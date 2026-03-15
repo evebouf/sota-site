@@ -78,7 +78,12 @@ const articles: Article[] = [
     brief: "Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh ut fermentum massa.",
   },
   {
-    words: [{ text: "Editor's Note", large: false }],
+    words: [
+      { text: "Editor's Note:", large: false },
+      { text: "The City", large: true },
+      { text: "of", large: false },
+      { text: "Tomorrow", large: true },
+    ],
     hoverClass: "[&>span]:hover:blur-[4px]",
     bgColor: { light: "#F7F7F7", dark: "#151515" },
     author: "Sanjana Friedman",
