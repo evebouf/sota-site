@@ -11,6 +11,7 @@ interface Article {
   hoverClass: string
   bgColor: { light: string; dark: string }
   author: string
+  brief: string
 }
 
 const articles: Article[] = [
@@ -19,6 +20,7 @@ const articles: Article[] = [
     hoverClass: "hover:line-through hover:decoration-[#FF2A00] hover:decoration-[4px]",
     bgColor: { light: "#F5F5F5", dark: "#1a1a1a" },
     author: "Wolf Tivy",
+    brief: "How sincere optimism about progress leads to dysfunctional governance — and what entropy has to do with it.",
   },
   {
     words: [
@@ -29,6 +31,7 @@ const articles: Article[] = [
     hoverClass: "hover:translate-x-[2vw]",
     bgColor: { light: "#F5F5F5", dark: "#1a1a1a" },
     author: "Jan Sramek",
+    brief: "The case for building a city that serves the entire Bay Area, not just 49 square miles.",
   },
   {
     words: [
@@ -39,6 +42,7 @@ const articles: Article[] = [
     hoverClass: "hover:skew-x-[-6deg] [&:hover>span]:!text-white",
     bgColor: { light: "#1a1a1a", dark: "#000000" },
     author: "Olivia Marotte",
+    brief: "What a Beat poet and a bookstore can teach us about building cultural infrastructure.",
   },
   {
     slug: "grecofuturism",
@@ -49,6 +53,7 @@ const articles: Article[] = [
     hoverClass: "hover:underline hover:decoration-[3px] hover:underline-offset-[8px]",
     bgColor: { light: "#ECECEC", dark: "#111111" },
     author: "Pablo Peniche",
+    brief: "Ancient Mediterranean aesthetics meet speculative futures — a new design philosophy.",
   },
   {
     words: [
@@ -62,6 +67,7 @@ const articles: Article[] = [
       "hover:bg-[#1a1a1a] [&:hover>span]:!text-white px-[0.6vw] py-[0.1em]",
     bgColor: { light: "#ECECEC", dark: "#111111" },
     author: "Evan Zimmerman",
+    brief: "Autonomous vehicles won't save transit. But they might reshape it entirely.",
   },
   {
     words: [{ text: "Alcatraz 20XX?", large: true }],
@@ -69,12 +75,14 @@ const articles: Article[] = [
       "after:content-[''] after:absolute after:left-0 after:top-1/2 after:h-[3px] after:bg-[#FF2A00] after:w-0 hover:after:w-full after:transition-all after:duration-350",
     bgColor: { light: "#E02010", dark: "#E02010" },
     author: "Sanjana Friedman",
+    brief: "What if the island became something else entirely?",
   },
   {
     words: [{ text: "Editor's Note", large: false }],
     hoverClass: "[&>span]:hover:blur-[4px]",
     bgColor: { light: "#F7F7F7", dark: "#151515" },
     author: "Sanjana Friedman",
+    brief: "A letter from the editor on why this zine exists.",
   },
 ]
 
@@ -245,13 +253,24 @@ function App() {
       {/* Dark mode toggle */}
       <button
         onClick={() => setDark(!dark)}
-        className={`absolute bottom-[4vh] left-[4vw] z-10 w-[40px] h-[40px] rounded-full border transition-all duration-300 hover:scale-110 ${
+        className={`absolute top-[3vh] right-[12vw] z-10 w-[28px] h-[28px] rounded-full border transition-all duration-300 hover:scale-110 ${
           dark
             ? "bg-white border-white/20"
             : "bg-[#1a1a1a] border-[#1a1a1a]/20"
         } ${activeArticle ? "opacity-0 pointer-events-none" : "opacity-100"}`}
         aria-label="Toggle dark mode"
       />
+
+      {/* Brief — fixed bottom left */}
+      <div
+        className={`absolute bottom-[4vh] left-[4vw] max-w-[35vw] font-sans text-[clamp(9px,0.75vw,12px)] leading-[1.5] tracking-[0.05em] transition-all duration-300 pointer-events-none ${
+          hoveredIndex !== null && !activeArticle
+            ? "opacity-70 translate-y-0"
+            : "opacity-0 translate-y-[4px]"
+        } ${dark || (hoveredIndex !== null && ["#1a1a1a", "#111111", "#000000"].includes(articles[hoveredIndex].bgColor.light)) ? "text-white" : "text-[#1a1a1a]"}`}
+      >
+        {hoveredIndex !== null ? articles[hoveredIndex].brief : ""}
+      </div>
 
       {/* Author name — fixed bottom right */}
       <div
