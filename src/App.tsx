@@ -126,6 +126,12 @@ function App() {
             : "opacity-0 scale-95 pointer-events-none"
         }`}
       >
+        <img
+          src="/peninsula-bg.png"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-[0.12] mix-blend-multiply"
+        />
+
         <div className={`absolute top-[3vh] w-full flex justify-between px-[4vw] font-sans text-[clamp(11px,1vw,14px)] tracking-[0.15em] uppercase font-medium transition-colors duration-500 ${dark ? "text-white/70" : "text-[#1a1a1a]"}`}>
           <span>State of the Art</span>
           <span className="flex items-center gap-3">
