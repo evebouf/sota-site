@@ -1,6 +1,18 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, type MouseEvent } from "react"
 
-const articles = [
+interface Word {
+  text: string
+  large: boolean
+}
+
+interface Article {
+  slug?: string
+  words: Word[]
+  hoverClass: string
+  bgColor: { light: string; dark: string }
+}
+
+const articles: Article[] = [
   {
     words: [{ text: "Against Progress", large: true }],
     hoverClass: "hover:text-[#C0272D]",
@@ -59,21 +71,21 @@ const articles = [
 ]
 
 function App() {
-  const [mode, setMode] = useState("writing")
-  const [activeArticle, setActiveArticle] = useState(null)
-  const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [mode, setMode] = useState<"writing" | "game">("writing")
+  const [activeArticle, setActiveArticle] = useState<string | null>(null)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 })
   const [dark, setDark] = useState(false)
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: globalThis.MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY })
     }
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [])
 
-  const handleArticleClick = (e, article) => {
+  const handleArticleClick = (e: MouseEvent, article: Article) => {
     e.preventDefault()
     if (article.slug) {
       setActiveArticle(article.slug)
@@ -127,8 +139,6 @@ function App() {
               )}
             </a>
           ))}
-
-
         </div>
 
         {/* City Lights sketch — appears on Ferlinghetti hover */}
