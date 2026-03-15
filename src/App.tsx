@@ -203,12 +203,33 @@ function App() {
 
         {/* Waymo sketches — flickering animation */}
 
-{/* Grecofuturism sketch — full bg */}
+        {/* Grecofuturism montage */}
         <img
           src="/greco-sketch.png"
           alt="Grecofuturist sketch"
-          className={`absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-500 ${
-            hoveredIndex === 3 ? "opacity-20" : "opacity-0"
+          className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 h-[60vh] object-contain pointer-events-none transition-all duration-500 ${
+            hoveredIndex === 3 ? "opacity-20 scale-100" : "opacity-0 scale-95"
+          }`}
+        />
+        <img
+          src="/tree-1.png"
+          alt=""
+          className={`absolute left-[3vw] bottom-[8vh] h-[45vh] object-contain pointer-events-none transition-all duration-500 delay-75 ${
+            hoveredIndex === 3 ? "opacity-70 translate-y-0" : "opacity-0 translate-y-[20px]"
+          }`}
+        />
+        <img
+          src="/tree-2.png"
+          alt=""
+          className={`absolute right-[3vw] bottom-[5vh] h-[50vh] object-contain pointer-events-none transition-all duration-500 delay-150 ${
+            hoveredIndex === 3 ? "opacity-70 translate-y-0" : "opacity-0 translate-y-[20px]"
+          }`}
+        />
+        <img
+          src="/tree-3.png"
+          alt=""
+          className={`absolute right-[18vw] top-[5vh] h-[35vh] object-contain pointer-events-none transition-all duration-500 delay-100 ${
+            hoveredIndex === 3 ? "opacity-50 translate-y-0" : "opacity-0 translate-y-[-20px]"
           }`}
         />
 
