@@ -10,6 +10,7 @@ interface Article {
   words: Word[]
   hoverClass: string
   bgColor: { light: string; dark: string }
+  author: string
 }
 
 const articles: Article[] = [
@@ -17,6 +18,7 @@ const articles: Article[] = [
     words: [{ text: "Against Progress", large: true }],
     hoverClass: "hover:line-through hover:decoration-[#FF2A00] hover:decoration-[4px]",
     bgColor: { light: "#F5F5F5", dark: "#1a1a1a" },
+    author: "Wolf Tivy",
   },
   {
     words: [
@@ -26,6 +28,7 @@ const articles: Article[] = [
     ],
     hoverClass: "hover:translate-x-[2vw]",
     bgColor: { light: "#F5F5F5", dark: "#1a1a1a" },
+    author: "Jan Sramek",
   },
   {
     words: [
@@ -35,6 +38,7 @@ const articles: Article[] = [
     ],
     hoverClass: "hover:skew-x-[-6deg] [&:hover>span]:!text-white",
     bgColor: { light: "#1a1a1a", dark: "#000000" },
+    author: "Olivia Marotte",
   },
   {
     slug: "grecofuturism",
@@ -44,6 +48,7 @@ const articles: Article[] = [
     ],
     hoverClass: "hover:underline hover:decoration-[3px] hover:underline-offset-[8px]",
     bgColor: { light: "#ECECEC", dark: "#111111" },
+    author: "Pablo Peniche",
   },
   {
     words: [
@@ -56,17 +61,20 @@ const articles: Article[] = [
     hoverClass:
       "hover:bg-[#1a1a1a] [&:hover>span]:!text-white px-[0.6vw] py-[0.1em]",
     bgColor: { light: "#ECECEC", dark: "#111111" },
+    author: "Evan Zimmerman",
   },
   {
     words: [{ text: "Alcatraz 20XX?", large: true }],
     hoverClass:
       "after:content-[''] after:absolute after:left-0 after:top-1/2 after:h-[3px] after:bg-[#FF2A00] after:w-0 hover:after:w-full after:transition-all after:duration-350",
     bgColor: { light: "#FF2A00", dark: "#FF2A00" },
+    author: "Sanjana Friedman",
   },
   {
     words: [{ text: "Editor's Note", large: false }],
     hoverClass: "[&>span]:hover:blur-[4px]",
     bgColor: { light: "#F7F7F7", dark: "#151515" },
+    author: "Sanjana Friedman",
   },
 ]
 
@@ -118,7 +126,7 @@ function App() {
               onClick={(e) => handleArticleClick(e, article)}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`flex items-baseline gap-[0.8vw] cursor-pointer no-underline relative transition-all duration-350 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${article.hoverClass}`}
+              className={`flex items-baseline gap-[0.8vw] cursor-pointer no-underline relative transition-all duration-350 ease-[cubic-bezier(0.25,0.1,0.25,1)] group ${article.hoverClass}`}
             >
               {article.words.map((word, j) =>
                 word.large ? (
@@ -137,6 +145,9 @@ function App() {
                   </span>
                 )
               )}
+              <span className={`absolute -bottom-[1.8em] left-1/2 -translate-x-1/2 font-sans text-[clamp(9px,0.75vw,12px)] tracking-[0.2em] uppercase opacity-0 translate-y-[4px] group-hover:opacity-60 group-hover:translate-y-0 transition-all duration-300 whitespace-nowrap ${dark ? "text-white" : "text-[#1a1a1a]"}`}>
+                {article.author}
+              </span>
             </a>
           ))}
         </div>
