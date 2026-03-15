@@ -134,7 +134,7 @@ function App() {
               onClick={(e) => handleArticleClick(e, article)}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`flex items-baseline gap-[0.8vw] cursor-pointer no-underline relative transition-all duration-350 ease-[cubic-bezier(0.25,0.1,0.25,1)] group ${article.hoverClass} ${(hoveredIndex === 5 && i !== 5) || (hoveredIndex === 3 && i !== 3) ? "opacity-0" : ""}`}
+              className={`flex items-baseline gap-[0.8vw] cursor-pointer no-underline relative transition-all duration-350 ease-[cubic-bezier(0.25,0.1,0.25,1)] group ${article.hoverClass} ${(hoveredIndex === 5 && i !== 5) || (hoveredIndex === 3 && i !== 3) ? "opacity-10" : ""}`}
             >
               {article.words.map((word, j) =>
                 word.large ? (
@@ -181,7 +181,7 @@ function App() {
         <img
           src="/greco-sketch.png"
           alt="Grecofuturist sketch"
-          className={`absolute right-[3vw] top-1/2 -translate-y-1/2 h-[50vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] mix-blend-darken ${
+          className={`absolute right-[3vw] top-1/2 -translate-y-1/2 h-[50vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] mix-blend-multiply ${
             hoveredIndex === 3
               ? "opacity-80 scale-100"
               : "opacity-0 scale-95"
