@@ -121,7 +121,9 @@ function App() {
         <img
           src="/alcatraz-sketch.png"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-15 mix-blend-multiply"
+          className={`absolute inset-0 w-full h-full object-cover pointer-events-none mix-blend-multiply transition-opacity duration-500 ${
+            hoveredIndex === 5 ? "opacity-15" : "opacity-0"
+          }`}
         />
 
         <div className="flex flex-col items-center px-[5vw] relative">
