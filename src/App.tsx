@@ -208,7 +208,7 @@ function App() {
         />
 
         {/* Traffic light animation — Waymo hover */}
-        <div className={`absolute left-[4vw] top-1/2 -translate-y-1/2 w-[15vw] h-[80vh] pointer-events-none transition-opacity duration-300 ${hoveredIndex === 4 ? "opacity-100" : "opacity-0"}`}>
+        <div className={`absolute left-[4vw] top-[40%] -translate-y-1/2 w-[15vw] h-[80vh] pointer-events-none transition-opacity duration-300 ${hoveredIndex === 4 ? "opacity-100" : "opacity-0"}`}>
           <img src="/light-3.png" alt="" className="absolute inset-0 w-full h-full object-contain" style={{ animation: "light-1 0.9s steps(1) infinite" }} />
           <img src="/light-2.png" alt="" className="absolute inset-0 w-full h-full object-contain" style={{ animation: "light-2 0.9s steps(1) infinite" }} />
           <img src="/light-1.png" alt="" className="absolute inset-0 w-full h-full object-contain" style={{ animation: "light-3 0.9s steps(1) infinite" }} />
