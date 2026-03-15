@@ -20,7 +20,7 @@ const articles: Article[] = [
     hoverClass: "hover:line-through hover:decoration-[#FF2A00] hover:decoration-[4px]",
     bgColor: { light: "#F5F5F5", dark: "#1a1a1a" },
     author: "Wolf Tivy",
-    brief: "How sincere optimism about progress leads to dysfunctional governance — and what entropy has to do with it.",
+    brief: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
   },
   {
     words: [
@@ -31,7 +31,7 @@ const articles: Article[] = [
     hoverClass: "hover:translate-x-[2vw]",
     bgColor: { light: "#F5F5F5", dark: "#1a1a1a" },
     author: "Jan Sramek",
-    brief: "The case for building a city that serves the entire Bay Area, not just 49 square miles.",
+    brief: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
   },
   {
     words: [
@@ -42,7 +42,7 @@ const articles: Article[] = [
     hoverClass: "hover:skew-x-[-6deg] [&:hover>span]:!text-white",
     bgColor: { light: "#1a1a1a", dark: "#000000" },
     author: "Olivia Marotte",
-    brief: "What a Beat poet and a bookstore can teach us about building cultural infrastructure.",
+    brief: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
   },
   {
     slug: "grecofuturism",
@@ -53,7 +53,7 @@ const articles: Article[] = [
     hoverClass: "hover:underline hover:decoration-[3px] hover:underline-offset-[8px]",
     bgColor: { light: "#ECECEC", dark: "#111111" },
     author: "Pablo Peniche",
-    brief: "Ancient Mediterranean aesthetics meet speculative futures — a new design philosophy.",
+    brief: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id.",
   },
   {
     words: [
@@ -67,7 +67,7 @@ const articles: Article[] = [
       "hover:bg-[#1a1a1a] [&:hover>span]:!text-white px-[0.6vw] py-[0.1em]",
     bgColor: { light: "#ECECEC", dark: "#111111" },
     author: "Evan Zimmerman",
-    brief: "Autonomous vehicles won't save transit. But they might reshape it entirely.",
+    brief: "Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo.",
   },
   {
     words: [{ text: "Alcatraz 20XX?", large: true }],
@@ -75,14 +75,14 @@ const articles: Article[] = [
       "after:content-[''] after:absolute after:left-0 after:top-1/2 after:h-[3px] after:bg-[#FF2A00] after:w-0 hover:after:w-full after:transition-all after:duration-350",
     bgColor: { light: "#E02010", dark: "#E02010" },
     author: "Sanjana Friedman",
-    brief: "What if the island became something else entirely?",
+    brief: "Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh ut fermentum massa.",
   },
   {
     words: [{ text: "Editor's Note", large: false }],
     hoverClass: "[&>span]:hover:blur-[4px]",
     bgColor: { light: "#F7F7F7", dark: "#151515" },
     author: "Sanjana Friedman",
-    brief: "A letter from the editor on why this zine exists.",
+    brief: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
   },
 ]
 
@@ -253,7 +253,7 @@ function App() {
       {/* Dark mode toggle */}
       <button
         onClick={() => setDark(!dark)}
-        className={`absolute top-[3vh] right-[12vw] z-10 w-[28px] h-[28px] rounded-full border transition-all duration-300 hover:scale-110 ${
+        className={`absolute top-[3vh] right-[1.5vw] z-10 w-[14px] h-[14px] rounded-full border transition-all duration-300 hover:scale-110 ${
           dark
             ? "bg-white border-white/20"
             : "bg-[#1a1a1a] border-[#1a1a1a]/20"
