@@ -9,6 +9,11 @@
   cursor: none !important;
 }
 
+::selection {
+  background-color: #FF2A00;
+  color: white;
+}
+
 body {
   background-color: #f5f2ed;
 }
