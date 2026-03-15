@@ -118,6 +118,12 @@ function App() {
           <span>Edition 01</span>
         </div>
 
+        <img
+          src="/alcatraz-sketch.png"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-15 mix-blend-multiply"
+        />
+
         <div className="flex flex-col items-center px-[5vw] relative">
           {articles.map((article, i) => (
             <a
