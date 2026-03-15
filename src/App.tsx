@@ -73,7 +73,7 @@ const articles: Article[] = [
     words: [{ text: "Alcatraz 20XX?", large: true }],
     hoverClass:
       "after:content-[''] after:absolute after:left-0 after:top-1/2 after:h-[3px] after:bg-[#FF2A00] after:w-0 hover:after:w-full after:transition-all after:duration-350",
-    bgColor: { light: "#E02010", dark: "#E02010" },
+    bgColor: { light: "#CC1100", dark: "#CC1100" },
     author: "Sanjana Friedman",
     brief: "Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh ut fermentum massa.",
   },
