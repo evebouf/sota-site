@@ -177,14 +177,12 @@ function App() {
           }`}
         />
 
-        {/* Grecofuturism sketch */}
+        {/* Grecofuturism sketch — full bg */}
         <img
           src="/greco-sketch.png"
           alt="Grecofuturist sketch"
-          className={`absolute right-[5vw] top-1/2 -translate-y-1/2 h-[30vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] -z-10 ${
-            hoveredIndex === 3
-              ? "opacity-50 scale-100"
-              : "opacity-0 scale-95"
+          className={`absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-500 ${
+            hoveredIndex === 3 ? "opacity-20" : "opacity-0"
           }`}
         />
 
