@@ -2,7 +2,7 @@
 
 @theme {
   --font-bodoni: "Fraunces", serif;
-  --font-sans: "DM Sans", sans-serif;
+  --font-sans: "Space Mono", monospace;
 }
 
 * {
