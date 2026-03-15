@@ -28,7 +28,7 @@ const articles: Article[] = [
       { text: "Is Not", large: false },
       { text: "An Island", large: true },
     ],
-    hoverClass: "sf-outline-hover",
+    hoverClass: "hover:opacity-50 hover:scale-[0.98]",
     bgColor: { light: "#F5F5F5", dark: "#1a1a1a" },
     author: "Jan Sramek",
     brief: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
