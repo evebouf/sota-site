@@ -168,6 +168,17 @@ function App() {
               : "opacity-0 scale-95"
           }`}
         />
+
+        {/* Alcatraz sketch — appears on Alcatraz hover */}
+        <img
+          src="/alcatraz-sketch.png"
+          alt="Alcatraz sketch"
+          className={`absolute left-1/2 -translate-x-1/2 bottom-[8vh] h-[40vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] invert brightness-200 ${
+            hoveredIndex === 5
+              ? "opacity-80 translate-y-0"
+              : "opacity-0 translate-y-[20px]"
+          }`}
+        />
       </div>
 
       {/* Article modal — Grecofuturism */}
