@@ -183,13 +183,19 @@ function App() {
             src="/waymo-1.png"
             alt="Waymo sketch 1"
             className="absolute inset-0 w-full h-full object-contain"
-            style={{ animation: "waymo-flicker 0.25s steps(1) infinite" }}
+            style={{ animation: "waymo-1 0.4s steps(1) infinite" }}
           />
           <img
             src="/waymo-2.png"
             alt="Waymo sketch 2"
             className="absolute inset-0 w-full h-full object-contain"
-            style={{ animation: "waymo-flicker 0.25s steps(1) infinite reverse" }}
+            style={{ animation: "waymo-2 0.4s steps(1) infinite" }}
+          />
+          <img
+            src="/waymo-3.png"
+            alt="Waymo sketch 3"
+            className="absolute inset-0 w-full h-full object-contain"
+            style={{ animation: "waymo-3 0.4s steps(1) infinite" }}
           />
         </div>
 

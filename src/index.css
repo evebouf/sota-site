@@ -31,7 +31,16 @@ body::before {
   mix-blend-mode: multiply;
 }
 
-@keyframes waymo-flicker {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
+@keyframes waymo-1 {
+  0%, 33.32% { opacity: 1; }
+  33.33%, 100% { opacity: 0; }
+}
+@keyframes waymo-2 {
+  0%, 33.32% { opacity: 0; }
+  33.33%, 66.65% { opacity: 1; }
+  66.66%, 100% { opacity: 0; }
+}
+@keyframes waymo-3 {
+  0%, 66.65% { opacity: 0; }
+  66.66%, 100% { opacity: 1; }
 }
