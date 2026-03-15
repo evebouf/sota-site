@@ -157,6 +157,19 @@ function App() {
           ))}
         </div>
 
+        {/* Against Progress pull quote */}
+        <div
+          className={`absolute bottom-[12vh] left-[4vw] right-[4vw] text-center pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
+            hoveredIndex === 0
+              ? "opacity-40 translate-y-0"
+              : "opacity-0 translate-y-[10px]"
+          }`}
+        >
+          <p className={`font-bodoni italic text-[clamp(14px,1.8vw,28px)] leading-[1.4] ${dark ? "text-white" : "text-[#1a1a1a]"}`}>
+            "The arrow of time is nothing more or less than<br />the irreversible increase of entropy."
+          </p>
+        </div>
+
         {/* City Lights sketch — appears on Ferlinghetti hover */}
         <img
           src="/ferlinghetti-portrait.svg"
