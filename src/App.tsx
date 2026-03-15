@@ -150,7 +150,7 @@ function App() {
           }`}
         />
 
-        <div className="flex flex-col items-center px-[5vw] relative">
+        <div className="flex flex-col items-center px-[5vw] relative z-10">
           {articles.map((article, i) => (
             <a
               key={i}
