@@ -214,31 +214,6 @@ function App() {
         />
       </div>
 
-      {/* Toggle */}
-      <div
-        onClick={() => {
-          setActiveArticle(null)
-          setMode(mode === "writing" ? "game" : "writing")
-        }}
-        className={`absolute bottom-[4vh] left-1/2 -translate-x-1/2 z-10 w-[220px] h-[56px] rounded-full backdrop-blur-xl cursor-pointer select-none p-[4px] hover:scale-105 transition-all duration-300 ${dark ? "bg-white/10 border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)]" : "bg-[#1a1a1a]/5 border border-[#1a1a1a]/10 shadow-[0_4px_30px_rgba(0,0,0,0.08)]"} ${activeArticle ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-      >
-        <div
-          className={`absolute top-[4px] w-[108px] h-[48px] rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${dark ? "bg-white" : "bg-[#1a1a1a]"} ${mode === "game" ? "left-[108px]" : "left-[4px]"}`}
-        />
-        <div className="relative flex h-full font-sans text-[13px] tracking-[0.2em] uppercase font-medium">
-          <span
-            className={`flex-1 flex items-center justify-center z-10 transition-colors duration-300 ${mode === "writing" ? (dark ? "text-[#1a1a1a]" : "text-white") + " font-medium" : dark ? "text-white/40" : "text-[#1a1a1a]/50"}`}
-          >
-            Writing
-          </span>
-          <span
-            className={`flex-1 flex items-center justify-center z-10 transition-colors duration-300 ${mode === "game" ? (dark ? "text-[#1a1a1a]" : "text-white") + " font-medium" : dark ? "text-white/40" : "text-[#1a1a1a]/50"}`}
-          >
-            Game
-          </span>
-        </div>
-      </div>
-
       {/* Dark mode toggle */}
       <button
         onClick={() => setDark(!dark)}
