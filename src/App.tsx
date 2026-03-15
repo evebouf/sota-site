@@ -194,7 +194,7 @@ function App() {
         <img
           src="/city-lights.svg"
           alt="City Lights Booksellers"
-          className={`absolute right-[2vw] top-[48%] -translate-y-1/2 h-[35vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${dark ? "" : "invert"} delay-75 ${
+          className={`absolute right-[2vw] top-[45%] -translate-y-1/2 h-[35vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${dark ? "" : "invert"} delay-75 ${
             hoveredIndex === 2
               ? "opacity-100 scale-100"
               : "opacity-0 scale-95"
