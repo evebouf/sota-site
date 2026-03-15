@@ -123,7 +123,18 @@ function App() {
       >
         <div className={`absolute top-[3vh] w-full flex justify-between px-[4vw] font-sans text-[clamp(11px,1vw,14px)] tracking-[0.15em] uppercase font-medium transition-colors duration-500 ${dark ? "text-white/70" : "text-[#1a1a1a]"}`}>
           <span>State of the Art</span>
-          <span>Edition 01</span>
+          <span className="flex items-center gap-3">
+            Edition 01
+            <button
+              onClick={() => setDark(!dark)}
+              className={`w-[20px] h-[20px] rounded-full border outline-none transition-all duration-300 hover:scale-110 ${
+                dark
+                  ? "bg-white border-white/20"
+                  : "bg-[#1a1a1a] border-[#1a1a1a]/20"
+              }`}
+              aria-label="Toggle dark mode"
+            />
+          </span>
         </div>
 
         <img
@@ -250,16 +261,6 @@ function App() {
         />
       </div>
 
-      {/* Dark mode toggle */}
-      <button
-        onClick={() => setDark(!dark)}
-        className={`absolute top-[3vh] right-[1.5vw] z-10 w-[14px] h-[14px] rounded-full border transition-all duration-300 hover:scale-110 ${
-          dark
-            ? "bg-white border-white/20"
-            : "bg-[#1a1a1a] border-[#1a1a1a]/20"
-        } ${activeArticle ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-        aria-label="Toggle dark mode"
-      />
 
       {/* Bottom info bar — brief left, author right */}
       <div
