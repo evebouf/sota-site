@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-bodoni: "Fraunces", serif;
+  --font-bodoni: "Instrument Serif", serif;
   --font-sans: "Space Mono", monospace;
 }
 
