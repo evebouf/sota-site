@@ -173,9 +173,9 @@ function App() {
         <img
           src="/alcatraz-sketch.png"
           alt="Alcatraz sketch"
-          className={`absolute left-1/2 -translate-x-1/2 bottom-[8vh] h-[40vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] invert brightness-200 ${
+          className={`absolute left-1/2 -translate-x-1/2 bottom-[8vh] h-[40vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] mix-blend-multiply ${
             hoveredIndex === 5
-              ? "opacity-80 translate-y-0"
+              ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-[20px]"
           }`}
         />
