@@ -257,7 +257,7 @@ function App() {
       <div
         className={`absolute bottom-[4vh] right-[4vw] font-sans text-[clamp(10px,0.85vw,13px)] tracking-[0.2em] uppercase transition-all duration-300 pointer-events-none ${
           hoveredIndex !== null && !activeArticle
-            ? "opacity-50 translate-y-0"
+            ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-[4px]"
         } ${dark || (hoveredIndex !== null && articles[hoveredIndex].bgColor.light === "#1a1a1a") ? "text-white" : "text-[#1a1a1a]"}`}
       >
