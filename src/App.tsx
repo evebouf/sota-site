@@ -42,7 +42,7 @@ const articles: Article[] = [
       { text: "What is", large: false },
       { text: "Grecofuturism?", large: true },
     ],
-    hoverClass: "hover:tracking-[0.15em]",
+    hoverClass: "hover:underline hover:decoration-[3px] hover:underline-offset-[8px]",
     bgColor: { light: "#ECECEC", dark: "#111111" },
   },
   {
