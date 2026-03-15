@@ -84,7 +84,7 @@ const articles: Article[] = [
       { text: "of", large: false },
       { text: "Tomorrow", large: true },
     ],
-    hoverClass: "[&>span]:hover:blur-[4px]",
+    hoverClass: "hover:blur-[4px]",
     bgColor: { light: "#F7F7F7", dark: "#151515" },
     author: "Sanjana Friedman",
     brief: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
