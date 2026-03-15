@@ -178,18 +178,18 @@ function App() {
         />
 
         {/* Waymo sketches — flickering animation */}
-        <div className={`absolute right-[3vw] top-1/2 -translate-y-1/2 h-[35vh] pointer-events-none transition-opacity duration-300 ${hoveredIndex === 4 ? "opacity-100" : "opacity-0"}`}>
+        <div className={`absolute right-[3vw] bottom-[10vh] w-[30vw] h-[25vh] pointer-events-none transition-opacity duration-300 ${hoveredIndex === 4 ? "opacity-100" : "opacity-0"}`}>
           <img
             src="/waymo-1.png"
             alt="Waymo sketch 1"
-            className="absolute inset-0 h-full object-contain mix-blend-darken"
-            style={{ animation: "waymo-flicker 0.3s steps(1) infinite" }}
+            className="absolute inset-0 w-full h-full object-contain"
+            style={{ animation: "waymo-flicker 0.25s steps(1) infinite" }}
           />
           <img
             src="/waymo-2.png"
             alt="Waymo sketch 2"
-            className="absolute inset-0 h-full object-contain mix-blend-darken"
-            style={{ animation: "waymo-flicker 0.3s steps(1) infinite reverse" }}
+            className="absolute inset-0 w-full h-full object-contain"
+            style={{ animation: "waymo-flicker 0.25s steps(1) infinite reverse" }}
           />
         </div>
 
