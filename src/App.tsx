@@ -153,7 +153,7 @@ function App() {
               onClick={(e) => handleArticleClick(e, article)}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`flex items-baseline gap-[0.8vw] cursor-pointer no-underline relative transition-all duration-350 ease-[cubic-bezier(0.25,0.1,0.25,1)] group ${article.hoverClass} ${(hoveredIndex === 5 && i !== 5) || (hoveredIndex === 3 && i !== 3) ? "opacity-10" : ""}`}
+              className={`flex items-baseline gap-[0.8vw] cursor-pointer no-underline relative transition-all duration-350 ease-[cubic-bezier(0.25,0.1,0.25,1)] group ${article.hoverClass} ${(hoveredIndex === 5 && i !== 5) || (hoveredIndex === 3 && i !== 3) || (hoveredIndex === 4 && i !== 4) ? "opacity-10" : ""}`}
             >
               {article.words.map((word, j) =>
                 word.large ? (
@@ -208,7 +208,7 @@ function App() {
         />
 
         {/* Traffic light animation — Waymo hover */}
-        <div className={`absolute right-[5vw] top-1/2 -translate-y-1/2 w-[15vw] h-[50vh] pointer-events-none transition-opacity duration-300 ${hoveredIndex === 4 ? "opacity-100" : "opacity-0"}`}>
+        <div className={`absolute left-[4vw] top-1/2 -translate-y-1/2 w-[12vw] h-[70vh] pointer-events-none transition-opacity duration-300 ${hoveredIndex === 4 ? "opacity-100" : "opacity-0"}`}>
           <img src="/light-3.png" alt="" className="absolute inset-0 w-full h-full object-contain" style={{ animation: "light-1 0.9s steps(1) infinite" }} />
           <img src="/light-2.png" alt="" className="absolute inset-0 w-full h-full object-contain" style={{ animation: "light-2 0.9s steps(1) infinite" }} />
           <img src="/light-1.png" alt="" className="absolute inset-0 w-full h-full object-contain" style={{ animation: "light-3 0.9s steps(1) infinite" }} />
