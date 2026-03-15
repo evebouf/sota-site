@@ -261,26 +261,20 @@ function App() {
         aria-label="Toggle dark mode"
       />
 
-      {/* Brief — fixed bottom left */}
+      {/* Bottom info bar — brief left, author right */}
       <div
-        className={`absolute bottom-[4vh] left-[4vw] max-w-[35vw] font-sans text-[clamp(9px,0.75vw,12px)] leading-[1.5] tracking-[0.05em] transition-all duration-300 pointer-events-none ${
-          hoveredIndex !== null && !activeArticle
-            ? "opacity-70 translate-y-0"
-            : "opacity-0 translate-y-[4px]"
-        } ${dark || (hoveredIndex !== null && ["#1a1a1a", "#111111", "#000000"].includes(articles[hoveredIndex].bgColor.light)) ? "text-white" : "text-[#1a1a1a]"}`}
-      >
-        {hoveredIndex !== null ? articles[hoveredIndex].brief : ""}
-      </div>
-
-      {/* Author name — fixed bottom right */}
-      <div
-        className={`absolute bottom-[4vh] right-[4vw] font-sans text-[clamp(10px,0.85vw,13px)] tracking-[0.2em] uppercase transition-all duration-300 pointer-events-none ${
+        className={`absolute bottom-[4vh] left-[4vw] right-[4vw] flex items-end justify-between transition-all duration-300 pointer-events-none ${
           hoveredIndex !== null && !activeArticle
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-[4px]"
         } ${dark || (hoveredIndex !== null && ["#1a1a1a", "#111111", "#000000"].includes(articles[hoveredIndex].bgColor.light)) ? "text-white" : "text-[#1a1a1a]"}`}
       >
-        {hoveredIndex !== null ? articles[hoveredIndex].author : ""}
+        <div className="max-w-[35vw] font-sans text-[clamp(9px,0.75vw,12px)] leading-[1.5] tracking-[0.05em] opacity-70">
+          {hoveredIndex !== null ? articles[hoveredIndex].brief : ""}
+        </div>
+        <div className="font-sans text-[clamp(10px,0.85vw,13px)] tracking-[0.2em] uppercase whitespace-nowrap">
+          {hoveredIndex !== null ? articles[hoveredIndex].author : ""}
+        </div>
       </div>
 
       {/* Custom cursor */}
