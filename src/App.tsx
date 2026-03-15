@@ -119,9 +119,9 @@ function App() {
         </div>
 
         <img
-          src="/alcatraz-sketch.svg"
+          src="/alcatraz-sketch.png"
           alt=""
-          className={`absolute inset-0 w-full h-full object-cover pointer-events-none mix-blend-multiply transition-opacity duration-500 ${
+          className={`absolute inset-0 w-full h-full object-cover pointer-events-none mix-blend-darken transition-opacity duration-500 ${
             hoveredIndex === 5 ? "opacity-15" : "opacity-0"
           }`}
         />
