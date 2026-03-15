@@ -145,9 +145,6 @@ function App() {
                   </span>
                 )
               )}
-              <span className={`absolute -bottom-[1.8em] left-1/2 -translate-x-1/2 font-sans text-[clamp(9px,0.75vw,12px)] tracking-[0.2em] uppercase opacity-0 translate-y-[4px] group-hover:opacity-60 group-hover:translate-y-0 transition-all duration-300 whitespace-nowrap ${dark ? "text-white" : "text-[#1a1a1a]"}`}>
-                {article.author}
-              </span>
             </a>
           ))}
         </div>
@@ -235,6 +232,17 @@ function App() {
         } ${activeArticle ? "opacity-0 pointer-events-none" : "opacity-100"}`}
         aria-label="Toggle dark mode"
       />
+
+      {/* Author name — fixed bottom right */}
+      <div
+        className={`absolute bottom-[4vh] right-[4vw] font-sans text-[clamp(10px,0.85vw,13px)] tracking-[0.2em] uppercase transition-all duration-300 pointer-events-none ${
+          hoveredIndex !== null && !activeArticle
+            ? "opacity-50 translate-y-0"
+            : "opacity-0 translate-y-[4px]"
+        } ${dark ? "text-white" : "text-[#1a1a1a]"}`}
+      >
+        {hoveredIndex !== null ? articles[hoveredIndex].author : ""}
+      </div>
 
       {/* Custom cursor */}
       <div
