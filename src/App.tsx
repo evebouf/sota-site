@@ -207,6 +207,13 @@ function App() {
           }`}
         />
 
+        {/* Traffic light animation — Waymo hover */}
+        <div className={`absolute right-[5vw] top-1/2 -translate-y-1/2 h-[50vh] pointer-events-none transition-opacity duration-300 ${hoveredIndex === 4 ? "opacity-100" : "opacity-0"}`}>
+          <img src="/light-3.png" alt="" className="absolute inset-0 h-full object-contain" style={{ animation: "light-1 0.9s steps(1) infinite" }} />
+          <img src="/light-2.png" alt="" className="absolute inset-0 h-full object-contain" style={{ animation: "light-2 0.9s steps(1) infinite" }} />
+          <img src="/light-1.png" alt="" className="absolute inset-0 h-full object-contain" style={{ animation: "light-3 0.9s steps(1) infinite" }} />
+        </div>
+
       </div>
 
       {/* Article modal — Grecofuturism */}
