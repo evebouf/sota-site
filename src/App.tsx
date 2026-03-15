@@ -177,6 +177,17 @@ function App() {
           }`}
         />
 
+        {/* Grecofuturism sketch */}
+        <img
+          src="/greco-sketch.png"
+          alt="Grecofuturist sketch"
+          className={`absolute right-[3vw] top-1/2 -translate-y-1/2 h-[50vh] object-contain pointer-events-none transition-all duration-600 ease-[cubic-bezier(0.25,0.1,0.25,1)] mix-blend-darken ${
+            hoveredIndex === 3
+              ? "opacity-80 scale-100"
+              : "opacity-0 scale-95"
+          }`}
+        />
+
       </div>
 
       {/* Article modal — Grecofuturism */}
