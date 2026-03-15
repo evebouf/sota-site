@@ -239,7 +239,7 @@ function App() {
           hoveredIndex !== null && !activeArticle
             ? "opacity-50 translate-y-0"
             : "opacity-0 translate-y-[4px]"
-        } ${dark ? "text-white" : "text-[#1a1a1a]"}`}
+        } ${dark || (hoveredIndex !== null && articles[hoveredIndex].bgColor.light === "#1a1a1a") ? "text-white" : "text-[#1a1a1a]"}`}
       >
         {hoveredIndex !== null ? articles[hoveredIndex].author : ""}
       </div>
