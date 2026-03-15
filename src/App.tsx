@@ -153,7 +153,7 @@ function App() {
               onClick={(e) => handleArticleClick(e, article)}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`flex items-baseline gap-[0.8vw] cursor-pointer no-underline relative transition-all duration-350 ease-[cubic-bezier(0.25,0.1,0.25,1)] group ${article.hoverClass} ${(hoveredIndex === 5 && i !== 5) || (hoveredIndex === 3 && i !== 3) || (hoveredIndex === 4 && i !== 4) || (hoveredIndex === 2 && i !== 2) ? "opacity-10" : ""}`}
+              className={`flex items-baseline gap-[0.8vw] cursor-pointer no-underline relative transition-all duration-350 ease-[cubic-bezier(0.25,0.1,0.25,1)] group ${article.hoverClass} ${(hoveredIndex === 5 && i !== 5) || (hoveredIndex === 3 && i !== 3) || (hoveredIndex === 4 && i !== 4) || (hoveredIndex === 2 && i !== 2) ? "opacity-20" : ""}`}
             >
               {article.words.map((word, j) =>
                 word.large ? (
