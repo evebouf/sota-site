@@ -60,7 +60,7 @@ const articles: Article[] = [
     ],
     hoverClass:
       "hover:bg-[#1a1a1a] [&:hover>span]:!text-white px-[0.6vw] py-[0.1em]",
-    bgColor: { light: "#111111", dark: "#000000" },
+    bgColor: { light: "#ECECEC", dark: "#111111" },
     author: "Evan Zimmerman",
   },
   {
@@ -178,23 +178,8 @@ function App() {
         />
 
         {/* Waymo sketches — flickering animation */}
-        {/* Waymo — glitchy full-screen feed */}
-        <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${hoveredIndex === 4 ? "opacity-100" : "opacity-0"}`}>
-          <img
-            src="/waymo-1.png"
-            alt=""
-            className="absolute inset-0 w-full h-full object-contain invert"
-            style={{ animation: "waymo-glitch 0.2s steps(1) infinite" }}
-          />
-          <img
-            src="/waymo-2.png"
-            alt=""
-            className="absolute inset-0 w-full h-full object-contain invert"
-            style={{ animation: "waymo-glitch 0.2s steps(1) infinite reverse" }}
-          />
-        </div>
 
-        {/* Grecofuturism sketch — full bg */}
+{/* Grecofuturism sketch — full bg */}
         <img
           src="/greco-sketch.png"
           alt="Grecofuturist sketch"
