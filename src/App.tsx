@@ -124,14 +124,14 @@ function App() {
                 word.large ? (
                   <span
                     key={j}
-                    className={`font-bodoni text-[clamp(48px,8.5vw,128px)] leading-[0.9] tracking-[0.02em] uppercase transition-[inherit] ${dark ? "text-white" : "text-[#1a1a1a]"}`}
+                    className={`font-bodoni text-[clamp(36px,6.2vw,96px)] leading-[0.9] tracking-[0.02em] uppercase transition-[inherit] ${dark ? "text-white" : "text-[#1a1a1a]"}`}
                   >
                     {word.text}
                   </span>
                 ) : (
                   <span
                     key={j}
-                    className={`font-bodoni italic text-[clamp(22px,3.6vw,48px)] leading-none transition-[inherit] ${dark ? "text-white" : "text-[#1a1a1a]"}`}
+                    className={`font-bodoni italic text-[clamp(16px,2.6vw,36px)] leading-none transition-[inherit] ${dark ? "text-white" : "text-[#1a1a1a]"}`}
                   >
                     {word.text}
                   </span>
