@@ -15,8 +15,8 @@ interface Article {
 const articles: Article[] = [
   {
     words: [{ text: "Against Progress", large: true }],
-    hoverClass: "hover:text-[#C0272D]",
-    bgColor: { light: "#FFE8E5", dark: "#2a0800" },
+    hoverClass: "hover:line-through hover:decoration-[#FF2A00] hover:decoration-[4px]",
+    bgColor: { light: "#F5F5F5", dark: "#1a1a1a" },
   },
   {
     words: [
@@ -42,8 +42,8 @@ const articles: Article[] = [
       { text: "What is", large: false },
       { text: "Grecofuturism?", large: true },
     ],
-    hoverClass: "hover:bg-[#FF2A00] [&:hover>span]:!text-white px-[0.6vw] py-[0.1em]",
-    bgColor: { light: "#FFF0ED", dark: "#2a0500" },
+    hoverClass: "hover:scale-105 hover:rotate-[-1deg]",
+    bgColor: { light: "#ECECEC", dark: "#111111" },
   },
   {
     words: [
