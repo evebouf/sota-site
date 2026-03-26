@@ -76,6 +76,121 @@ function PageTwo() {
       m.addLayer({ id: "buildings-3d", source: "composite", "source-layer": "building", type: "fill-extrusion", minzoom: 1,
         paint: { "fill-extrusion-color": "#1a1a1a", "fill-extrusion-height": ["get", "height"], "fill-extrusion-base": ["get", "min_height"], "fill-extrusion-opacity": 0.7 },
       })
+
+      // === DATA LAYERS ===
+
+      // 1. Transit agency boundaries (simplified)
+      m.addSource("transit-agencies", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [
+            { type: "Feature", properties: { name: "Muni" }, geometry: { type: "Polygon", coordinates: [[[-122.517, 37.708],[-122.517, 37.812],[-122.357, 37.812],[-122.357, 37.708],[-122.517, 37.708]]] } },
+            { type: "Feature", properties: { name: "BART" }, geometry: { type: "Polygon", coordinates: [[[-122.53, 37.55],[-122.53, 37.82],[-122.25, 37.82],[-122.0, 37.75],[-121.88, 37.60],[-121.88, 37.50],[-122.08, 37.35],[-122.40, 37.35],[-122.53, 37.55]]] } },
+            { type: "Feature", properties: { name: "Caltrain" }, geometry: { type: "Polygon", coordinates: [[[-122.42, 37.78],[-122.44, 37.65],[-122.42, 37.55],[-122.38, 37.45],[-122.30, 37.35],[-121.88, 37.33],[-121.86, 37.38],[-122.08, 37.45],[-122.18, 37.55],[-122.30, 37.65],[-122.38, 37.78],[-122.42, 37.78]]] } },
+            { type: "Feature", properties: { name: "AC Transit" }, geometry: { type: "Polygon", coordinates: [[[-122.35, 37.70],[-122.35, 37.88],[-122.25, 37.92],[-122.10, 37.92],[-122.10, 37.70],[-122.20, 37.65],[-122.35, 37.70]]] } },
+            { type: "Feature", properties: { name: "VTA" }, geometry: { type: "Polygon", coordinates: [[[-122.20, 37.45],[-122.20, 37.25],[-121.75, 37.20],[-121.70, 37.45],[-122.00, 37.48],[-122.20, 37.45]]] } },
+            { type: "Feature", properties: { name: "Golden Gate Transit" }, geometry: { type: "Polygon", coordinates: [[[-122.75, 37.83],[-122.75, 38.08],[-122.40, 38.08],[-122.40, 37.83],[-122.53, 37.82],[-122.75, 37.83]]] } },
+            { type: "Feature", properties: { name: "SamTrans" }, geometry: { type: "Polygon", coordinates: [[[-122.52, 37.71],[-122.52, 37.55],[-122.35, 37.45],[-122.18, 37.45],[-122.10, 37.55],[-122.20, 37.65],[-122.35, 37.71],[-122.52, 37.71]]] } },
+          ],
+        },
+      })
+      m.addLayer({ id: "transit-fill", source: "transit-agencies", type: "fill",
+        paint: { "fill-color": "#FF2A00", "fill-opacity": 0.04 },
+      })
+      m.addLayer({ id: "transit-borders", source: "transit-agencies", type: "line",
+        paint: { "line-color": "#FF2A00", "line-opacity": 0.25, "line-width": 1, "line-dasharray": [4, 3] },
+      })
+      m.addLayer({ id: "transit-labels", source: "transit-agencies", type: "symbol",
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": ["Roboto Mono Regular", "Arial Unicode MS Regular"],
+          "text-size": 9,
+          "text-transform": "uppercase",
+          "text-letter-spacing": 0.2,
+        },
+        paint: { "text-color": "#FF2A00", "text-opacity": 0.3, "text-halo-color": "#0a0a0a", "text-halo-width": 1 },
+      })
+
+      // 2. Northern California Megaregion boundary
+      m.addSource("megaregion", {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          properties: { name: "NorCal Megaregion" },
+          geometry: {
+            type: "Polygon",
+            coordinates: [[
+              [-122.52, 37.30], [-122.50, 37.78], [-122.52, 37.82],
+              [-122.75, 38.08], [-122.40, 38.35], [-121.95, 38.60],
+              [-121.45, 38.60], [-121.40, 38.50], [-121.30, 38.00],
+              [-121.20, 37.50], [-121.50, 37.20], [-121.90, 37.15],
+              [-122.20, 37.20], [-122.52, 37.30],
+            ]],
+          },
+        },
+      })
+      m.addLayer({ id: "megaregion-fill", source: "megaregion", type: "fill",
+        paint: { "fill-color": "#FF2A00", "fill-opacity": 0.02 },
+      })
+      m.addLayer({ id: "megaregion-border", source: "megaregion", type: "line",
+        paint: { "line-color": "#FF2A00", "line-opacity": 0.35, "line-width": 2, "line-dasharray": [8, 6] },
+      })
+
+      // 3. Article location markers
+      const articleLocations = {
+        type: "FeatureCollection" as const,
+        features: [
+          { type: "Feature" as const, properties: { title: "The Ferlinghetti Method", place: "City Lights Bookstore" }, geometry: { type: "Point" as const, coordinates: [-122.4066, 37.7976] } },
+          { type: "Feature" as const, properties: { title: "Alcatraz 20XX?", place: "Alcatraz Island" }, geometry: { type: "Point" as const, coordinates: [-122.4230, 37.8267] } },
+          { type: "Feature" as const, properties: { title: "SF Is Not An Island", place: "California Forever, Solano County" }, geometry: { type: "Point" as const, coordinates: [-122.0017, 38.2660] } },
+          { type: "Feature" as const, properties: { title: "Editor's Note", place: "Pacific Stock Exchange" }, geometry: { type: "Point" as const, coordinates: [-122.4010, 37.7922] } },
+          { type: "Feature" as const, properties: { title: "The Ferlinghetti Method", place: "Six Gallery" }, geometry: { type: "Point" as const, coordinates: [-122.4328, 37.7890] } },
+          { type: "Feature" as const, properties: { title: "Waymo & Transit", place: "Downtown SF" }, geometry: { type: "Point" as const, coordinates: [-122.4014, 37.7880] } },
+        ],
+      }
+      m.addSource("article-locations", { type: "geojson", data: articleLocations })
+
+      // Pulse ring (animated)
+      m.addLayer({ id: "article-pulse", source: "article-locations", type: "circle",
+        paint: { "circle-radius": 18, "circle-color": "transparent", "circle-stroke-color": "#FF2A00", "circle-stroke-width": 1.5, "circle-stroke-opacity": 0.6 },
+      })
+      // Core dot
+      m.addLayer({ id: "article-dots", source: "article-locations", type: "circle",
+        paint: { "circle-radius": 5, "circle-color": "#FF2A00", "circle-opacity": 0.9, "circle-stroke-color": "#fff", "circle-stroke-width": 1, "circle-stroke-opacity": 0.3 },
+      })
+      // Label on hover
+      m.addLayer({ id: "article-labels", source: "article-locations", type: "symbol",
+        layout: {
+          "text-field": ["get", "place"],
+          "text-font": ["Roboto Mono Regular", "Arial Unicode MS Regular"],
+          "text-size": 10,
+          "text-offset": [0, -2],
+          "text-transform": "uppercase",
+          "text-letter-spacing": 0.12,
+        },
+        paint: { "text-color": "#ffffff", "text-opacity": 0.7, "text-halo-color": "#0a0a0a", "text-halo-width": 2 },
+      })
+
+      // Pulse animation
+      let animating = true
+      function animatePulse() {
+        if (!animating || !mapRef.current) return
+        const t = (Date.now() % 2000) / 2000 // 0-1 over 2 seconds
+        const radius = 5 + t * 20
+        const opacity = 0.6 * (1 - t)
+        try {
+          mapRef.current.setPaintProperty("article-pulse", "circle-radius", radius)
+          mapRef.current.setPaintProperty("article-pulse", "circle-stroke-opacity", opacity)
+        } catch {}
+        mapRef.current.triggerRepaint()
+        requestAnimationFrame(animatePulse)
+      }
+      animatePulse()
+
+      // Cleanup on unmount
+      const cleanup = () => { animating = false }
+      window.addEventListener("beforeunload", cleanup)
     })
 
     const container = mapContainer.current
