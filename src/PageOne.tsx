@@ -395,19 +395,31 @@ function PageOne() {
           Menu
         </div>
         <div className="flex flex-col items-center gap-6">
-          <button onClick={() => { setContentVisible(true); setCoverOpen(false) }} className="bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-[#FF2A00] transition-colors duration-200 p-0"
+          <button onClick={() => {
+            if (contentVisible) { setContentVisible(false) } else { setContentVisible(true); setCoverOpen(false) }
+          }} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
+            contentVisible ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
+          }`}
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", cursor: "none" }}>
             Contents
           </button>
-          <button onClick={() => { setCoverOpen(true); setContentVisible(false) }} className="bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-[#FF2A00] transition-colors duration-200 p-0"
+          <button onClick={() => {
+            if (coverOpen) { setCoverOpen(false) } else { setCoverOpen(true); setContentVisible(false) }
+          }} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
+            coverOpen ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
+          }`}
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", cursor: "none" }}>
             Cover
           </button>
-          <button onClick={() => { setContentVisible(false); setCoverOpen(false) }} className="bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-[#FF2A00] transition-colors duration-200 p-0"
+          <button onClick={() => { setContentVisible(false); setCoverOpen(false) }} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
+            !contentVisible && !coverOpen ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
+          }`}
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", cursor: "none" }}>
             Map
           </button>
-          <button onClick={togglePlay} className="bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-[#FF2A00] transition-colors duration-200 p-0"
+          <button onClick={togglePlay} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
+            isPlaying ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
+          }`}
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", cursor: "none" }}>
             {isPlaying ? "Mute" : "Sound"}
           </button>
@@ -444,6 +456,20 @@ function PageOne() {
           }}
         />
 
+        {/* GGB illustration — centered, red */}
+        <img
+          src="/ggb-grave-red.png"
+          alt=""
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[20vh] object-contain pointer-events-none opacity-50"
+        />
+
+        {/* Hyperstition Machine */}
+        <img
+          src="/hyperstition.png"
+          alt="Hyperstition Machine"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] object-contain pointer-events-none mix-blend-screen opacity-70"
+        />
+
         {/* Grain overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay"
           style={{
@@ -463,11 +489,11 @@ function PageOne() {
 
 
       {/* Dark scrim when content is visible */}
-      <div className={`absolute inset-0 z-[8] bg-black/60 pointer-events-none transition-opacity duration-700 ${contentVisible ? "opacity-100" : "opacity-0"}`} />
+      <div className={`absolute inset-0 z-[8] bg-black/80 pointer-events-none transition-opacity duration-700 ${contentVisible ? "opacity-100" : "opacity-0"}`} />
 
       {/* Editorial content layer */}
       <div className={`absolute inset-0 z-10 flex items-center pointer-events-none transition-all duration-700 ${contentVisible ? "opacity-100" : "opacity-0"}`}>
-        <div className="w-full px-[4vw] py-[8vh] flex flex-col gap-[4vh]">
+        <div className="w-full px-[4vw] py-[8vh] flex flex-col justify-between h-full">
           {articles.map((article, i) => (
             <div
               key={i}
@@ -486,27 +512,34 @@ function PageOne() {
                   style={{ fontFamily: "'Special Elite', cursive" }}>
                   {article.ex}
                 </span>
-                <span className={`text-[clamp(28px,4vw,64px)] leading-[0.88] tracking-[0.01em] uppercase transition-colors duration-200 ${
+                <span className={`text-[clamp(20px,2.8vw,44px)] leading-[0.92] uppercase transition-colors duration-200 ${
                   hoveredArticle === i ? "text-[#FF2A00]" : "text-white"
                 }`}
-                  style={{ fontFamily: "'Special Elite', cursive" }}>
-                  {article.title}
+                  style={{ fontFamily: "'Anybody', sans-serif", fontWeight: 800, fontStretch: "75%" }}>
+                  {article.title.split("").map((char, j) => (
+                    <span key={j} style={{
+                      letterSpacing: `${(Math.sin(j * 1.7 + i * 3) * 0.04).toFixed(3)}em`,
+                      fontStretch: `${73 + Math.sin(j * 0.9 + i * 2) * 5}%`,
+                    }}>
+                      {char}
+                    </span>
+                  ))}
                 </span>
               </div>
 
-              {/* Bottom line — teaser, description, author */}
-              <div className="flex items-baseline gap-[2vw] mt-[0.5vh] ml-[3.5vw]">
-                <span className="font-bodoni italic text-[clamp(12px,1vw,16px)] text-white/35">
-                  {article.teaser}
-                </span>
-                <span className="font-sans text-[clamp(9px,0.65vw,11px)] text-white/15 max-w-[30vw] leading-[1.4] font-light">
-                  {article.desc}
-                </span>
+              {/* Details — author, teaser, description on one line */}
+              <div className="mt-[0.3vh] ml-[3.5vw] flex items-baseline gap-[1.2vw]">
                 {article.author && (
-                  <span className="font-sans text-[clamp(8px,0.55vw,10px)] tracking-[0.2em] uppercase text-white/20 shrink-0">
+                  <span className="font-sans text-[clamp(11px,0.85vw,15px)] tracking-[0.1em] uppercase text-white/70 shrink-0 font-medium">
                     {article.author}
                   </span>
                 )}
+                <span className="font-bodoni italic text-[clamp(11px,0.9vw,15px)] text-white/40">
+                  {article.teaser}
+                </span>
+                <span className="font-sans text-[clamp(9px,0.65vw,12px)] text-white/20 max-w-[35vw] leading-[1.3] font-light truncate">
+                  {article.desc}
+                </span>
               </div>
             </div>
           ))}
