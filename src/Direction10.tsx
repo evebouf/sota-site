@@ -46,6 +46,19 @@ export default function Direction10() {
   const cursor = useRedCursor()
   const [hovered, setHovered] = useState<number | null>(null)
   const [view, setView] = useState<"cover" | "index">("cover")
+  const [time, setTime] = useState("")
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date()
+      const hms = now.toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })
+      const ms = String(now.getMilliseconds()).padStart(3, "0")
+      setTime(`${hms}.${ms}`)
+    }
+    tick()
+    const id = setInterval(tick, 37)
+    return () => clearInterval(id)
+  }, [])
 
   return (
     <div
@@ -155,7 +168,8 @@ export default function Direction10() {
               }}
             >
               San Francisco, CA<br />
-              The Bay Area
+              The Bay Area<br />
+              <span className="tabular-nums">{time} PT</span>
             </div>
           </div>
         </>
