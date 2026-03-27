@@ -24,6 +24,7 @@ const articles = [
 ]
 
 export default function Direction7() {
+  useEffect(() => { document.title = "D9 — Playlist Index" }, [])
   const cursor = useRedCursor()
   const [activeIndex, setActiveIndex] = useState(0)
   const red = "#E23525"

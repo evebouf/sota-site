@@ -19,6 +19,7 @@ const articles = [
 ]
 
 function PageTwo() {
+  useEffect(() => { document.title = "D2 — Editorial" }, [])
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 })
   const [hoveredArticle, setHoveredArticle] = useState<number | null>(null)
   const [mode, setMode] = useState<"content" | "map">("content")
@@ -79,40 +80,7 @@ function PageTwo() {
 
       // === DATA LAYERS ===
 
-      // 1. Transit agency boundaries (simplified)
-      m.addSource("transit-agencies", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [
-            { type: "Feature", properties: { name: "Muni" }, geometry: { type: "Polygon", coordinates: [[[-122.517, 37.708],[-122.517, 37.812],[-122.357, 37.812],[-122.357, 37.708],[-122.517, 37.708]]] } },
-            { type: "Feature", properties: { name: "BART" }, geometry: { type: "Polygon", coordinates: [[[-122.53, 37.55],[-122.53, 37.82],[-122.25, 37.82],[-122.0, 37.75],[-121.88, 37.60],[-121.88, 37.50],[-122.08, 37.35],[-122.40, 37.35],[-122.53, 37.55]]] } },
-            { type: "Feature", properties: { name: "Caltrain" }, geometry: { type: "Polygon", coordinates: [[[-122.42, 37.78],[-122.44, 37.65],[-122.42, 37.55],[-122.38, 37.45],[-122.30, 37.35],[-121.88, 37.33],[-121.86, 37.38],[-122.08, 37.45],[-122.18, 37.55],[-122.30, 37.65],[-122.38, 37.78],[-122.42, 37.78]]] } },
-            { type: "Feature", properties: { name: "AC Transit" }, geometry: { type: "Polygon", coordinates: [[[-122.35, 37.70],[-122.35, 37.88],[-122.25, 37.92],[-122.10, 37.92],[-122.10, 37.70],[-122.20, 37.65],[-122.35, 37.70]]] } },
-            { type: "Feature", properties: { name: "VTA" }, geometry: { type: "Polygon", coordinates: [[[-122.20, 37.45],[-122.20, 37.25],[-121.75, 37.20],[-121.70, 37.45],[-122.00, 37.48],[-122.20, 37.45]]] } },
-            { type: "Feature", properties: { name: "Golden Gate Transit" }, geometry: { type: "Polygon", coordinates: [[[-122.75, 37.83],[-122.75, 38.08],[-122.40, 38.08],[-122.40, 37.83],[-122.53, 37.82],[-122.75, 37.83]]] } },
-            { type: "Feature", properties: { name: "SamTrans" }, geometry: { type: "Polygon", coordinates: [[[-122.52, 37.71],[-122.52, 37.55],[-122.35, 37.45],[-122.18, 37.45],[-122.10, 37.55],[-122.20, 37.65],[-122.35, 37.71],[-122.52, 37.71]]] } },
-          ],
-        },
-      })
-      m.addLayer({ id: "transit-fill", source: "transit-agencies", type: "fill",
-        paint: { "fill-color": "#FF2A00", "fill-opacity": 0.04 },
-      })
-      m.addLayer({ id: "transit-borders", source: "transit-agencies", type: "line",
-        paint: { "line-color": "#FF2A00", "line-opacity": 0.25, "line-width": 1, "line-dasharray": [4, 3] },
-      })
-      m.addLayer({ id: "transit-labels", source: "transit-agencies", type: "symbol",
-        layout: {
-          "text-field": ["get", "name"],
-          "text-font": ["Roboto Mono Regular", "Arial Unicode MS Regular"],
-          "text-size": 9,
-          "text-transform": "uppercase",
-          "text-letter-spacing": 0.2,
-        },
-        paint: { "text-color": "#FF2A00", "text-opacity": 0.3, "text-halo-color": "#0a0a0a", "text-halo-width": 1 },
-      })
-
-      // 2. Northern California Megaregion boundary
+      // 1. Northern California Megaregion boundary
       m.addSource("megaregion", {
         type: "geojson",
         data: {
@@ -286,8 +254,12 @@ function PageTwo() {
                 <div className="flex items-baseline gap-[1vw]">
                   <span className={`text-[clamp(9px,0.6vw,11px)] tabular-nums font-light transition-colors duration-200 ${hoveredArticle === i ? "text-[#FF2A00]/50" : "text-white/40"}`}>{article.ex}</span>
                   <div className="flex-1">
-                    <div className={`text-[clamp(18px,1.7vw,28px)] leading-[1.05] tracking-[-0.01em] uppercase transition-colors duration-200 ${hoveredArticle === i ? "text-[#FF2A00]" : "text-white/90"}`}
-                      style={{ fontFamily: "'Anybody', sans-serif", fontVariationSettings: "'wdth' 85, 'wght' 500" }}>{article.title}</div>
+                    <div className={`text-[clamp(18px,1.7vw,28px)] leading-[1.05] uppercase transition-colors duration-200 ${hoveredArticle === i ? "text-[#FF2A00]" : "text-white/90"}`}
+                      style={{ fontFamily: "'Anybody', sans-serif", fontVariationSettings: "'wdth' 85, 'wght' 500" }}>
+                      {article.title.split("").map((ch, j) => (
+                        <span key={j} style={{ letterSpacing: ch === " " ? undefined : `${0.01 + Math.sin(j * 1.7) * 0.05}em` }}>{ch}</span>
+                      ))}
+                    </div>
                     <div className={`overflow-hidden transition-all duration-400 ${hoveredArticle === i ? "max-h-[30px] opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
                       <span className="text-[clamp(11px,0.75vw,14px)] text-white/50 font-light italic">{article.teaser}</span>
                     </div>

@@ -14,6 +14,7 @@ function useRedCursor() {
 }
 
 export default function Direction4() {
+  useEffect(() => { document.title = "D6 — Clean Academic" }, [])
   const cursor = useRedCursor()
   return (
     <div

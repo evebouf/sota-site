@@ -1,5 +1,5 @@
-// Direction 11: Swiss Editorial
-// Inspired by: "Zine about Hedonism" by Anna D — large sans + italic serif accent, asymmetric photo, black footer bar, minimal
+// Direction 11: Chaos Catalog
+// Inspired by: Parcel Chaos Board (PCB) / Are.na — full small index as scaffold, selected entries blown up huge overlaid on top
 
 import { useState, useEffect } from "react"
 
@@ -13,203 +13,333 @@ function useRedCursor() {
   return pos
 }
 
-const articles = [
-  {
-    title: ["State of", "the art"],
-    italicIndex: 1,
-    author: "Wolf Tivy",
-    image: "/greco-sketch.png",
-    subtitle: "Against Progress",
-    issue: "01",
-  },
-  {
-    title: ["San Francisco", "is not an island"],
-    italicIndex: 1,
-    author: "Jan Sramek",
-    image: "/peninsula-bg.png",
-    subtitle: "Urban Futures",
-    issue: "02",
-  },
-  {
-    title: ["The", "Ferlinghetti", "method"],
-    italicIndex: 1,
-    author: "Olivia Marotte",
-    image: "/ferlinghetti-portrait.svg",
-    subtitle: "Literary Heritage",
-    issue: "03",
-  },
-  {
-    title: ["What is", "Grecofuturism?"],
-    italicIndex: 1,
-    author: "Pablo Peniche",
-    image: "/greco-sketch.png",
-    subtitle: "Architecture",
-    issue: "04",
-  },
-  {
-    title: ["Waymo", "and the future of transit"],
-    italicIndex: 1,
-    author: "Evan Zimmerman",
-    image: "/light-1.png",
-    subtitle: "Technology",
-    issue: "05",
-  },
-  {
-    title: ["Alcatraz", "20XX?"],
-    italicIndex: 1,
-    author: "Sanjana Friedman",
-    image: "/alcatraz-sketch.png",
-    subtitle: "Speculative Fiction",
-    issue: "06",
-  },
-  {
-    title: ["The city of", "tomorrow"],
-    italicIndex: 1,
-    author: "Sanjana Friedman",
-    image: "/sf-collage.png",
-    subtitle: "Editor's Note",
-    issue: "07",
-  },
+const index = [
+  { fig: 7, text: "The City of Tomorrow, Editor's Note, Sanjana Friedman" },
+  { fig: 6, text: "Alcatraz 20XX?, Speculative Fiction, Sanjana Friedman" },
+  { fig: 5, text: "Waymo and the Future of Transit, Report, Evan Zimmerman" },
+  { fig: 4, text: "What is Grecofuturism?, Manifesto, Pablo Peniche" },
+  { fig: 3, text: "The Ferlinghetti Method, Profile, Olivia Marotte" },
+  { fig: 2, text: "San Francisco Is Not An Island, Essay, Jan Sramek" },
+  { fig: 1, text: "Against Progress, Essay, Wolf Tivy" },
 ]
 
 export default function Direction11() {
+  useEffect(() => { document.title = "D13 — Chaos Catalog" }, [])
   const cursor = useRedCursor()
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [transitioning, setTransitioning] = useState(false)
+  const [hovered, setHovered] = useState<number | null>(null)
 
-  const article = articles[activeIndex]
-  const invertImage = article.image.endsWith(".svg")
-
-  function goTo(index: number) {
-    if (index === activeIndex || transitioning) return
-    setTransitioning(true)
-    setTimeout(() => {
-      setActiveIndex(index)
-      setTimeout(() => setTransitioning(false), 50)
-    }, 300)
-  }
+  const mono = "'DM Sans', sans-serif"
+  const serif = "'Anybody', sans-serif"
+  const bold = "'Anybody', sans-serif"
+  const smallSize = "clamp(7.5px, 0.62vw, 10px)"
 
   return (
-    <div className="w-screen h-screen bg-[#f5f2ed] overflow-hidden relative flex flex-col">
+    <div className="w-screen h-screen bg-[#0a0a0a] overflow-hidden relative">
       <div
         className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
       />
 
-      {/* Main content area */}
-      <div className="flex-1 flex relative">
-        {/* Left: Title area */}
-        <div className="flex-1 flex flex-col justify-between px-[5vw] py-[5vh]">
-          {/* Title block */}
-          <div
-            className="mt-[8vh]"
-            style={{
-              opacity: transitioning ? 0 : 1,
-              transform: transitioning ? "translateY(12px)" : "translateY(0)",
-              transition: "all 300ms ease",
-            }}
-          >
-            {article.title.map((line, i) => (
-              <div
-                key={i}
-                className="leading-[1.05]"
-                style={{
-                  fontFamily:
-                    i === article.italicIndex
-                      ? "'Instrument Serif', serif"
-                      : "'DM Sans', sans-serif",
-                  fontStyle: i === article.italicIndex ? "italic" : "normal",
-                  fontWeight: i === article.italicIndex ? 400 : 500,
-                  fontSize: "clamp(40px, 7vw, 96px)",
-                  color: "#0a0a0a",
-                  letterSpacing: i === article.italicIndex ? "0.01em" : "-0.02em",
-                }}
-              >
-                {line}
-              </div>
-            ))}
+      {/* BASE LAYER: Full small index — single column, top to bottom */}
+      <div
+        className="absolute left-[6vw] top-[5vh] flex flex-col"
+        style={{
+          fontFamily: mono,
+          fontSize: smallSize,
+          letterSpacing: "0.03em",
+          color: "#e8e4dc",
+          lineHeight: 1.7,
+          textTransform: "uppercase",
+        }}
+      >
+        {/* Top entries */}
+        {index.map((item) => (
+          <div key={item.fig} className="flex gap-[1.8em]">
+            <span className="shrink-0 w-[5em] text-right opacity-40">
+              Fig. {item.fig}.
+            </span>
+            <span>{item.text}</span>
           </div>
+        ))}
 
-          {/* Issue number — top right */}
-          <div
-            className="absolute top-[5vh] right-[5vw] text-[clamp(16px,2vw,28px)] text-[#0a0a0a]"
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 400,
-            }}
-          >
-            ({article.issue})
-          </div>
+        {/* Spacer */}
+        <div className="h-[1.5em]" />
 
-          {/* Navigation dots */}
-          <div className="flex gap-3 mt-auto">
-            {articles.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                className="w-[8px] h-[8px] rounded-full transition-all duration-200"
-                style={{
-                  backgroundColor: i === activeIndex ? "#0a0a0a" : "transparent",
-                  border: "1px solid #0a0a0a",
-                  opacity: i === activeIndex ? 1 : 0.3,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Right: Image area — asymmetric placement */}
+        {/* Banner */}
         <div
-          className="w-[45%] flex items-center justify-center pr-[5vw]"
+          className="uppercase tracking-[0.08em] text-center py-[0.4em] self-start"
           style={{
-            opacity: transitioning ? 0 : 1,
-            transform: transitioning ? "translateY(16px)" : "translateY(0)",
-            transition: "all 350ms ease 50ms",
+            fontFamily: bold,
+            fontVariationSettings: "'wdth' 85, 'wght' 800",
+            fontSize: "clamp(9px, 0.8vw, 13px)",
+            color: "#e8e4dc",
+            lineHeight: 1.35,
+            marginLeft: "5em",
           }}
         >
-          <div className="w-[80%] mt-[10vh]">
-            <img
-              src={article.image}
-              alt={article.subtitle}
-              className="w-full h-auto object-contain max-h-[55vh]"
-              style={{
-                filter: invertImage ? "none" : "grayscale(100%) contrast(1.1)",
-                mixBlendMode: "multiply",
-              }}
-            />
+          This is a publication<br />
+          which is called<br />
+          "State of the Art"
+        </div>
+
+        {/* Spacer */}
+        <div className="h-[1.5em]" />
+
+        {/* Repeat index in different order — more entries to fill the page */}
+        {[...index].reverse().map((item) => (
+          <div key={`r-${item.fig}`} className="flex gap-[1.8em]">
+            <span className="shrink-0 w-[5em] text-right opacity-40">
+              Fig. {item.fig}.
+            </span>
+            <span>{item.text}</span>
           </div>
+        ))}
+
+        {/* Spacer */}
+        <div className="h-[1.5em]" />
+
+        {/* More scattered entries */}
+        {index.slice(2, 6).map((item) => (
+          <div key={`s-${item.fig}`} className="flex gap-[1.8em]">
+            <span className="shrink-0 w-[5em] text-right opacity-40">
+              Fig. {item.fig}.
+            </span>
+            <span>{item.text}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* OVERLAY LAYER: Blown-up entries */}
+
+      {/* Fig. 4 — Grecofuturism — huge, overlapping mid-left */}
+      <div
+        className="absolute transition-opacity duration-150"
+        style={{
+          top: "24%",
+          left: "5vw",
+          maxWidth: "65vw",
+          opacity: hovered !== null && hovered !== 4 ? 0.05 : 1,
+        }}
+        onMouseEnter={() => setHovered(4)}
+        onMouseLeave={() => setHovered(null)}
+      >
+        <div className="flex items-baseline gap-[0.3em]">
+          <span
+            style={{
+              fontFamily: serif,
+              fontSize: "clamp(28px, 4.5vw, 68px)",
+              color: "#e8e4dc",
+              lineHeight: 1.08,
+              letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+            }}
+          >
+            Fig. 4.
+          </span>
+          <span
+            style={{
+              fontFamily: serif,
+              fontSize: "clamp(28px, 4.5vw, 68px)",
+              color: "#e8e4dc",
+              lineHeight: 1.08,
+              letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+            }}
+          >
+            What is
+          </span>
+        </div>
+        <div
+          style={{
+            fontFamily: serif,
+            fontSize: "clamp(28px, 4.5vw, 68px)",
+            color: "#e8e4dc",
+            lineHeight: 1.08,
+            letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+          }}
+        >
+          Grecofuturism?,
+        </div>
+        <div
+          style={{
+            fontFamily: serif,
+            fontSize: "clamp(28px, 4.5vw, 68px)",
+            color: "#e8e4dc",
+            lineHeight: 1.08,
+            letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+          }}
+        >
+          Pablo Peniche
         </div>
       </div>
 
-      {/* Black footer bar */}
+      {/* Fig. 3 — Ferlinghetti — large, overlapping the index below Fig. 4 */}
       <div
-        className="flex items-center justify-between px-[5vw] py-[2.2vh] shrink-0"
-        style={{ backgroundColor: "#0a0a0a" }}
+        className="absolute transition-opacity duration-150"
+        style={{
+          top: "50%",
+          left: "4vw",
+          maxWidth: "55vw",
+          opacity: hovered !== null && hovered !== 3 ? 0.05 : 1,
+        }}
+        onMouseEnter={() => setHovered(3)}
+        onMouseLeave={() => setHovered(null)}
       >
-        <span
-          className="text-[clamp(9px,0.7vw,11px)] tracking-[0.15em] uppercase text-white/50"
-          style={{ fontFamily: "'Space Mono', monospace" }}
+        <div className="flex items-baseline gap-[0.3em] flex-wrap">
+          <span
+            style={{
+              fontFamily: serif,
+              fontSize: "clamp(20px, 3.2vw, 48px)",
+              color: "#e8e4dc",
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+            }}
+          >
+            Fig. 3.
+          </span>
+          <span
+            style={{
+              fontFamily: serif,
+              fontSize: "clamp(20px, 3.2vw, 48px)",
+              color: "#e8e4dc",
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+            }}
+          >
+            The Ferlinghetti
+          </span>
+        </div>
+        <div
+          style={{
+            fontFamily: serif,
+            fontSize: "clamp(20px, 3.2vw, 48px)",
+            color: "#e8e4dc",
+            lineHeight: 1.1,
+            letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+          }}
         >
-          State of the Art
-        </span>
-        <span
-          className="text-[clamp(9px,0.7vw,11px)] tracking-[0.15em] uppercase text-white/50"
-          style={{ fontFamily: "'Space Mono', monospace" }}
+          Method, Olivia Marotte
+        </div>
+      </div>
+
+      {/* Fig. 6 — Alcatraz — large, bottom right */}
+      <div
+        className="absolute text-right transition-opacity duration-150"
+        style={{
+          bottom: "12vh",
+          right: "5vw",
+          maxWidth: "50vw",
+          opacity: hovered !== null && hovered !== 6 ? 0.05 : 1,
+        }}
+        onMouseEnter={() => setHovered(6)}
+        onMouseLeave={() => setHovered(null)}
+      >
+        <div
+          style={{
+            fontFamily: serif,
+            fontSize: "clamp(24px, 3.8vw, 56px)",
+            color: "#e8e4dc",
+            lineHeight: 1.08,
+            letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+          }}
         >
-          Edition #{article.issue}
-        </span>
-        <span
-          className="text-[clamp(9px,0.7vw,11px)] tracking-[0.15em] uppercase text-white/50"
-          style={{ fontFamily: "'Space Mono', monospace" }}
+          Fig. 6.
+        </div>
+        <div
+          style={{
+            fontFamily: serif,
+            fontSize: "clamp(24px, 3.8vw, 56px)",
+            color: "#e8e4dc",
+            lineHeight: 1.08,
+            letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+          }}
         >
-          {article.subtitle}
-        </span>
-        <span
-          className="text-[clamp(9px,0.7vw,11px)] tracking-[0.15em] uppercase text-white/50"
-          style={{ fontFamily: "'Space Mono', monospace" }}
+          Alcatraz
+        </div>
+        <div
+          style={{
+            fontFamily: serif,
+            fontSize: "clamp(24px, 3.8vw, 56px)",
+            color: "#e8e4dc",
+            lineHeight: 1.08,
+            letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+          }}
         >
-          {article.author}
-        </span>
+          20XX?,
+        </div>
+        <div
+          style={{
+            fontFamily: serif,
+            fontSize: "clamp(24px, 3.8vw, 56px)",
+            color: "#e8e4dc",
+            lineHeight: 1.08,
+            letterSpacing: "-0.02em",
+              fontVariationSettings: "'wdth' 85, 'wght' 700",
+          }}
+        >
+          Sanjana Friedman
+        </div>
+      </div>
+
+      {/* "7 ARTICLES" count — bottom center */}
+      <div
+        className="absolute bottom-[13vh] left-1/2 -translate-x-1/2 uppercase tracking-[0.15em]"
+        style={{
+          fontFamily: mono,
+          fontSize: "clamp(8px, 0.7vw, 11px)",
+          color: "#e8e4dc",
+        }}
+      >
+        7 Articles
+      </div>
+
+      {/* Vertical text — right edge */}
+      <div
+        className="absolute right-[1.5vw] top-[5vh] bottom-[5vh] flex items-center"
+      >
+        <div
+          style={{
+            writingMode: "vertical-rl",
+            fontFamily: mono,
+            fontSize: "clamp(6.5px, 0.5vw, 8px)",
+            letterSpacing: "0.12em",
+            color: "#e8e4dc",
+            opacity: 0.18,
+            textTransform: "uppercase",
+            whiteSpace: "nowrap",
+          }}
+        >
+          State of the Art — San Francisco — Edition 01 — 2026 — 7 Articles
+        </div>
+      </div>
+
+      {/* Bottom footer line */}
+      <div
+        className="absolute bottom-[4vh] left-[6vw] right-[6vw] flex justify-between uppercase"
+        style={{
+          fontFamily: mono,
+          fontSize: smallSize,
+          letterSpacing: "0.04em",
+          color: "#e8e4dc",
+          lineHeight: 1.6,
+        }}
+      >
+        <div>
+          State of the Art<br />
+          Edition 01, 2026
+        </div>
+        <div className="text-right">
+          San Francisco, CA<br />
+          The Bay Area
+        </div>
       </div>
     </div>
   )

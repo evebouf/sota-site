@@ -19,6 +19,9 @@ const Direction8 = lazy(() => import('./Direction8.tsx'))
 const Direction9 = lazy(() => import('./Direction9.tsx'))
 const Direction10 = lazy(() => import('./Direction10.tsx'))
 const Direction11 = lazy(() => import('./Direction11.tsx'))
+const Direction12 = lazy(() => import('./Direction12.tsx'))
+const Direction13 = lazy(() => import('./Direction13.tsx'))
+const Direction14 = lazy(() => import('./Direction14.tsx'))
 const Glossary = lazy(() => import('./Glossary.tsx'))
 
 createRoot(document.getElementById('root')!).render(
@@ -42,6 +45,9 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/d11" element={<Direction9 />} />
           <Route path="/d12" element={<Direction10 />} />
           <Route path="/d13" element={<Direction11 />} />
+          <Route path="/d14" element={<Direction12 />} />
+          <Route path="/d15" element={<Direction13 />} />
+          <Route path="/d16" element={<Direction14 />} />
           <Route path="/glossary" element={<Glossary />} />
         </Routes>
       </Suspense>

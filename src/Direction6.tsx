@@ -24,6 +24,7 @@ const items: { label: string; align: "flex-start" | "flex-end" | "center" }[] = 
 ]
 
 export default function Direction6() {
+  useEffect(() => { document.title = "D8 — Dark Stacked Nav" }, [])
   const cursor = useRedCursor()
   return (
     <div

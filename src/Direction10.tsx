@@ -42,15 +42,36 @@ function VerticalWord({ word }: { word: string }) {
 }
 
 export default function Direction10() {
+  useEffect(() => { document.title = "D12 — Exhibition Broadsheet" }, [])
   const cursor = useRedCursor()
   const [hovered, setHovered] = useState<number | null>(null)
   const [view, setView] = useState<"cover" | "index">("cover")
 
   return (
     <div
-      className="w-screen h-screen bg-[#f0ece4] overflow-hidden relative flex flex-col"
+      className="w-screen h-screen bg-[#0a0a0a] overflow-hidden relative flex flex-col"
       style={{ fontFamily: "'Space Mono', monospace" }}
     >
+      {/* SVG filters for distressed text */}
+      <svg className="absolute w-0 h-0">
+        <defs>
+          <filter id="distress-heavy">
+            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" seed="2" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="distress-light">
+            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="7" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="erode">
+            <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="4" seed="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+            <feMorphology in="displaced" operator="erode" radius="0.4" result="eroded" />
+            <feBlend in="eroded" in2="displaced" mode="darken" />
+          </filter>
+        </defs>
+      </svg>
+
       <div
         className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
@@ -59,9 +80,9 @@ export default function Direction10() {
       {view === "cover" ? (
         <>
           {/* Body text blocks — top */}
-          <div className="px-[8vw] pt-[5vh] flex flex-col gap-[2.5vh]">
+          <div className="px-[8vw] pt-[5vh] flex flex-col gap-[2.5vh]" style={{ filter: "url(#distress-light)" }}>
             <p
-              className="uppercase leading-[1.55] text-[#0a0a0a]"
+              className="uppercase leading-[1.55] text-[#e8e4dc]"
               style={{
                 fontSize: "clamp(8px, 0.72vw, 11px)",
                 letterSpacing: "0.06em",
@@ -72,7 +93,7 @@ export default function Direction10() {
               {bodyText1}
             </p>
             <p
-              className="uppercase leading-[1.55] text-[#0a0a0a]"
+              className="uppercase leading-[1.55] text-[#e8e4dc]"
               style={{
                 fontSize: "clamp(8px, 0.72vw, 11px)",
                 letterSpacing: "0.06em",
@@ -92,8 +113,9 @@ export default function Direction10() {
                 fontFamily: "'Anybody', sans-serif",
                 fontVariationSettings: "'wdth' 80, 'wght' 900",
                 fontSize: "clamp(24px, 3.8vw, 56px)",
-                color: "#0a0a0a",
+                color: "#e8e4dc",
                 letterSpacing: "0.08em",
+                filter: "url(#erode)",
               }}
             >
               <VerticalWord word="STATE" />
@@ -104,9 +126,9 @@ export default function Direction10() {
           </div>
 
           {/* Footer */}
-          <div className="px-[8vw] pb-[4vh] flex justify-between items-end">
+          <div className="px-[8vw] pb-[4vh] flex justify-between items-end" style={{ filter: "url(#distress-light)" }}>
             <div
-              className="uppercase leading-[1.6] text-[#0a0a0a]"
+              className="uppercase leading-[1.6] text-[#e8e4dc]"
               style={{
                 fontSize: "clamp(7px, 0.6vw, 9px)",
                 letterSpacing: "0.06em",
@@ -117,7 +139,7 @@ export default function Direction10() {
             </div>
             <button
               onClick={() => setView("index")}
-              className="uppercase text-[#0a0a0a] hover:text-[#FF2A00] transition-colors underline underline-offset-2"
+              className="uppercase text-[#e8e4dc] hover:text-[#FF2A00] transition-colors underline underline-offset-2"
               style={{
                 fontSize: "clamp(7px, 0.6vw, 9px)",
                 letterSpacing: "0.06em",
@@ -126,7 +148,7 @@ export default function Direction10() {
               View Index →
             </button>
             <div
-              className="uppercase leading-[1.6] text-[#0a0a0a] text-right"
+              className="uppercase leading-[1.6] text-[#e8e4dc] text-right"
               style={{
                 fontSize: "clamp(7px, 0.6vw, 9px)",
                 letterSpacing: "0.06em",
@@ -143,7 +165,7 @@ export default function Direction10() {
           <div className="px-[8vw] pt-[5vh]">
             <button
               onClick={() => setView("cover")}
-              className="uppercase text-[#0a0a0a]/40 hover:text-[#FF2A00] transition-colors"
+              className="uppercase text-[#e8e4dc]/40 hover:text-[#FF2A00] transition-colors"
               style={{
                 fontSize: "clamp(8px, 0.65vw, 10px)",
                 letterSpacing: "0.15em",
@@ -157,7 +179,7 @@ export default function Direction10() {
           <div className="flex-1 flex items-center justify-center">
             <div className="w-[60vw]">
               <div
-                className="uppercase mb-[4vh] text-[#0a0a0a]"
+                className="uppercase mb-[4vh] text-[#e8e4dc]"
                 style={{
                   fontFamily: "'Anybody', sans-serif",
                   fontVariationSettings: "'wdth' 80, 'wght' 900",
@@ -173,14 +195,14 @@ export default function Direction10() {
                   key={i}
                   onMouseEnter={() => setHovered(i)}
                   onMouseLeave={() => setHovered(null)}
-                  className="flex items-baseline justify-between border-t border-black/8 py-[1.2vh] transition-opacity duration-150"
+                  className="flex items-baseline justify-between border-t border-white/10 py-[1.2vh] transition-opacity duration-150"
                   style={{
                     opacity: hovered !== null && hovered !== i ? 0.12 : 1,
                   }}
                 >
                   <div className="flex items-baseline gap-[2vw]">
                     <span
-                      className="text-black/20 tabular-nums"
+                      className="text-white/20 tabular-nums"
                       style={{
                         fontSize: "clamp(8px, 0.6vw, 10px)",
                         letterSpacing: "0.05em",
@@ -189,7 +211,7 @@ export default function Direction10() {
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span
-                      className="uppercase text-[#0a0a0a]"
+                      className="uppercase text-[#e8e4dc]"
                       style={{
                         fontSize: "clamp(11px, 1.1vw, 16px)",
                         letterSpacing: "0.08em",
@@ -200,7 +222,7 @@ export default function Direction10() {
                     </span>
                   </div>
                   <span
-                    className="uppercase text-black/30"
+                    className="uppercase text-white/30"
                     style={{
                       fontSize: "clamp(7px, 0.55vw, 9px)",
                       letterSpacing: "0.1em",
@@ -210,14 +232,14 @@ export default function Direction10() {
                   </span>
                 </div>
               ))}
-              <div className="border-t border-black/8" />
+              <div className="border-t border-white/10" />
             </div>
           </div>
 
           {/* Footer */}
-          <div className="px-[8vw] pb-[4vh] flex justify-between items-end">
+          <div className="px-[8vw] pb-[4vh] flex justify-between items-end" style={{ filter: "url(#distress-light)" }}>
             <div
-              className="uppercase text-[#0a0a0a]"
+              className="uppercase text-[#e8e4dc]"
               style={{
                 fontSize: "clamp(7px, 0.6vw, 9px)",
                 letterSpacing: "0.06em",
@@ -226,7 +248,7 @@ export default function Direction10() {
               7 Articles
             </div>
             <div
-              className="uppercase text-[#0a0a0a] text-right"
+              className="uppercase text-[#e8e4dc] text-right"
               style={{
                 fontSize: "clamp(7px, 0.6vw, 9px)",
                 letterSpacing: "0.06em",

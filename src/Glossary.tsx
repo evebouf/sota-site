@@ -25,10 +25,14 @@ const pages = [
   { path: "/d10", label: "D10 — Portfolio Index", desc: "Bold lowercase, superscript numbers, floating image, red accent" },
   { path: "/d11", label: "D11 — Conversational", desc: "Large red italic serif paragraph, inline links, circled markers" },
   { path: "/d12", label: "D12 — Exhibition Broadsheet", desc: "Vertical bold title, justified uppercase mono body, exhibition poster layout" },
-  { path: "/d13", label: "D13 — Swiss Editorial", desc: "Large sans + italic serif, asymmetric photo, black footer bar" },
+  { path: "/d13", label: "D13 — Chaos Catalog", desc: "Scattered Fig. entries at mixed scales, research board / Are.na aesthetic" },
+  { path: "/d14", label: "D14 — Festival Poster", desc: "Bold stacked lineup, scattered SF motif, Rewire-inspired typographic confetti" },
+  { path: "/d15", label: "D15 — Scattered Program", desc: "Random black dots, scattered info fields, airy open layout, event flyer" },
+  { path: "/d16", label: "D16 — Text Wallpaper", desc: "Repeating text background, bold words popping through at scale, Swiss Design Awards" },
 ]
 
 export default function Glossary() {
+  useEffect(() => { document.title = "SOTA — Page Index" }, [])
   const cursor = useRedCursor()
   return (
     <div
