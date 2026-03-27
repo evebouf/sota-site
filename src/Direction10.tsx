@@ -164,7 +164,7 @@ export default function Direction10() {
               style={{
                 fontFamily: "'Anybody', sans-serif",
                 fontVariationSettings: "'wdth' 80, 'wght' 900",
-                fontSize: "clamp(24px, 3.8vw, 56px)",
+                fontSize: "clamp(36px, 5vw, 56px)",
                 color: "#e8e4dc",
                 letterSpacing: "0.08em",
                 filter: "url(#erode)",
