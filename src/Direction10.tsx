@@ -101,7 +101,7 @@ export default function Direction10() {
 
   return (
     <div
-      className="w-screen h-screen bg-[#0a0a0a] overflow-hidden relative flex flex-col"
+      className="w-screen min-h-screen bg-[#0a0a0a] overflow-x-hidden relative flex flex-col"
       style={{ fontFamily: "'Space Mono', monospace" }}
     >
       {/* SVG filters for distressed text */}
