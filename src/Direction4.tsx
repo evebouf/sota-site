@@ -1,5 +1,5 @@
-// Direction 4: Clean Academic
-// Inspired by: RCA design school sites, large serif text, green accent links, white background, minimal
+// Direction 4: Industrial Index
+// Inspired by: Dense technical text as texture, article titles punching through at scale
 
 import { useState, useEffect } from "react"
 
@@ -13,69 +13,250 @@ function useRedCursor() {
   return pos
 }
 
+const denseText = "STATE OF THE ART · EDITION 01 · SAN FRANCISCO 2026 · URBAN FUTURES · SPECULATIVE DESIGN · CRITICAL CULTURE · TRANSIT · ARCHITECTURE · POETRY · COUNTER-ENTROPIC · THE CITY OF TOMORROW · AGAINST PROGRESS · SAN FRANCISCO IS NOT AN ISLAND · THE FERLINGHETTI METHOD · WHAT IS GRECOFUTURISM · WAYMO AND THE FUTURE OF TRANSIT · ALCATRAZ 20XX · WOLF TIVY · JAN SRAMEK · OLIVIA MAROTTE · PABLO PENICHE · EVAN ZIMMERMAN · SANJANA FRIEDMAN · "
+
 export default function Direction4() {
-  useEffect(() => { document.title = "D6 — Clean Academic" }, [])
+  useEffect(() => { document.title = "D6 — Industrial Index" }, [])
   const cursor = useRedCursor()
   return (
     <div
-      className="w-screen h-screen bg-[#f9f9f9] overflow-hidden flex flex-col relative"
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      className="w-screen h-screen bg-[#0a0a0a] overflow-hidden relative"
+      style={{ fontFamily: "'Space Mono', monospace" }}
     >
-      {/* Red dot cursor */}
       <div
         className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
       />
-      {/* Close button — top right */}
-      <button className="absolute top-6 right-7 text-[22px] text-black/40 hover:text-black transition-colors z-10 leading-none">
-        ×
-      </button>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col justify-center px-[8vw] max-w-[900px]">
-        {/* Title line */}
+      {/* Dense repeating text — fills entire background */}
+      <div
+        className="absolute inset-0 p-[4vw] overflow-hidden"
+        style={{
+          fontSize: "clamp(6px, 0.55vw, 9px)",
+          color: "rgba(255,255,255,0.5)",
+          lineHeight: 1.6,
+          letterSpacing: "0.02em",
+          wordBreak: "break-all",
+        }}
+      >
+        {Array(20).fill(denseText).join("")}
+      </div>
+
+      {/* Article titles punching through */}
+      <div className="absolute top-[8vh] left-[5vw] right-[5vw]">
         <div
-          className="text-[clamp(22px, 2.8vw, 34px)] leading-[1.3] mb-8"
           style={{
-            fontFamily: "'Instrument Serif', serif",
+            fontFamily: "'Anybody', sans-serif",
+            fontVariationSettings: "'wdth' 85, 'wght' 800",
+            fontSize: "clamp(18px, 2.2vw, 32px)",
+            color: "#ffffff",
+            lineHeight: 1.15,
+            textTransform: "uppercase",
+            letterSpacing: "-0.01em",
           }}
         >
-          <span className="text-black">State of the Art,</span>{" "}
-          <span className="text-[#FF2A00] italic">Edition 01, 2026</span>
+          Against Progress
         </div>
-
-        {/* Large body text */}
         <div
-          className="text-[clamp(22px,3.2vw,38px)] leading-[1.35] text-black/90 tracking-[-0.01em]"
           style={{
-            fontFamily: "'Instrument Serif', serif",
+            fontSize: "clamp(6px, 0.5vw, 8px)",
+            color: "rgba(255,255,255,0.3)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginTop: "4px",
           }}
         >
-          State of the Art is a publication for a pair of
-          networked ideas, which contrast with the products
-          of contemporary urban culture by aiming to highlight
-          our dependency on the city and its systems.
-          The seven essays in this edition; from speculative
-          transit to Grecofuturism, from Alcatraz provocations
-          to Ferlinghetti's method, aim to prompt consideration
-          of our relationship to San Francisco and remind us
-          of its reality as a physical infrastructure we
-          depend on everyday.
+          Wolf Tivy
         </div>
       </div>
 
-      {/* Bottom bar */}
-      <div className="flex items-end justify-between px-[8vw] pb-8 text-[12px] text-black/40 shrink-0">
-        <div className="flex items-center gap-4">
-          <span>7 Articles</span>
-          <span className="text-black/15">·</span>
-          <span className="hover:text-black cursor-pointer transition-colors">View Index</span>
-          <span className="text-black/15">·</span>
-          <span className="text-[#FF2A00]">#Urban Futures</span>
+      <div className="absolute top-[20vh] left-[5vw] right-[5vw]">
+        <div
+          style={{
+            fontFamily: "'Anybody', sans-serif",
+            fontVariationSettings: "'wdth' 85, 'wght' 800",
+            fontSize: "clamp(16px, 1.8vw, 26px)",
+            color: "#ffffff",
+            lineHeight: 1.15,
+            textTransform: "uppercase",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          The Ferlinghetti Method
         </div>
-        <div className="hover:text-black cursor-pointer transition-colors">
-          Previous Edition
+        <div
+          style={{
+            fontSize: "clamp(6px, 0.5vw, 8px)",
+            color: "rgba(255,255,255,0.3)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginTop: "4px",
+          }}
+        >
+          Olivia Marotte
         </div>
+      </div>
+
+      <div className="absolute top-[32vh] left-[5vw] right-[5vw]">
+        <div
+          style={{
+            fontFamily: "'Anybody', sans-serif",
+            fontVariationSettings: "'wdth' 85, 'wght' 800",
+            fontSize: "clamp(22px, 2.8vw, 40px)",
+            color: "#FF2A00",
+            lineHeight: 1.15,
+            textTransform: "uppercase",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          Grecofuturism
+        </div>
+        <div
+          style={{
+            fontSize: "clamp(6px, 0.5vw, 8px)",
+            color: "rgba(255,42,0,0.4)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginTop: "4px",
+          }}
+        >
+          Pablo Peniche
+        </div>
+      </div>
+
+      <div className="absolute top-[46vh] left-[5vw] right-[5vw]">
+        <div
+          style={{
+            fontFamily: "'Anybody', sans-serif",
+            fontVariationSettings: "'wdth' 85, 'wght' 800",
+            fontSize: "clamp(14px, 1.6vw, 24px)",
+            color: "rgba(255,255,255,0.7)",
+            lineHeight: 1.15,
+            textTransform: "uppercase",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          Alcatraz 20XX?
+        </div>
+        <div
+          style={{
+            fontSize: "clamp(6px, 0.5vw, 8px)",
+            color: "rgba(255,255,255,0.25)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginTop: "4px",
+          }}
+        >
+          Sanjana Friedman
+        </div>
+      </div>
+
+      <div className="absolute top-[57vh] left-[5vw] right-[5vw]">
+        <div
+          style={{
+            fontFamily: "'Anybody', sans-serif",
+            fontVariationSettings: "'wdth' 85, 'wght' 800",
+            fontSize: "clamp(13px, 1.4vw, 20px)",
+            color: "rgba(255,255,255,0.5)",
+            lineHeight: 1.15,
+            textTransform: "uppercase",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          Waymo and the Future of Transit
+        </div>
+        <div
+          style={{
+            fontSize: "clamp(6px, 0.5vw, 8px)",
+            color: "rgba(255,255,255,0.2)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginTop: "4px",
+          }}
+        >
+          Evan Zimmerman
+        </div>
+      </div>
+
+      <div className="absolute top-[67vh] left-[5vw] right-[5vw]">
+        <div
+          style={{
+            fontFamily: "'Anybody', sans-serif",
+            fontVariationSettings: "'wdth' 85, 'wght' 800",
+            fontSize: "clamp(12px, 1.2vw, 18px)",
+            color: "rgba(255,255,255,0.35)",
+            lineHeight: 1.15,
+            textTransform: "uppercase",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          SF Is Not An Island
+        </div>
+        <div
+          style={{
+            fontSize: "clamp(6px, 0.5vw, 8px)",
+            color: "rgba(255,255,255,0.15)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginTop: "4px",
+          }}
+        >
+          Jan Sramek
+        </div>
+      </div>
+
+      <div className="absolute top-[77vh] left-[5vw] right-[5vw]">
+        <div
+          style={{
+            fontFamily: "'Anybody', sans-serif",
+            fontVariationSettings: "'wdth' 85, 'wght' 800",
+            fontSize: "clamp(11px, 1vw, 16px)",
+            color: "rgba(255,255,255,0.25)",
+            lineHeight: 1.15,
+            textTransform: "uppercase",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          The City of Tomorrow
+        </div>
+        <div
+          style={{
+            fontSize: "clamp(6px, 0.5vw, 8px)",
+            color: "rgba(255,255,255,0.12)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginTop: "4px",
+          }}
+        >
+          Sanjana Friedman
+        </div>
+      </div>
+
+      {/* Bottom — edition mark */}
+      <div
+        className="absolute bottom-[4vh] right-[5vw]"
+        style={{
+          fontSize: "clamp(7px, 0.55vw, 9px)",
+          color: "rgba(255,255,255,0.15)",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          textAlign: "right",
+        }}
+      >
+        SOTA ED.01<br />
+        SF 2026
+      </div>
+
+      <div
+        className="absolute bottom-[4vh] left-[5vw]"
+        style={{
+          fontSize: "clamp(7px, 0.55vw, 9px)",
+          color: "rgba(255,255,255,0.15)",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+        }}
+      >
+        7 Articles
       </div>
     </div>
   )
