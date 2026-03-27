@@ -84,8 +84,6 @@ export default function Direction12() {
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
       />
 
-      {/* Scattered "SF" motifs */}
-      <ScatteredMotifs />
 
       {/* Corner logos */}
       {[
