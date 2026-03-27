@@ -18,17 +18,18 @@ const pages = [
   { path: "/d3", label: "D3 — Brutalist Map", desc: "Dark brutalist grid, 3D map with live coordinates + clock, red mode toggle" },
   { path: "/d4", label: "D4 — Dark Cinematic", desc: "Numbered monospace list, floating magazine cover, timecode overlay" },
   { path: "/d5", label: "D5 — Cover + Hover Worlds", desc: "Magazine cover, bold Anybody titles, per-article hover environments" },
-  { path: "/d6", label: "D6 — Clean Academic", desc: "Large serif, red accent links" },
-  { path: "/d7", label: "D7 — Dark Minimal", desc: "Dark background, article titles as underlined links, faded cover" },
   { path: "/d8", label: "D8 — Dark Stacked Nav", desc: "Huge bold zigzag text, horizontal rules" },
   { path: "/d9", label: "D9 — Playlist Index", desc: "Red bold type, numbered rows, repeating overflow" },
-  { path: "/d10", label: "D10 — Portfolio Index", desc: "Bold lowercase, superscript numbers, floating image, red accent" },
-  { path: "/d11", label: "D11 — Conversational", desc: "Dark background, red italic Anybody paragraph, DM Sans chrome" },
   { path: "/d12", label: "D12 — Exhibition Broadsheet", desc: "Dark distressed typography, vertical title, live clock + countdown + moon phase" },
   { path: "/d13", label: "D13 — Chaos Catalog", desc: "Dark scattered Fig. entries, Anybody bold overlays, research board aesthetic" },
   { path: "/d14", label: "D14 — Festival Poster", desc: "Bold stacked lineup, scattered SF motif, Rewire-inspired typographic confetti" },
-  { path: "/d15", label: "D15 — Scattered Program", desc: "Random black dots, scattered info fields, airy open layout, event flyer" },
   { path: "/d16", label: "D16 — Text Wallpaper", desc: "Repeating text background, bold words popping through at scale, Swiss Design Awards" },
+  // Weaker explorations
+  { path: "/d6", label: "D6 — Clean Academic", desc: "Large serif, red accent links" },
+  { path: "/d7", label: "D7 — Dark Minimal", desc: "Dark background, article titles as underlined links, faded cover" },
+  { path: "/d10", label: "D10 — Portfolio Index", desc: "Bold lowercase, superscript numbers, floating image, red accent" },
+  { path: "/d11", label: "D11 — Conversational", desc: "Dark background, red italic Anybody paragraph, DM Sans chrome" },
+  { path: "/d15", label: "D15 — Scattered Program", desc: "Random black dots, scattered info fields, airy open layout, event flyer" },
 ]
 
 export default function Glossary() {
@@ -69,7 +70,11 @@ export default function Glossary() {
       </div>
 
       <div className="flex flex-col">
-        {pages.map((p, i) => (
+        {[...pages].sort((a, b) => {
+          const aStarred = starred.has(a.path) ? 0 : 1
+          const bStarred = starred.has(b.path) ? 0 : 1
+          return aStarred - bStarred
+        }).map((p, i) => (
           <Link
             key={p.path}
             to={p.path}

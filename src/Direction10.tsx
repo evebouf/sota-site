@@ -129,6 +129,73 @@ export default function Direction10() {
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
       />
 
+      {/* Barcode — right edge, rotated, hidden on mobile */}
+      <div className="absolute right-[2vw] top-1/2 pointer-events-none hidden lg:block" style={{ transform: "translateY(-50%) rotate(90deg)", opacity: 0.3 }}>
+        {(() => {
+          // EAN-13 encoding for 7500893407236
+          // Each module is 1px wide. Total = 95 modules + quiet zones
+          // Pattern: 3 (start) + 42 (left) + 5 (center) + 42 (right) + 3 (end) = 95
+          const modules = [
+            // Start guard
+            1,0,1,
+            // L-codes for 500893 (with parity from leading 7)
+            0,1,1,0,0,0,1, // 5 (L)
+            0,0,0,1,1,0,1, // 0 (G)
+            0,0,0,1,1,0,1, // 0 (G)
+            0,1,0,0,0,1,1, // 8 (L)
+            0,0,1,0,0,1,1, // 9 (G)
+            0,1,0,0,1,1,1, // 3 (L)
+            // Center guard
+            0,1,0,1,0,
+            // R-codes for 407236
+            1,0,1,1,1,0,0, // 4
+            1,1,0,1,1,1,0, // 0
+            1,1,1,0,1,1,0, // 7
+            1,1,0,0,1,1,0, // 2
+            1,0,0,0,0,1,0, // 3
+            1,0,1,0,0,0,0, // 6
+            // End guard
+            1,0,1,
+          ]
+          const h = 65
+          const guardH = 75
+          return (
+            <svg width={95 * 1.5 + 20} height={guardH + 18} viewBox={`0 0 ${95 * 1.5 + 20} ${guardH + 18}`}>
+              {modules.map((m, i) => {
+                if (!m) return null
+                const isGuard = i < 3 || i >= 92 || (i >= 45 && i <= 49)
+                return (
+                  <rect
+                    key={i}
+                    x={10 + i * 1.5}
+                    y={0}
+                    width={1.5}
+                    height={isGuard ? guardH : h}
+                    fill="#ffffff"
+                  />
+                )
+              })}
+              <text x="0" y={h + 5} fontSize="9" fontFamily="'Space Mono', monospace" fill="#ffffff" filter="url(#distress-light)">7</text>
+              <text x="16" y={h + 5} fontSize="9" fontFamily="'Space Mono', monospace" fill="#ffffff" letterSpacing="4" filter="url(#distress-light)">500893</text>
+              <text x="82" y={h + 5} fontSize="9" fontFamily="'Space Mono', monospace" fill="#ffffff" letterSpacing="4" filter="url(#distress-light)">407236</text>
+            </svg>
+          )
+        })()}
+      </div>
+
+      {/* Price tag — next to barcode, rotated same direction, hidden on mobile */}
+      <div
+        className="absolute right-[5vw] top-[34%] pointer-events-none hidden lg:block"
+        style={{ transform: "rotate(90deg)", opacity: 0.3, filter: "url(#distress-light)" }}
+      >
+        <div style={{ fontSize: "12px", color: "#ffffff", fontFamily: "'Space Mono', monospace", lineHeight: 1.4, whiteSpace: "nowrap" }}>
+          $2.99 USD<br />
+          $3.99 CAD<br />
+          £2.49 GBP<br />
+          €2.79 EUR
+        </div>
+      </div>
+
       {view === "cover" ? (
         <>
           {/* Body text blocks — top */}
