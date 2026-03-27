@@ -1,7 +1,11 @@
 // Direction 10: Exhibition Broadsheet
 // Inspired by: Material Culture — Melbourne Design Week poster. Vertical bold title, justified uppercase mono body, minimal footer.
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import mapboxgl from "mapbox-gl"
+import "mapbox-gl/dist/mapbox-gl.css"
+
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })
@@ -46,6 +50,54 @@ export default function Direction10() {
   const cursor = useRedCursor()
   const [hovered, setHovered] = useState<number | null>(null)
   const [view, setView] = useState<"cover" | "index">("cover")
+  const [peelHovered, setPeelHovered] = useState(false)
+  const [mapOpen, setMapOpen] = useState(false)
+  const mapContainer = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<mapboxgl.Map | null>(null)
+
+  // Initialize map
+  useEffect(() => {
+    if (mapRef.current || !mapContainer.current) return
+    mapRef.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: "mapbox://styles/mapbox/dark-v11",
+      center: [-122.405609, 37.791686],
+      zoom: 14, pitch: 55, bearing: -20,
+      antialias: true, interactive: true, minZoom: 11,
+    })
+    mapRef.current.on("style.load", () => {
+      const m = mapRef.current!
+      for (const layer of m.getStyle().layers || []) { if (layer.type === "symbol") m.removeLayer(layer.id) }
+      m.addSource("mapbox-dem", { type: "raster-dem", url: "mapbox://mapbox.mapbox-terrain-dem-v1", tileSize: 512, maxzoom: 14 })
+      m.setTerrain({ source: "mapbox-dem", exaggeration: 1.5 })
+      m.setFog({ range: [-0.5, 2.5], color: "#0a0a0a", "horizon-blend": 0.03, "high-color": "#0a0a0a", "space-color": "#0a0a0a", "star-intensity": 0 })
+      for (const layer of m.getStyle().layers || []) {
+        if (layer.type === "fill") {
+          if (layer["source-layer"] === "water") { m.setPaintProperty(layer.id, "fill-color", "#000000"); m.setPaintProperty(layer.id, "fill-opacity", 0.95) }
+          else m.setPaintProperty(layer.id, "fill-color", "#111111")
+        }
+        if (layer.type === "line") { m.setPaintProperty(layer.id, "line-color", "#ffffff"); m.setPaintProperty(layer.id, "line-opacity", 0.06) }
+      }
+      m.addLayer({ id: "ggb", source: "composite", "source-layer": "road", type: "line",
+        filter: ["any", ["==", ["get", "name"], "Golden Gate Bridge"], ["==", ["get", "name_en"], "Golden Gate Bridge"]],
+        paint: { "line-color": "#FF2A00", "line-width": 4, "line-opacity": 1 },
+      })
+      m.addLayer({ id: "buildings-3d", source: "composite", "source-layer": "building", type: "fill-extrusion", minzoom: 1,
+        paint: { "fill-extrusion-color": "#1a1a1a", "fill-extrusion-height": ["get", "height"], "fill-extrusion-base": ["get", "min_height"], "fill-extrusion-opacity": 0.7 },
+      })
+    })
+    return () => { mapRef.current?.remove(); mapRef.current = null }
+  }, [])
+
+  // Resize map when peel opens
+  useEffect(() => {
+    if (mapOpen && mapRef.current) {
+      setTimeout(() => mapRef.current?.resize(), 100)
+      setTimeout(() => mapRef.current?.resize(), 500)
+    }
+  }, [mapOpen])
+
+  const peelSize = mapOpen ? 5000 : peelHovered ? 220 : 120
 
   // Hide the global grain overlay and set body to black on this page
   useEffect(() => {
@@ -76,7 +128,6 @@ export default function Direction10() {
       const daysSince = (now.getTime() - knownNew) / 86400000
       const phase = ((daysSince % synodic) + synodic) % synodic
       const pct = phase / synodic
-      const glyphs = ["○", "◐", "◑", "◕", "●", "◕", "◑", "◐"]
       const names = ["New", "Wax Crescent", "First Qtr", "Wax Gibbous", "Full", "Wan Gibbous", "Last Qtr", "Wan Crescent"]
       const idx = Math.floor(pct * 8) % 8
       const illum = Math.round(pct <= 0.5 ? pct * 200 : (1 - pct) * 200)
@@ -101,10 +152,40 @@ export default function Direction10() {
 
   return (
     <div
-      className="w-screen bg-[#0a0a0a] overflow-x-hidden relative flex flex-col"
-      style={{ fontFamily: "'Space Mono', monospace", minHeight: "100dvh", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      className="w-screen overflow-hidden relative"
+      style={{ fontFamily: "'Space Mono', monospace", height: "100dvh" }}
     >
-      {/* SVG filters for distressed text */}
+      {/* Map — behind everything */}
+      <div className="absolute inset-0 z-0">
+        <div ref={mapContainer} className="w-full h-full" style={{ pointerEvents: mapOpen ? "auto" : "none" }} />
+        {/* Bottom banner — hides Mapbox attribution */}
+        <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-[#0a0a0a] z-10 flex items-center justify-between px-[4vw] border-t-[1px] border-white/10">
+          <div
+            className="text-white/30 hover:text-[#FF2A00] transition-colors cursor-pointer"
+            style={{ fontSize: "9px", fontFamily: "'Space Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", cursor: "none" }}
+            onClick={() => { setMapOpen(false); setPeelHovered(false) }}
+          >
+            &larr; Back to page
+          </div>
+          <div
+            className="text-white/15 tabular-nums"
+            style={{ fontSize: "9px", fontFamily: "'Space Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
+          >
+            San Francisco, CA
+          </div>
+        </div>
+      </div>
+
+      {/* Content layer — peels away from top-right */}
+      <div
+        className="absolute inset-0 z-10 bg-[#0a0a0a] flex flex-col transition-[clip-path] duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+        style={{
+          clipPath: `polygon(0 0, calc(100% - ${peelSize}px) 0, 100% ${peelSize}px, 100% 100%, 0 100%)`,
+          pointerEvents: mapOpen ? "none" : "auto",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}
+      >
+        {/* SVG filters for distressed text */}
       <svg className="absolute w-0 h-0">
         <defs>
           <filter id="distress-heavy">
@@ -382,6 +463,36 @@ export default function Direction10() {
           </div>
         </>
       )}
+      </div>{/* end content layer */}
+
+      {/* Red fold triangle — top right corner */}
+      <div
+        className="absolute z-20 pointer-events-none transition-all duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+        style={{ top: 0, right: 0, width: `${peelSize}px`, height: `${peelSize}px`, opacity: mapOpen ? 0 : 1 }}
+      >
+        <div className="absolute inset-0" style={{
+          backgroundColor: "#FF2A00",
+          clipPath: "polygon(100% 0, 0 0, 100% 100%)",
+          boxShadow: "-3px 3px 15px rgba(0,0,0,0.6)",
+        }} />
+      </div>
+
+      {/* Peel click target */}
+      {!mapOpen && (
+        <div
+          className="absolute z-30"
+          style={{ top: 0, right: 0, width: "200px", height: "200px", cursor: "none" }}
+          onMouseEnter={() => setPeelHovered(true)}
+          onMouseLeave={() => setPeelHovered(false)}
+          onClick={() => setMapOpen(true)}
+        />
+      )}
+
+      {/* Cursor */}
+      <div
+        className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
+        style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
+      />
     </div>
   )
 }
