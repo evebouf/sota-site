@@ -92,6 +92,7 @@ const articles: Article[] = [
 ]
 
 function App() {
+  useEffect(() => { document.title = "D0 — Hover Effects" }, [])
   const [mode, setMode] = useState<"writing" | "game">("writing")
   const [activeArticle, setActiveArticle] = useState<string | null>(null)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)

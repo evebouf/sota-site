@@ -223,6 +223,7 @@ const articles = [
 
 // --- Component ---
 function PageOne() {
+  useEffect(() => { document.title = "D1 — Map & Audio" }, [])
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const engine = useRef<AmbientEngine | null>(null)
@@ -233,6 +234,7 @@ function PageOne() {
   const [hoveredArticle, setHoveredArticle] = useState<number | null>(null)
   const [coverOpen, setCoverOpen] = useState(false)
   const [contentVisible, setContentVisible] = useState(false)
+  const [hyperstitionMode, setHyperstitionMode] = useState(false)
 
   const togglePlay = useCallback(() => {
     if (!engine.current) {
@@ -282,17 +284,21 @@ function PageOne() {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: "mapbox://styles/mapbox/light-v11",
+      style: "mapbox://styles/mapbox/dark-v11",
       center: [-122.405609, 37.791686],
       zoom: 15.49,
       pitch: 60,
       bearing: -30,
       antialias: true,
-      minZoom: 13.5,
+      minZoom: 11,
     })
 
     map.current.on("style.load", () => {
       const m = map.current!
+
+      for (const layer of m.getStyle().layers || []) {
+        if (layer.type === "symbol") m.removeLayer(layer.id)
+      }
 
       m.addSource("mapbox-dem", {
         type: "raster-dem",
@@ -304,35 +310,25 @@ function PageOne() {
 
       m.setFog({
         range: [-0.5, 2.5],
-        color: "#e8e3db",
+        color: "#0a0a0a",
         "horizon-blend": 0.03,
-        "high-color": "#e8e3db",
-        "space-color": "#e8e3db",
+        "high-color": "#0a0a0a",
+        "space-color": "#0a0a0a",
         "star-intensity": 0,
       })
 
       for (const layer of m.getStyle().layers || []) {
-        if (layer.type === "symbol") m.removeLayer(layer.id)
-      }
-
-      if (m.getLayer("background")) {
-        m.setPaintProperty("background", "background-color", "#e8e3db")
-      }
-
-      for (const layer of m.getStyle().layers || []) {
         if (layer.type === "fill") {
           if (layer["source-layer"] === "water") {
-            m.setPaintProperty(layer.id, "fill-color", "#0a0a0a")
+            m.setPaintProperty(layer.id, "fill-color", "#000000")
             m.setPaintProperty(layer.id, "fill-opacity", 0.95)
-          } else if (layer["source-layer"] === "landuse") {
-            m.setPaintProperty(layer.id, "fill-color", "#d5cfc5")
           } else {
-            m.setPaintProperty(layer.id, "fill-color", "#ddd8ce")
+            m.setPaintProperty(layer.id, "fill-color", "#111111")
           }
         }
         if (layer.type === "line") {
-          m.setPaintProperty(layer.id, "line-color", "#1a1a1a")
-          m.setPaintProperty(layer.id, "line-opacity", 0.15)
+          m.setPaintProperty(layer.id, "line-color", "#ffffff")
+          m.setPaintProperty(layer.id, "line-opacity", 0.06)
         }
       }
 
@@ -363,10 +359,7 @@ function PageOne() {
           "fill-extrusion-color": "#1a1a1a",
           "fill-extrusion-height": ["get", "height"],
           "fill-extrusion-base": ["get", "min_height"],
-          "fill-extrusion-opacity": 0.8,
-          "fill-extrusion-opacity-transition": { duration: 1500, delay: 0 },
-          "fill-extrusion-height-transition": { duration: 1000, delay: 0 },
-          "fill-extrusion-color-transition": { duration: 1500, delay: 0 },
+          "fill-extrusion-opacity": 0.7,
         },
       })
     })
@@ -396,7 +389,7 @@ function PageOne() {
         </div>
         <div className="flex flex-col items-center gap-6">
           <button onClick={() => {
-            if (contentVisible) { setContentVisible(false) } else { setContentVisible(true); setCoverOpen(false) }
+            if (contentVisible) { setContentVisible(false) } else { setContentVisible(true); setCoverOpen(false); setHyperstitionMode(false) }
           }} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
             contentVisible ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
           }`}
@@ -404,15 +397,23 @@ function PageOne() {
             Contents
           </button>
           <button onClick={() => {
-            if (coverOpen) { setCoverOpen(false) } else { setCoverOpen(true); setContentVisible(false) }
+            if (coverOpen) { setCoverOpen(false) } else { setCoverOpen(true); setContentVisible(false); setHyperstitionMode(false) }
           }} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
             coverOpen ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
           }`}
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", cursor: "none" }}>
             Cover
           </button>
-          <button onClick={() => { setContentVisible(false); setCoverOpen(false) }} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
-            !contentVisible && !coverOpen ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
+          <button onClick={() => {
+            if (hyperstitionMode) { setHyperstitionMode(false) } else { setHyperstitionMode(true); setContentVisible(false); setCoverOpen(false) }
+          }} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
+            hyperstitionMode ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
+          }`}
+            style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", cursor: "none" }}>
+            Hyperstition
+          </button>
+          <button onClick={() => { setContentVisible(false); setCoverOpen(false); setHyperstitionMode(false) }} className={`bg-transparent border-none font-sans text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 p-0 ${
+            !contentVisible && !coverOpen && !hyperstitionMode ? "text-[#FF2A00]" : "text-white/50 hover:text-[#FF2A00]"
           }`}
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", cursor: "none" }}>
             Map
@@ -444,40 +445,46 @@ function PageOne() {
         </span>
       </div>
 
-      {/* Map — darkened */}
+      {/* Map */}
       <div className="w-full h-full relative">
-        <div ref={mapContainer} className="w-full h-full" style={{ filter: "contrast(1.8) saturate(0) brightness(0.3)" }} />
+        <div ref={mapContainer} className="w-full h-full" />
 
-        {/* Halftone dot grid — red */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.25] mix-blend-screen"
-          style={{
-            backgroundImage: "radial-gradient(circle, #FF2A00 1px, transparent 1px)",
-            backgroundSize: "4px 4px",
-          }}
-        />
+        {/* Overlays — visible when NOT in map mode */}
+        <div className={`absolute inset-0 pointer-events-none transition-opacity duration-700 ${!contentVisible && !coverOpen && !hyperstitionMode ? "opacity-0" : "opacity-100"}`}>
+          {/* Dark scrim base */}
+          <div className="absolute inset-0 bg-black/70" />
 
-        {/* GGB illustration — centered, red */}
-        <img
-          src="/ggb-grave-red.png"
-          alt=""
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[20vh] object-contain pointer-events-none opacity-50"
-        />
+          {/* Halftone dot grid — red */}
+          <div className="absolute inset-0 opacity-[0.25] mix-blend-screen"
+            style={{
+              backgroundImage: "radial-gradient(circle, #FF2A00 1px, transparent 1px)",
+              backgroundSize: "4px 4px",
+            }}
+          />
 
-        {/* Hyperstition Machine */}
-        <img
-          src="/hyperstition.png"
-          alt="Hyperstition Machine"
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] object-contain pointer-events-none mix-blend-screen opacity-70"
-        />
+          {/* GGB illustration — centered, red */}
+          <img
+            src="/ggb-grave-red.png"
+            alt=""
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[20vh] object-contain opacity-50"
+          />
 
-        {/* Grain overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='6' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-            backgroundSize: "256px",
-          }}
-        />
+          {/* Hyperstition Machine */}
+          <img
+            src="/hyperstition.png"
+            alt="Hyperstition Machine"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] object-contain mix-blend-screen opacity-70"
+          />
+
+          {/* Grain overlay */}
+          <div className="absolute inset-0 opacity-20 mix-blend-overlay"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='6' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+              backgroundRepeat: "repeat",
+              backgroundSize: "256px",
+            }}
+          />
+        </div>
       </div>
 
       {/* Horizontal rules — spanning full width */}
@@ -489,7 +496,7 @@ function PageOne() {
 
 
       {/* Dark scrim when content is visible */}
-      <div className={`absolute inset-0 z-[8] bg-black/80 pointer-events-none transition-opacity duration-700 ${contentVisible ? "opacity-100" : "opacity-0"}`} />
+      <div className={`absolute inset-0 z-[8] bg-black/80 pointer-events-none transition-opacity duration-700 ${contentVisible && !hyperstitionMode ? "opacity-100" : "opacity-0"}`} />
 
       {/* Editorial content layer */}
       <div className={`absolute inset-0 z-10 flex items-center pointer-events-none transition-all duration-700 ${contentVisible ? "opacity-100" : "opacity-0"}`}>

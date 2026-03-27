@@ -29,6 +29,7 @@ const words: { text: string; num: string; green?: boolean }[] = [
 ]
 
 export default function Direction8() {
+  useEffect(() => { document.title = "D10 — Portfolio Index" }, [])
   const cursor = useRedCursor()
   return (
     <div

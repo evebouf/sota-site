@@ -24,6 +24,7 @@ const articles = [
 ]
 
 export default function Direction2() {
+  useEffect(() => { document.title = "D4 — Dark Cinematic" }, [])
   const cursor = useRedCursor()
   return (
     <div
@@ -97,10 +98,9 @@ export default function Direction2() {
         {/* Dashed border frame */}
         <div className="absolute inset-[-6px] border border-dashed border-white/40 pointer-events-none" />
         <img
-          src="/alcatraz-sketch.png"
-          alt=""
-          className="w-full aspect-[4/5] object-cover"
-          style={{ filter: "grayscale(0.8) brightness(0.7) contrast(1.3)" }}
+          src="/cover.webp"
+          alt="SOTA Edition 01"
+          className="w-full object-contain"
         />
       </div>
     </div>

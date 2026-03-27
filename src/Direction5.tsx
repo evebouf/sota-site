@@ -1,5 +1,5 @@
 // Direction 5: Minimal Filter / Visual Diary
-// Inspired by: clean white background, category filter list with underlines, faded image, research archive feel
+// Inspired by: clean background, category filter list with underlines, faded image, research archive feel
 
 import { useState, useEffect } from "react"
 
@@ -13,20 +13,22 @@ function useRedCursor() {
   return pos
 }
 
-const filters = [
-  "Urban Futures",
-  "Speculative Design",
-  "Transit",
-  "Poetry & Culture",
-  "Architecture",
-  "Provocation",
+const articles = [
+  "Editor's Note: The City of Tomorrow",
+  "San Francisco Is Not An Island",
+  "The Ferlinghetti Method",
+  "What Is Grecofuturism?",
+  "Waymo and the Future of Transit",
+  "Alcatraz 20XX?",
+  "Against Progress",
 ]
 
 export default function Direction5() {
+  useEffect(() => { document.title = "D7 — Minimal Filter" }, [])
   const cursor = useRedCursor()
   return (
     <div
-      className="w-screen h-screen bg-white overflow-hidden flex flex-col relative"
+      className="w-screen h-screen bg-[#0a0a0a] overflow-hidden flex flex-col relative"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* Red dot cursor */}
@@ -36,7 +38,7 @@ export default function Direction5() {
       />
 
       {/* Title bar */}
-      <div className="text-[11px] text-black/40 text-center py-2 border-b border-black/10 shrink-0 tracking-[0.03em]">
+      <div className="text-[11px] text-white/30 text-center py-2 border-b border-white/10 shrink-0 tracking-[0.03em]">
         State of the Art
       </div>
 
@@ -45,46 +47,45 @@ export default function Direction5() {
         {/* Top row: title left, link right */}
         <div className="flex justify-between items-start mb-[4vh]">
           <div>
-            <div className="text-[clamp(24px,3vw,38px)] leading-[1.2] tracking-[-0.02em] text-black">
+            <div className="text-[clamp(24px,3vw,38px)] leading-[1.2] tracking-[-0.02em] text-white">
               State of the Art
             </div>
-            <div className="text-[clamp(24px,3vw,38px)] leading-[1.2] tracking-[-0.02em] text-black">
-              Research Edition, 2026
+            <div className="text-[clamp(24px,3vw,38px)] leading-[1.2] tracking-[-0.02em] text-white">
+              Edition 01, 2026
             </div>
           </div>
-          <div className="text-[clamp(18px,2.2vw,28px)] text-black tracking-[-0.01em] cursor-pointer hover:opacity-60 transition-opacity">
-            Articles and essays →
+          <div className="text-[clamp(18px,2.2vw,28px)] text-white/50 tracking-[-0.01em] cursor-pointer hover:text-white transition-colors">
+            7 Articles →
           </div>
         </div>
 
-        {/* Filter section */}
+        {/* Article titles as links */}
         <div className="pl-[12vw] flex flex-col gap-[0.3em]">
-          <div className="text-[clamp(18px,2.2vw,28px)] text-black/40 mb-[0.2em] tracking-[-0.01em]">
-            Filter
+          <div className="text-[clamp(18px,2.2vw,28px)] text-white/30 mb-[0.2em] tracking-[-0.01em]">
+            Contents
           </div>
-          {filters.map((f) => (
+          {articles.map((title) => (
             <div
-              key={f}
-              className="text-[clamp(18px,2.2vw,28px)] text-black underline underline-offset-4 decoration-[1px] cursor-pointer hover:opacity-60 transition-opacity tracking-[-0.01em]"
+              key={title}
+              className="text-[clamp(18px,2.2vw,28px)] text-white underline underline-offset-4 decoration-[1px] decoration-white/20 cursor-pointer hover:text-[#FF2A00] hover:decoration-[#FF2A00]/40 transition-colors tracking-[-0.01em]"
             >
-              {f}
+              {title}
             </div>
           ))}
         </div>
 
         {/* Close link */}
         <div className="pl-[12vw] mt-[5vh]">
-          <div className="text-[clamp(18px,2.2vw,28px)] text-black underline underline-offset-4 decoration-[1px] cursor-pointer hover:opacity-60 transition-opacity tracking-[-0.01em]">
+          <div className="text-[clamp(18px,2.2vw,28px)] text-white/40 underline underline-offset-4 decoration-[1px] decoration-white/15 cursor-pointer hover:text-white transition-colors tracking-[-0.01em]">
             Close
           </div>
         </div>
 
         {/* Faded image at bottom */}
         <img
-          src="/sf-collage.png"
+          src="/cover.webp"
           alt=""
-          className="absolute bottom-0 left-[12vw] w-[50vw] opacity-[0.18] pointer-events-none"
-          style={{ filter: "grayscale(1)" }}
+          className="absolute bottom-0 left-[12vw] w-[40vw] opacity-[0.08] pointer-events-none"
         />
       </div>
     </div>
