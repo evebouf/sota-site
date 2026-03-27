@@ -47,13 +47,42 @@ export default function Direction10() {
   const [hovered, setHovered] = useState<number | null>(null)
   const [view, setView] = useState<"cover" | "index">("cover")
   const [time, setTime] = useState("")
+  const [countdown, setCountdown] = useState("")
+  const [moon, setMoon] = useState("")
 
   useEffect(() => {
+    // April 17, 2026 at 10:00 PM PT (UTC-7 during PDT)
+    const launch = new Date("2026-04-18T05:00:00Z") // 10 PM PT = 5 AM UTC next day
+
     const tick = () => {
       const now = new Date()
       const hms = now.toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })
       const ms = String(now.getMilliseconds()).padStart(3, "0")
       setTime(`${hms}.${ms}`)
+
+      // Moon phase calculation (synodic period)
+      const knownNew = new Date("2000-01-06T18:14:00Z").getTime()
+      const synodic = 29.53058867
+      const daysSince = (now.getTime() - knownNew) / 86400000
+      const phase = ((daysSince % synodic) + synodic) % synodic
+      const pct = phase / synodic
+      const glyphs = ["○", "◐", "◑", "◕", "●", "◕", "◑", "◐"]
+      const names = ["New", "Wax Crescent", "First Qtr", "Wax Gibbous", "Full", "Wan Gibbous", "Last Qtr", "Wan Crescent"]
+      const idx = Math.floor(pct * 8) % 8
+      const illum = Math.round(pct <= 0.5 ? pct * 200 : (1 - pct) * 200)
+      setMoon(`Moon: ${names[idx]} ${illum}%`)
+
+      const diff = launch.getTime() - now.getTime()
+      if (diff <= 0) {
+        setCountdown("LIVE")
+      } else {
+        const d = Math.floor(diff / 86400000)
+        const h = Math.floor((diff % 86400000) / 3600000)
+        const m = Math.floor((diff % 3600000) / 60000)
+        const s = Math.floor((diff % 60000) / 1000)
+        const msLeft = String(Math.floor(diff % 1000)).padStart(3, "0")
+        setCountdown(`${String(d).padStart(2, "0")}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}.${msLeft}s`)
+      }
     }
     tick()
     const id = setInterval(tick, 37)
@@ -148,7 +177,8 @@ export default function Direction10() {
               }}
             >
               State of the Art<br />
-              Edition 01, 2026
+              Edition 01, 2026<br />
+              <span className="tabular-nums">T-{countdown}</span>
             </div>
             <button
               onClick={() => setView("index")}
@@ -169,7 +199,8 @@ export default function Direction10() {
             >
               San Francisco, CA<br />
               The Bay Area<br />
-              <span className="tabular-nums">{time} PT</span>
+              <span className="tabular-nums">{time} PT</span><br />
+              {moon}
             </div>
           </div>
         </>
