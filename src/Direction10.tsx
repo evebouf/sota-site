@@ -97,7 +97,7 @@ export default function Direction10() {
             <p
               className="uppercase leading-[1.55] text-[#e8e4dc]"
               style={{
-                fontSize: "clamp(8px, 0.72vw, 11px)",
+                fontSize: "clamp(7.5px, 0.75vw, 15px)",
                 letterSpacing: "0.06em",
                 textAlign: "justify",
                 maxWidth: "90%",
@@ -108,7 +108,7 @@ export default function Direction10() {
             <p
               className="uppercase leading-[1.55] text-[#e8e4dc]"
               style={{
-                fontSize: "clamp(8px, 0.72vw, 11px)",
+                fontSize: "clamp(7.5px, 0.75vw, 15px)",
                 letterSpacing: "0.06em",
                 textAlign: "justify",
                 maxWidth: "90%",
@@ -143,7 +143,7 @@ export default function Direction10() {
             <div
               className="uppercase leading-[1.6] text-[#e8e4dc]"
               style={{
-                fontSize: "clamp(7px, 0.6vw, 9px)",
+                fontSize: "clamp(8px, 0.7vw, 14px)",
                 letterSpacing: "0.06em",
               }}
             >
@@ -154,7 +154,7 @@ export default function Direction10() {
               onClick={() => setView("index")}
               className="uppercase text-[#e8e4dc] hover:text-[#FF2A00] transition-colors underline underline-offset-2"
               style={{
-                fontSize: "clamp(7px, 0.6vw, 9px)",
+                fontSize: "clamp(8px, 0.7vw, 14px)",
                 letterSpacing: "0.06em",
               }}
             >
@@ -163,7 +163,7 @@ export default function Direction10() {
             <div
               className="uppercase leading-[1.6] text-[#e8e4dc] text-right"
               style={{
-                fontSize: "clamp(7px, 0.6vw, 9px)",
+                fontSize: "clamp(8px, 0.7vw, 14px)",
                 letterSpacing: "0.06em",
               }}
             >
@@ -181,7 +181,7 @@ export default function Direction10() {
               onClick={() => setView("cover")}
               className="uppercase text-[#e8e4dc]/40 hover:text-[#FF2A00] transition-colors"
               style={{
-                fontSize: "clamp(8px, 0.65vw, 10px)",
+                fontSize: "clamp(9px, 0.75vw, 14px)",
                 letterSpacing: "0.15em",
                 fontFamily: "'Space Mono', monospace",
               }}
@@ -197,7 +197,7 @@ export default function Direction10() {
                 style={{
                   fontFamily: "'Anybody', sans-serif",
                   fontVariationSettings: "'wdth' 80, 'wght' 900",
-                  fontSize: "clamp(10px, 0.8vw, 13px)",
+                  fontSize: "clamp(10px, 0.9vw, 16px)",
                   letterSpacing: "0.2em",
                 }}
               >
@@ -218,7 +218,7 @@ export default function Direction10() {
                     <span
                       className="text-white/20 tabular-nums"
                       style={{
-                        fontSize: "clamp(8px, 0.6vw, 10px)",
+                        fontSize: "clamp(9px, 0.7vw, 14px)",
                         letterSpacing: "0.05em",
                       }}
                     >
@@ -227,7 +227,7 @@ export default function Direction10() {
                     <span
                       className="uppercase text-[#e8e4dc]"
                       style={{
-                        fontSize: "clamp(11px, 1.1vw, 16px)",
+                        fontSize: "clamp(12px, 1.2vw, 20px)",
                         letterSpacing: "0.08em",
                         fontFamily: "'Space Mono', monospace",
                       }}
@@ -255,7 +255,7 @@ export default function Direction10() {
             <div
               className="uppercase text-[#e8e4dc]"
               style={{
-                fontSize: "clamp(7px, 0.6vw, 9px)",
+                fontSize: "clamp(8px, 0.7vw, 14px)",
                 letterSpacing: "0.06em",
               }}
             >
@@ -264,7 +264,7 @@ export default function Direction10() {
             <div
               className="uppercase text-[#e8e4dc] text-right"
               style={{
-                fontSize: "clamp(7px, 0.6vw, 9px)",
+                fontSize: "clamp(8px, 0.7vw, 14px)",
                 letterSpacing: "0.06em",
               }}
             >
