@@ -280,7 +280,8 @@ export default function Direction10() {
           $2.99 USD<br />
           $3.99 CAD<br />
           £2.49 GBP<br />
-          €2.79 EUR
+          €2.79 EUR<br />
+          HK$23 HKD
         </div>
       </div>
 

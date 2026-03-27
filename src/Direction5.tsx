@@ -1,5 +1,5 @@
-// Direction 5: Minimal Filter / Visual Diary
-// Inspired by: clean background, category filter list with underlines, faded image, research archive feel
+// Direction 5: Editorial Spread
+// Inspired by: Vein Magazine — full bleed split, marble/texture left, clean serif right
 
 import { useState, useEffect } from "react"
 
@@ -13,80 +13,140 @@ function useRedCursor() {
   return pos
 }
 
-const articles = [
-  "Editor's Note: The City of Tomorrow",
-  "San Francisco Is Not An Island",
-  "The Ferlinghetti Method",
-  "What Is Grecofuturism?",
-  "Waymo and the Future of Transit",
-  "Alcatraz 20XX?",
-  "Against Progress",
-]
-
 export default function Direction5() {
-  useEffect(() => { document.title = "D7 — Minimal Filter" }, [])
+  useEffect(() => { document.title = "D7 — Editorial Spread" }, [])
   const cursor = useRedCursor()
   return (
-    <div
-      className="w-screen h-screen bg-[#0a0a0a] overflow-hidden flex flex-col relative"
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      {/* Red dot cursor */}
+    <div className="w-screen h-screen overflow-hidden relative flex">
       <div
         className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
       />
 
-      {/* Title bar */}
-      <div className="text-[11px] text-white/30 text-center py-2 border-b border-white/10 shrink-0 tracking-[0.03em]">
-        State of the Art
+      {/* Left page — full bleed abstract texture */}
+      <div className="w-1/2 h-full relative overflow-hidden bg-[#e8e4dc]">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 600" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <filter id="ink-blot">
+              <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves="6" seed="3" result="noise" />
+              <feColorMatrix in="noise" type="saturate" values="0" result="bw" />
+              <feComponentTransfer in="bw">
+                <feFuncR type="discrete" tableValues="0 0 0 0 0 0.2 0.5 0.8 1 1" />
+                <feFuncG type="discrete" tableValues="0 0 0 0 0 0.2 0.5 0.8 1 1" />
+                <feFuncB type="discrete" tableValues="0 0 0 0 0 0.2 0.5 0.8 1 1" />
+              </feComponentTransfer>
+            </filter>
+            <filter id="ink-blot-2">
+              <feTurbulence type="turbulence" baseFrequency="0.012" numOctaves="4" seed="17" result="noise2" />
+              <feColorMatrix in="noise2" type="saturate" values="0" result="bw2" />
+              <feComponentTransfer in="bw2">
+                <feFuncR type="discrete" tableValues="0 0 0 0.1 0.4 0.7 1 1 1 1" />
+                <feFuncG type="discrete" tableValues="0 0 0 0.1 0.4 0.7 1 1 1 1" />
+                <feFuncB type="discrete" tableValues="0 0 0 0.1 0.4 0.7 1 1 1 1" />
+              </feComponentTransfer>
+            </filter>
+          </defs>
+          <rect width="400" height="600" fill="#0a0a0a" />
+          <rect width="400" height="600" fill="#e8e4dc" filter="url(#ink-blot)" opacity="0.35" />
+          <rect width="400" height="600" fill="#e8e4dc" filter="url(#ink-blot-2)" opacity="0.2" />
+        </svg>
+
+        {/* Spine shadow — right edge */}
+        <div
+          className="absolute top-0 right-0 bottom-0 w-[40px]"
+          style={{ background: "linear-gradient(to left, rgba(0,0,0,0.12), transparent)" }}
+        />
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col px-[6vw] pt-[6vh] relative">
-        {/* Top row: title left, link right */}
-        <div className="flex justify-between items-start mb-[4vh]">
-          <div>
-            <div className="text-[clamp(24px,3vw,38px)] leading-[1.2] tracking-[-0.02em] text-white">
-              State of the Art
-            </div>
-            <div className="text-[clamp(24px,3vw,38px)] leading-[1.2] tracking-[-0.02em] text-white">
-              Edition 01, 2026
-            </div>
-          </div>
-          <div className="text-[clamp(18px,2.2vw,28px)] text-white/50 tracking-[-0.01em] cursor-pointer hover:text-white transition-colors">
-            7 Articles →
-          </div>
-        </div>
+      {/* Right page — clean editorial */}
+      <div
+        className="w-1/2 h-full relative bg-[#f5f2ed] flex flex-col justify-between"
+        style={{ padding: "clamp(28px, 5vh, 56px) clamp(28px, 4vw, 56px)" }}
+      >
+        {/* Spine shadow — left edge */}
+        <div
+          className="absolute top-0 left-0 bottom-0 w-[30px]"
+          style={{ background: "linear-gradient(to right, rgba(0,0,0,0.06), transparent)" }}
+        />
 
-        {/* Article titles as links */}
-        <div className="pl-[12vw] flex flex-col gap-[0.3em]">
-          <div className="text-[clamp(18px,2.2vw,28px)] text-white/30 mb-[0.2em] tracking-[-0.01em]">
+        {/* Top header */}
+        <div className="flex justify-between items-start relative z-10">
+          <div
+            style={{
+              fontFamily: "'Instrument Serif', serif",
+              fontSize: "clamp(13px, 1.6vh, 20px)",
+              color: "#0a0a0a",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+            }}
+          >
             Contents
           </div>
-          {articles.map((title) => (
+          <div className="text-right">
             <div
-              key={title}
-              className="text-[clamp(18px,2.2vw,28px)] text-white underline underline-offset-4 decoration-[1px] decoration-white/20 cursor-pointer hover:text-[#FF2A00] hover:decoration-[#FF2A00]/40 transition-colors tracking-[-0.01em]"
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(13px, 1.6vh, 20px)",
+                color: "#0a0a0a",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
             >
-              {title}
+              State of
             </div>
-          ))}
-        </div>
-
-        {/* Close link */}
-        <div className="pl-[12vw] mt-[5vh]">
-          <div className="text-[clamp(18px,2.2vw,28px)] text-white/40 underline underline-offset-4 decoration-[1px] decoration-white/15 cursor-pointer hover:text-white transition-colors tracking-[-0.01em]">
-            Close
+            <div
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(13px, 1.6vh, 20px)",
+                color: "#0a0a0a",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              the Art
+            </div>
+            <div
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(13px, 1.6vh, 20px)",
+                color: "#0a0a0a",
+                letterSpacing: "0.08em",
+                marginTop: "clamp(6px, 1vh, 12px)",
+              }}
+            >
+              N<sup style={{ fontSize: "0.65em" }}>o</sup>1
+            </div>
           </div>
         </div>
 
-        {/* Faded image at bottom */}
-        <img
-          src="/cover.webp"
-          alt=""
-          className="absolute bottom-0 left-[12vw] w-[40vw] opacity-[0.08] pointer-events-none"
-        />
+        {/* Page number — centered */}
+        <div
+          className="absolute top-[clamp(28px,5vh,56px)] left-1/2 -translate-x-1/2"
+          style={{
+            fontFamily: "'Instrument Serif', serif",
+            fontSize: "clamp(12px, 1.4vh, 16px)",
+            color: "#0a0a0a",
+            opacity: 0.35,
+          }}
+        >
+          03
+        </div>
+
+        {/* Body text — editorial paragraph */}
+        <div className="relative z-10" style={{ maxWidth: "85%" }}>
+          <p
+            style={{
+              fontFamily: "'Instrument Serif', serif",
+              fontSize: "clamp(13px, 1.6vh, 20px)",
+              lineHeight: 1.55,
+              color: "#0a0a0a",
+              textAlign: "justify",
+              hyphens: "auto",
+            }}
+          >
+            A publication dedicated to the ongoing evolution of San Francisco. An attempt to expand on conversations surrounding why and how cities are built, and what social, functional, or symbolic needs they satisfy. Seven writers explore transit, architecture, poetry, speculative fiction, and the counter-entropic politics of building something that lasts. Edition one asks: what does it mean to be absolutely modern?
+          </p>
+        </div>
       </div>
     </div>
   )
