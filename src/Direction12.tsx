@@ -58,7 +58,7 @@ function ScatteredMotifs() {
             fontVariationSettings: "'wdth' 75, 'wght' 700",
             fontSize: "clamp(9px, 0.85vw, 13px)",
             letterSpacing: "0.05em",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             opacity: m.opacity,
           }}
         >
@@ -78,7 +78,7 @@ export default function Direction12() {
   const mono = "'Space Mono', monospace"
 
   return (
-    <div className="w-screen h-screen bg-white overflow-hidden relative flex flex-col">
+    <div className="w-screen h-screen bg-[#0a0a0a] overflow-hidden relative flex flex-col">
       <div
         className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
@@ -103,7 +103,7 @@ export default function Direction12() {
             fontVariationSettings: "'wdth' 65, 'wght' 800",
             fontSize: "clamp(6px, 0.5vw, 8px)",
             letterSpacing: "0.08em",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             opacity: 0.4,
             lineHeight: 1.2,
           }}
@@ -121,7 +121,7 @@ export default function Direction12() {
             fontFamily: bold,
             fontVariationSettings: "'wdth' 80, 'wght' 900",
             fontSize: "clamp(28px, 4.2vw, 62px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             letterSpacing: "-0.01em",
           }}
         >
@@ -135,7 +135,7 @@ export default function Direction12() {
             fontFamily: bold,
             fontVariationSettings: "'wdth' 80, 'wght' 900",
             fontSize: "clamp(20px, 3vw, 44px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             letterSpacing: "-0.01em",
           }}
         >
@@ -161,7 +161,7 @@ export default function Direction12() {
                   fontFamily: bold,
                   fontVariationSettings: "'wdth' 80, 'wght' 800",
                   fontSize: "clamp(18px, 2.6vw, 38px)",
-                  color: "#0a0a0a",
+                  color: "#e8e4dc",
                   letterSpacing: "-0.005em",
                 }}
               >
@@ -173,7 +173,7 @@ export default function Direction12() {
                   fontFamily: bold,
                   fontVariationSettings: "'wdth' 80, 'wght' 400",
                   fontSize: "clamp(18px, 2.6vw, 38px)",
-                  color: "#0a0a0a",
+                  color: "#e8e4dc",
                   letterSpacing: "-0.005em",
                 }}
               >
@@ -191,7 +191,7 @@ export default function Direction12() {
           style={{
             fontFamily: mono,
             fontSize: "clamp(8px, 0.65vw, 10px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             opacity: 0.4,
           }}
         >
@@ -202,7 +202,7 @@ export default function Direction12() {
           style={{
             fontFamily: mono,
             fontSize: "clamp(8px, 0.65vw, 10px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             opacity: 0.4,
           }}
         >

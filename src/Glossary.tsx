@@ -77,7 +77,7 @@ export default function Glossary() {
             className="group flex items-baseline gap-4 py-[6px] border-t border-black/8 no-underline hover:bg-black/[0.02] transition-colors px-1 -mx-1"
           >
             <span
-              className="text-[10px] w-[20px] shrink-0 cursor-pointer transition-colors duration-150 select-none"
+              className="text-[16px] w-[28px] shrink-0 cursor-pointer transition-colors duration-150 select-none flex items-center justify-center"
               style={{ color: starred.has(p.path) ? "#FF2A00" : "rgba(0,0,0,0.15)", cursor: "none" }}
               onClick={(e) => toggleStar(p.path, e)}
               title="Star this direction"
