@@ -178,6 +178,7 @@ export default function Direction10() {
             >
               State of the Art<br />
               Edition 01, 2026<br />
+              April 17, 10PM — SOMA<br />
               <span className="tabular-nums">T-{countdown}</span>
             </div>
             <button
