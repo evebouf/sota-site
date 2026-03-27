@@ -97,7 +97,14 @@ export default function Direction10() {
     }
   }, [mapOpen])
 
-  const peelSize = mapOpen ? 5000 : peelHovered ? 220 : 120
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
+  const peelSize = mapOpen ? 5000 : peelHovered ? (isMobile ? 120 : 220) : (isMobile ? 60 : 120)
 
   // Hide the global grain overlay and set body to black on this page
   useEffect(() => {
