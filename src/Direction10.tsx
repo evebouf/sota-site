@@ -47,10 +47,14 @@ export default function Direction10() {
   const [hovered, setHovered] = useState<number | null>(null)
   const [view, setView] = useState<"cover" | "index">("cover")
 
-  // Hide the global grain overlay on this page
+  // Hide the global grain overlay and set body to black on this page
   useEffect(() => {
     document.body.style.setProperty("--grain-opacity", "0")
-    return () => { document.body.style.removeProperty("--grain-opacity") }
+    document.body.style.backgroundColor = "#0a0a0a"
+    return () => {
+      document.body.style.removeProperty("--grain-opacity")
+      document.body.style.backgroundColor = ""
+    }
   }, [])
   const [time, setTime] = useState("")
   const [countdown, setCountdown] = useState("")
