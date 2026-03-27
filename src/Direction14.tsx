@@ -72,7 +72,7 @@ function TextWallpaper() {
         fontWeight: 400,
         fontSize: "clamp(11px, 1.1vw, 16px)",
         lineHeight: 1.85,
-        color: "#0a0a0a",
+        color: "#e8e4dc",
         opacity: 0.12,
         letterSpacing: "0.02em",
         whiteSpace: "nowrap",
@@ -93,7 +93,7 @@ export default function Direction14() {
   const [hovered, setHovered] = useState<number | null>(null)
 
   return (
-    <div className="w-screen h-screen bg-[#eeeae2] overflow-hidden relative">
+    <div className="w-screen h-screen bg-[#0a0a0a] overflow-hidden relative">
       <div
         className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
@@ -104,7 +104,7 @@ export default function Direction14() {
 
       {/* Horizontal divider — mid page */}
       <div
-        className="absolute left-0 right-0 h-[1px] bg-[#0a0a0a] opacity-10 pointer-events-none"
+        className="absolute left-0 right-0 h-[1px] bg-[#e8e4dc] opacity-10 pointer-events-none"
         style={{ top: "38%" }}
       />
 
@@ -128,7 +128,7 @@ export default function Direction14() {
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 700,
               fontSize: word.fontSize,
-              color: "#0a0a0a",
+              color: "#e8e4dc",
               letterSpacing: "-0.02em",
               lineHeight: 1.1,
             }}
@@ -146,7 +146,7 @@ export default function Direction14() {
             fontFamily: "'DM Sans', sans-serif",
             fontWeight: 700,
             fontSize: "clamp(16px, 2vw, 28px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             letterSpacing: "-0.01em",
           }}
         >
@@ -158,7 +158,7 @@ export default function Direction14() {
             fontFamily: "'DM Sans', sans-serif",
             fontWeight: 700,
             fontSize: "clamp(16px, 2vw, 28px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             letterSpacing: "-0.01em",
           }}
         >

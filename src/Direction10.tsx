@@ -101,8 +101,8 @@ export default function Direction10() {
 
   return (
     <div
-      className="w-screen min-h-screen bg-[#0a0a0a] overflow-x-hidden relative flex flex-col"
-      style={{ fontFamily: "'Space Mono', monospace" }}
+      className="w-screen bg-[#0a0a0a] overflow-x-hidden relative flex flex-col"
+      style={{ fontFamily: "'Space Mono', monospace", minHeight: "100dvh", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       {/* SVG filters for distressed text */}
       <svg className="absolute w-0 h-0">
@@ -178,7 +178,7 @@ export default function Direction10() {
           </div>
 
           {/* Footer */}
-          <div className="px-[8vw] pb-[4vh] flex justify-between items-end" style={{ filter: "url(#distress-light)" }}>
+          <div className="px-[8vw] pb-[6vh] flex justify-between items-end" style={{ filter: "url(#distress-light)" }}>
             <div
               className="uppercase leading-[1.6] text-[#e8e4dc]"
               style={{
@@ -293,7 +293,7 @@ export default function Direction10() {
           </div>
 
           {/* Footer */}
-          <div className="px-[8vw] pb-[4vh] flex justify-between items-end" style={{ filter: "url(#distress-light)" }}>
+          <div className="px-[8vw] pb-[6vh] flex justify-between items-end" style={{ filter: "url(#distress-light)" }}>
             <div
               className="uppercase text-[#e8e4dc]"
               style={{

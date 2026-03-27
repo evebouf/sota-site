@@ -30,21 +30,16 @@ const articles = [
 function JustifiedTitle({ text, hovered, redMode }: { text: string; hovered: boolean; redMode: boolean }) {
   return (
     <div
-      className="uppercase leading-[0.95] transition-colors duration-150 w-full"
+      className="uppercase leading-[0.95] transition-colors duration-150"
       style={{
         fontFamily: "'Anybody', sans-serif",
         fontVariationSettings: "'wdth' 68, 'wght' 800",
         fontSize: "clamp(14px, 1.6vw, 22px)",
+        letterSpacing: "0.04em",
         color: hovered ? "#FF2A00" : redMode ? "#FF2A00" : "#e8e4dc",
-        display: "flex",
-        justifyContent: "space-between",
       }}
     >
-      {text.split("").map((char, i) => (
-        <span key={i} style={{ display: char === " " ? "inline-block" : undefined, width: char === " " ? "0.3em" : undefined }}>
-          {char === " " ? "" : char}
-        </span>
-      ))}
+      {text}
     </div>
   )
 }

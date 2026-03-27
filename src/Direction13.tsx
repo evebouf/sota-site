@@ -35,7 +35,7 @@ function Dots() {
       {dots.map((d, i) => (
         <div
           key={i}
-          className="absolute w-[7px] h-[7px] rounded-full bg-[#0a0a0a] pointer-events-none"
+          className="absolute w-[7px] h-[7px] rounded-full bg-[#e8e4dc] pointer-events-none"
           style={{ top: d.top, left: d.left }}
         />
       ))}
@@ -58,7 +58,7 @@ export default function Direction13() {
   })
 
   return (
-    <div className="w-screen h-screen bg-[#f0ece4] overflow-hidden relative">
+    <div className="w-screen h-screen bg-[#0a0a0a] overflow-hidden relative">
       <div
         className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
@@ -78,7 +78,7 @@ export default function Direction13() {
           style={{
             fontFamily: special,
             fontSize: "clamp(20px, 2.8vw, 40px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             letterSpacing: "0.15em",
           }}
         >
@@ -89,7 +89,7 @@ export default function Direction13() {
           style={{
             fontFamily: mono,
             fontSize: "clamp(10px, 0.9vw, 14px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             letterSpacing: "0.02em",
           }}
         >
@@ -108,7 +108,7 @@ export default function Direction13() {
           style={{
             fontFamily: mono,
             fontSize: "clamp(10px, 0.9vw, 14px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             lineHeight: 1.6,
           }}
         >
@@ -133,7 +133,7 @@ export default function Direction13() {
               fontVariationSettings: "'wdth' 80, 'wght' 800",
               fontSize: "clamp(10px, 0.85vw, 13px)",
               letterSpacing: "0.06em",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             Read:
@@ -142,7 +142,7 @@ export default function Direction13() {
             style={{
               fontFamily: mono,
               fontSize: "clamp(10px, 0.9vw, 14px)",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             7 Articles
@@ -156,7 +156,7 @@ export default function Direction13() {
               fontVariationSettings: "'wdth' 80, 'wght' 800",
               fontSize: "clamp(10px, 0.85vw, 13px)",
               letterSpacing: "0.06em",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             Take Home:
@@ -165,7 +165,7 @@ export default function Direction13() {
             style={{
               fontFamily: mono,
               fontSize: "clamp(10px, 0.9vw, 14px)",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             New ideas
@@ -188,7 +188,7 @@ export default function Direction13() {
               fontVariationSettings: "'wdth' 80, 'wght' 800",
               fontSize: "clamp(10px, 0.85vw, 13px)",
               letterSpacing: "0.06em",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             Try:
@@ -197,7 +197,7 @@ export default function Direction13() {
             style={{
               fontFamily: mono,
               fontSize: "clamp(10px, 0.9vw, 14px)",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             The Ferlinghetti Method
@@ -216,7 +216,7 @@ export default function Direction13() {
           style={{
             fontFamily: mono,
             fontSize: "clamp(12px, 1.1vw, 16px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
           }}
         >
           What is Grecofuturism?
@@ -238,7 +238,7 @@ export default function Direction13() {
               fontVariationSettings: "'wdth' 80, 'wght' 800",
               fontSize: "clamp(10px, 0.85vw, 13px)",
               letterSpacing: "0.06em",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             Essay:
@@ -247,7 +247,7 @@ export default function Direction13() {
             style={{
               fontFamily: mono,
               fontSize: "clamp(10px, 0.9vw, 14px)",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             Against Progress (Wolf Tivy)
@@ -261,7 +261,7 @@ export default function Direction13() {
               fontVariationSettings: "'wdth' 80, 'wght' 800",
               fontSize: "clamp(10px, 0.85vw, 13px)",
               letterSpacing: "0.06em",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             Fiction:
@@ -270,7 +270,7 @@ export default function Direction13() {
             style={{
               fontFamily: mono,
               fontSize: "clamp(10px, 0.9vw, 14px)",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
             }}
           >
             Alcatraz 20XX? (Sanjana Friedman)
@@ -292,7 +292,7 @@ export default function Direction13() {
             fontVariationSettings: "'wdth' 80, 'wght' 800",
             fontSize: "clamp(8px, 0.65vw, 10px)",
             letterSpacing: "0.1em",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
           }}
         >
           What is State of the Art
@@ -301,7 +301,7 @@ export default function Direction13() {
           style={{
             fontFamily: mono,
             fontSize: "clamp(7px, 0.55vw, 9px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             lineHeight: 1.6,
             letterSpacing: "0.01em",
           }}
@@ -326,7 +326,7 @@ export default function Direction13() {
           style={{
             fontFamily: mono,
             fontSize: "clamp(10px, 0.9vw, 14px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
           }}
         >
           SF Is Not An Island
@@ -343,7 +343,7 @@ export default function Direction13() {
           style={{
             fontFamily: mono,
             fontSize: "clamp(10px, 0.9vw, 14px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
           }}
         >
           Waymo & The Future of Transit
@@ -362,7 +362,7 @@ export default function Direction13() {
               fontVariationSettings: "'wdth' 80, 'wght' 800",
               fontSize: "clamp(7px, 0.55vw, 9px)",
               letterSpacing: "0.08em",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
               opacity: 0.4,
             }}
           >
@@ -373,7 +373,7 @@ export default function Direction13() {
             style={{
               fontFamily: "'Instrument Serif', serif",
               fontSize: "clamp(12px, 1vw, 16px)",
-              color: "#0a0a0a",
+              color: "#e8e4dc",
               opacity: 0.5,
             }}
           >
@@ -385,7 +385,7 @@ export default function Direction13() {
           style={{
             fontFamily: "'Instrument Serif', serif",
             fontSize: "clamp(12px, 1vw, 16px)",
-            color: "#0a0a0a",
+            color: "#e8e4dc",
             opacity: 0.5,
           }}
         >
