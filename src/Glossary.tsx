@@ -82,7 +82,7 @@ export default function Glossary() {
               onClick={(e) => toggleStar(p.path, e)}
               title="Star this direction"
             >
-              {starred.has(p.path) ? "★" : "☆"}
+              {starred.has(p.path) ? "●" : "○"}
             </span>
             <span className="text-[10px] text-black/20 tabular-nums w-[20px] shrink-0">
               {String(i).padStart(2, "0")}

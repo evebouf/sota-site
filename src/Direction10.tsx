@@ -46,6 +46,12 @@ export default function Direction10() {
   const cursor = useRedCursor()
   const [hovered, setHovered] = useState<number | null>(null)
   const [view, setView] = useState<"cover" | "index">("cover")
+
+  // Hide the global grain overlay on this page
+  useEffect(() => {
+    document.body.style.setProperty("--grain-opacity", "0")
+    return () => { document.body.style.removeProperty("--grain-opacity") }
+  }, [])
   const [time, setTime] = useState("")
   const [countdown, setCountdown] = useState("")
   const [moon, setMoon] = useState("")
