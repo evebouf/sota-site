@@ -252,9 +252,14 @@ export default function EtchedMap() {
     // Restyle layers
     for (const layer of m.getStyle().layers || []) {
       if (layer.id === "ggb" || layer.id === "buildings-3d" || layer.id === "hillshade") continue
+      if (layer.type === "background") {
+        m.setPaintProperty(layer.id, "background-color", t.land)
+      }
       if (layer.type === "fill") {
-        if (layer["source-layer"] === "water") {
+        const sl = (layer as any)["source-layer"] || ""
+        if (sl === "water" || layer.id.includes("water")) {
           m.setPaintProperty(layer.id, "fill-color", t.water)
+          m.setPaintProperty(layer.id, "fill-opacity", 1)
         } else {
           m.setPaintProperty(layer.id, "fill-color", t.land)
         }
@@ -386,7 +391,7 @@ export default function EtchedMap() {
           fontSize: 9,
           letterSpacing: "0.15em",
           color: t.textColor,
-          opacity: 0.4,
+          opacity: 1,
           transition: "all 0.6s ease",
         }}
       >
