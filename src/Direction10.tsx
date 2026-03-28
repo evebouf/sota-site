@@ -62,8 +62,10 @@ export default function Direction10() {
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/dark-v11",
       center: [-122.405609, 37.791686],
-      zoom: 14, pitch: 55, bearing: -20,
-      antialias: true, interactive: true, minZoom: 11,
+      zoom: 13.5, pitch: 0, bearing: 0,
+      antialias: true, interactive: true, minZoom: 12, maxZoom: 15,
+      dragRotate: false, pitchWithRotate: false,
+      maxBounds: [[-122.55, 37.70], [-122.30, 37.85]],
     })
     mapRef.current.on("style.load", () => {
       const m = mapRef.current!
@@ -85,6 +87,14 @@ export default function Direction10() {
       m.addLayer({ id: "buildings-3d", source: "composite", "source-layer": "building", type: "fill-extrusion", minzoom: 1,
         paint: { "fill-extrusion-color": "#1a1a1a", "fill-extrusion-height": ["get", "height"], "fill-extrusion-base": ["get", "min_height"], "fill-extrusion-opacity": 0.7 },
       })
+      // Slow ambient drift
+      let bearing = 0
+      const drift = () => {
+        bearing += 0.02
+        m.easeTo({ bearing: bearing % 360, duration: 0, easing: (t: number) => t })
+        requestAnimationFrame(drift)
+      }
+      drift()
     })
     return () => { mapRef.current?.remove(); mapRef.current = null }
   }, [])
@@ -164,7 +174,19 @@ export default function Direction10() {
     >
       {/* Map — behind everything */}
       <div className="absolute inset-0 z-0">
-        <div ref={mapContainer} className="w-full h-full" style={{ pointerEvents: mapOpen ? "auto" : "none" }} />
+        <div ref={mapContainer} className="w-full h-full" style={{ pointerEvents: mapOpen ? "auto" : "none", filter: "contrast(1.3) brightness(0.75)" }} />
+        {/* Grain overlay */}
+        <div className="absolute inset-0 pointer-events-none z-[5]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "200px 200px",
+          mixBlendMode: "overlay",
+          opacity: 0.6,
+        }} />
+        {/* Vignette */}
+        <div className="absolute inset-0 pointer-events-none z-[6]" style={{
+          background: "radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.5) 70%, rgba(10,10,10,0.9) 100%)",
+        }} />
         {/* Bottom banner — hides Mapbox attribution */}
         <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-[#0a0a0a] z-10 flex items-center justify-between px-[4vw] border-t-[1px] border-white/10">
           <div

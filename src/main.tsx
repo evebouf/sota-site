@@ -22,6 +22,11 @@ const Direction11 = lazy(() => import('./Direction11.tsx'))
 const Direction12 = lazy(() => import('./Direction12.tsx'))
 const Direction13 = lazy(() => import('./Direction13.tsx'))
 const Direction14 = lazy(() => import('./Direction14.tsx'))
+const Direction15 = lazy(() => import('./Direction15.tsx'))
+const MapControls = lazy(() => import('./MapControls.tsx'))
+const XeroxMap = lazy(() => import('./XeroxMap.tsx'))
+const NeonMap = lazy(() => import('./NeonMap.tsx'))
+const EtchedMap = lazy(() => import('./EtchedMap.tsx'))
 const Glossary = lazy(() => import('./Glossary.tsx'))
 
 createRoot(document.getElementById('root')!).render(
@@ -48,6 +53,11 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/d14" element={<Direction12 />} />
           <Route path="/d15" element={<Direction13 />} />
           <Route path="/d16" element={<Direction14 />} />
+          <Route path="/d17" element={<Direction15 />} />
+          <Route path="/xerox" element={<XeroxMap />} />
+          <Route path="/neon" element={<NeonMap />} />
+          <Route path="/etched" element={<EtchedMap />} />
+          <Route path="/map-controls" element={<MapControls />} />
           <Route path="/glossary" element={<Glossary />} />
         </Routes>
       </Suspense>
