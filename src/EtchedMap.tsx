@@ -14,6 +14,20 @@ fontStyle.textContent = `
     font-style: normal;
     font-display: swap;
   }
+  @font-face {
+    font-family: 'Neue Haas Grotesk';
+    src: url('/fonts/NHaasGroteskDSPro-65Md.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Neue Haas Grotesk';
+    src: url('/fonts/NHaasGroteskDSPro-75Bd.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
   .photos-hidden .photo-marker {
     opacity: 0 !important;
     pointer-events: none !important;
@@ -110,6 +124,8 @@ export default function EtchedMap() {
   const [ready, setReady] = useState(false)
   const [mode, setMode] = useState<MapMode>("day")
   const [showPhotos, setShowPhotos] = useState(false)
+  const [showManifesto, setShowManifesto] = useState(false)
+  const [coords, setCoords] = useState({ lat: 37.7749, lng: -122.4194 })
   const cursor = useRedCursor()
 
   useEffect(() => {
@@ -129,6 +145,11 @@ export default function EtchedMap() {
       maxBounds: [[-122.55, 37.70], [-122.30, 37.85]],
     })
     mapRef.current = m
+
+    m.on("move", () => {
+      const c = m.getCenter()
+      setCoords({ lat: c.lat, lng: c.lng })
+    })
 
     m.on("style.load", () => {
       // Strip labels
@@ -372,8 +393,8 @@ export default function EtchedMap() {
             letterSpacing: "0.15em",
             transform: "scaleX(0.72)",
             transformOrigin: "left",
-            color: t.textColor,
-            opacity: 0.6,
+            color: mode === "day" ? "#000000" : t.textColor,
+            opacity: 1,
             transition: "color 0.6s",
           }}
         >
@@ -383,7 +404,7 @@ export default function EtchedMap() {
           className="text-[9px] tracking-[0.15em]"
           style={{ fontFamily: "'Space Mono', monospace", color: t.textColor, opacity: 0.3, transition: "color 0.6s" }}
         >
-          37.7749°N 122.4194°W
+          {coords.lat.toFixed(4)}°N {Math.abs(coords.lng).toFixed(4)}°W
         </div>
       </div>
 
@@ -409,6 +430,137 @@ export default function EtchedMap() {
       >
         {mode === "day" ? "Night" : "Day"}
       </button>
+
+      {/* Manifesto panel */}
+      <div
+        className="absolute top-0 right-0 z-30"
+        style={{
+          width: 420,
+          height: "100dvh",
+          transform: showManifesto ? "translateX(0)" : "translateX(100%)",
+          transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          background: mode === "day"
+            ? "rgba(255, 255, 255, 0.92)"
+            : "rgba(12, 16, 32, 0.92)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderLeft: `1px solid ${t.borderColor}`,
+          overflowY: "auto",
+          cursor: "none",
+        }}
+      >
+        <div style={{ padding: "60px 40px 80px" }}>
+          <button
+            onClick={() => setShowManifesto(false)}
+            style={{
+              position: "absolute", top: 24, right: 24,
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+              transform: "scaleX(0.75)", transformOrigin: "right",
+              color: t.textColor, opacity: 0.5,
+              background: "none", border: `1px solid ${t.borderColor}`,
+              padding: "6px 14px", cursor: "none",
+            }}
+          >
+            Close
+          </button>
+
+          <div style={{
+            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+            fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
+            transform: "scaleX(0.72)", transformOrigin: "left",
+            color: t.textColor, opacity: 0.4, marginBottom: 8,
+          }}>
+            What is SOTA ZINE?
+          </div>
+          <div style={{
+            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+            fontSize: 11, letterSpacing: "0.1em",
+            color: t.textColor, opacity: 0.5, marginBottom: 32,
+          }}>
+            Sanjana Friedman — Editor and Publisher
+          </div>
+
+          <div style={{
+            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+            fontSize: 15, lineHeight: 1.7,
+            color: t.textColor,
+          }}>
+            <p style={{ marginBottom: 20 }}>
+              <strong style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 11, letterSpacing: "0.05em", transform: "scaleX(0.85)", display: "inline-block" }}>STATE OF THE ART</strong>, or <strong>SOTA ZINE</strong> is an indefensible project born out of the convictions of a megalomaniac. These convictions run as follows:
+            </p>
+            <div style={{ paddingLeft: 20, marginBottom: 20 }}>
+              1) No one reads anymore<br />
+              2) No one values good design<br />
+              3) No one cares<br />
+              4) We will die if we don't do the work
+            </div>
+            <p style={{ marginBottom: 20 }}>
+              Actually, <strong>SOTA ZINE</strong> was born out of a directive from a donor (hereafter referred to collectively as "THE DONORS") to "make a cool techno-optimist zine." Techno-optimism is, as far as we can tell, a recent coinage; it emerged near-simultaneously with the affirmation that "we are the media now." It is also a nonsense phrase. Techno-optimism? We are optimistic about technology? Technology doesn't accept predicates like "optimism" — technology is just the inevitable consequence of human organization and ingenuity. Technology exists. What does it mean for our lives?
+            </p>
+            <p style={{ marginBottom: 20 }}>
+              Ok, we are being obtuse. What the "techno-optimists" really mean to say is that they are sick of the mediocre schoolmarm critic class that regards every attempt to MAKE IT NEW as an attack. Right. This is our common enemy: the hand-wringers, the self-satisfied, and above all the mediocrities.
+            </p>
+            <p style={{ marginBottom: 20 }}>
+              <strong>SOTA ZINE</strong> believes in velocity and heat; <strong>SOTA ZINE</strong> believes in singular genius; <strong>SOTA ZINE</strong> believes that some things are better than others; <strong>SOTA ZINE</strong> believes in doing the work; <strong>SOTA ZINE</strong> believes in making new things; <strong>SOTA ZINE</strong> believes in tomorrow.
+            </p>
+
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+              transform: "scaleX(0.75)", transformOrigin: "left",
+              color: t.textColor, opacity: 0.6, marginBottom: 8, marginTop: 32,
+            }}>
+              Red Meat
+            </div>
+            <p style={{ marginBottom: 20 }}>
+              We should do things that look GOOD. Even an inside joke which operates on multiple levels (some of which will be inscrutable to all but us) should be legible to the drooling median social media user as, simply, "cool." This doesn't mean we dumb things down; it just means that everything should also work at some obvious level.
+            </p>
+
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+              transform: "scaleX(0.75)", transformOrigin: "left",
+              color: t.textColor, opacity: 0.6, marginBottom: 8, marginTop: 32,
+            }}>
+              All Killer No Filler
+            </div>
+            <p style={{ marginBottom: 20 }}>
+              We should strive to make everything we touch excellent — according to our very high standards. The goal should always be excellence in prose, visuals, ideas, execution. We obsess over details. We do not accept anything — a phrase, a design choice, a title — that doesn't make sense. In this we will never be satisfied, of course. That is our curse.
+            </p>
+
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+              transform: "scaleX(0.75)", transformOrigin: "left",
+              color: t.textColor, opacity: 0.6, marginBottom: 8, marginTop: 32,
+            }}>
+              Faber Ludens
+            </div>
+            <p style={{ marginBottom: 20 }}>
+              <span>Maker at play.</span> We are doing our life's work; how could we not have fun. Harry Mathews (member of our closest forebear, Oulipo) gives us this: "Literature and game playing, literature as game playing… The words evoke a weedy figure: the playful writer… sauntering down sunny boulevards... <span>Faber ludens</span> — a little ludicrous, too."
+            </p>
+
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+              transform: "scaleX(0.75)", transformOrigin: "left",
+              color: t.textColor, opacity: 0.6, marginBottom: 8, marginTop: 32,
+            }}>
+              Sharp Lines, No Approximation
+            </div>
+            <p style={{ marginBottom: 20 }}>
+              I keep coming back to this line from Bernhard's hallucination of Glenn Gould: "He loved things with sharp contours, detested approximation. One of his favorite words was self-discipline… He was the most ruthless person toward himself. He never allowed himself to be imprecise."
+            </p>
+            <p style={{ marginBottom: 20 }}>
+              Perhaps this is just my sensibility but I feel strongly that everything I touch should be sharp. It should be in focus. If I am ruthless toward myself, it is because I hold myself to high standards that I believe I will one day be capable of meeting.
+            </p>
+            <p style={{ marginBottom: 40 }}>
+              <strong>SOTA ZINE</strong> is not like the other girls; everything we do should be something that only we could do. We are in the business of remembering that we exist as human beings — as unique embodied subjectivities that exist in "the brief crack of light between two eternities of darkness." ➽
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Photo toggle — bottom right */}
       <button
@@ -449,6 +601,12 @@ export default function EtchedMap() {
         }}
       >
         <span style={{ transform: "scaleX(0.75)", transformOrigin: "left", display: "inline-block" }}>EDITION 01 — 2026</span>
+        <button
+          onClick={() => setShowManifesto(!showManifesto)}
+          style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", display: "inline-block", color: t.textColor, background: "none", border: "none", cursor: "none", borderBottom: `1px solid ${t.borderColor}`, paddingBottom: 2, fontFamily: "inherit", fontSize: "inherit" }}
+        >
+          Manifesto
+        </button>
         <span style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", display: "inline-block" }}>San Francisco, CA</span>
         <span style={{ transform: "scaleX(0.75)", transformOrigin: "right", display: "inline-block" }}>STATE OF THE ART</span>
       </div>
