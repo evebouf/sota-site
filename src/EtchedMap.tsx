@@ -4,6 +4,22 @@ import { useEffect, useRef, useState } from "react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 
+// Inject Trade Gothic Heavy font-face
+const fontStyle = document.createElement("style")
+fontStyle.textContent = `
+  @font-face {
+    font-family: 'Trade Gothic Heavy';
+    src: url('/fonts/TradeGothicNextLTPro-Hv.otf') format('opentype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+  }
+`
+if (!document.querySelector('[data-trade-gothic]')) {
+  fontStyle.setAttribute('data-trade-gothic', '')
+  document.head.appendChild(fontStyle)
+}
+
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
 function useRedCursor() {
@@ -346,8 +362,16 @@ export default function EtchedMap() {
         style={{ opacity: ready ? 1 : 0 }}
       >
         <div
-          className="text-[9px] tracking-[0.25em] uppercase mb-1"
-          style={{ fontFamily: "'Space Mono', monospace", color: t.textColor, opacity: 0.5, transition: "color 0.6s" }}
+          className="text-[14px] uppercase mb-1"
+          style={{
+            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+            letterSpacing: "0.15em",
+            transform: "scaleX(0.72)",
+            transformOrigin: "left",
+            color: t.textColor,
+            opacity: 0.6,
+            transition: "color 0.6s",
+          }}
         >
           State of the Art
         </div>
@@ -364,10 +388,12 @@ export default function EtchedMap() {
         onClick={() => setMode(mode === "day" ? "night" : "day")}
         className="absolute top-[4vh] right-[4vw] z-20"
         style={{
-          fontFamily: "'Space Mono', monospace",
-          fontSize: 9,
+          fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+          fontSize: 10,
           letterSpacing: "0.2em",
           textTransform: "uppercase",
+          transform: "scaleX(0.75)",
+          transformOrigin: "right",
           color: t.textColor,
           opacity: 0.5,
           background: "none",
@@ -387,17 +413,17 @@ export default function EtchedMap() {
           height: 40,
           background: mode === "day" ? "#ffffff" : "#0c1020",
           borderTop: `1px solid ${t.borderColor}`,
-          fontFamily: "'Space Mono', monospace",
-          fontSize: 9,
+          fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+          fontSize: 10,
           letterSpacing: "0.15em",
           color: t.textColor,
           opacity: 1,
           transition: "all 0.6s ease",
         }}
       >
-        <span>EDITION 01 — 2026</span>
-        <span style={{ letterSpacing: "0.25em", textTransform: "uppercase" }}>San Francisco, CA</span>
-        <span>STATE OF THE ART</span>
+        <span style={{ transform: "scaleX(0.75)", transformOrigin: "left", display: "inline-block" }}>EDITION 01 — 2026</span>
+        <span style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", display: "inline-block" }}>San Francisco, CA</span>
+        <span style={{ transform: "scaleX(0.75)", transformOrigin: "right", display: "inline-block" }}>STATE OF THE ART</span>
       </div>
     </div>
   )
