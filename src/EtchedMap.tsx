@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 
-// Inject Trade Gothic Heavy font-face
+// Inject Trade Gothic Heavy font-face + photo toggle styles
 const fontStyle = document.createElement("style")
 fontStyle.textContent = `
   @font-face {
@@ -13,6 +13,10 @@ fontStyle.textContent = `
     font-weight: 800;
     font-style: normal;
     font-display: swap;
+  }
+  .photos-hidden .photo-marker {
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 `
 if (!document.querySelector('[data-trade-gothic]')) {
@@ -40,10 +44,7 @@ const landmarks: { name: string; coords: [number, number]; photo?: string }[] = 
   { name: "North Beach Psychic", coords: [-122.4084, 37.7999] },
   { name: "Coffee Roastery", coords: [-122.4400, 37.8005] },
   { name: "Alcatraz View", coords: [-122.4120, 37.8060], photo: "/photos/alcatraz-view.jpeg" },
-  { name: "SOMA", coords: [-122.3986, 37.7785] },
-  { name: "Ferry Building", coords: [-122.3937, 37.7956] },
   { name: "Coit Tower", coords: [-122.4058, 37.8024], photo: "/photos/coit-tower.jpeg" },
-  { name: "Mission Dolores", coords: [-122.4270, 37.7600] },
   { name: "Fort Point View Point", coords: [-122.4734, 37.8090], photo: "/photos/fort-point.jpeg" },
   { name: "Legion of Honor", coords: [-122.4997, 37.7846] },
   { name: "Golden Gate Bridge", coords: [-122.4783, 37.8199] },
@@ -108,6 +109,7 @@ export default function EtchedMap() {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [ready, setReady] = useState(false)
   const [mode, setMode] = useState<MapMode>("day")
+  const [showPhotos, setShowPhotos] = useState(false)
   const cursor = useRedCursor()
 
   useEffect(() => {
@@ -230,7 +232,8 @@ export default function EtchedMap() {
     for (const lm of landmarks) {
       const el = document.createElement("div")
       if (lm.photo) {
-        el.style.cssText = `width: 70px; height: 70px; cursor: none;`
+        el.className = "photo-marker"
+        el.style.cssText = `width: 70px; height: 70px; cursor: none; transition: opacity 0.3s ease;`
         const inner = document.createElement("div")
         inner.style.cssText = `
           width: 100%; height: 100%; border: 1px solid rgba(0,0,0,0.1);
@@ -255,6 +258,7 @@ export default function EtchedMap() {
 
     return () => { m.remove(); mapRef.current = null }
   }, [])
+
 
   // Apply theme when mode changes
   useEffect(() => {
@@ -319,7 +323,7 @@ export default function EtchedMap() {
 
   return (
     <div
-      className="w-screen overflow-hidden relative"
+      className={`w-screen overflow-hidden relative${showPhotos ? "" : " photos-hidden"}`}
       style={{ fontFamily: "'Space Mono', monospace", height: "100dvh", background: t.bg, cursor: "none", transition: "background 0.6s ease" }}
     >
       {/* Halftone SVG pattern definition */}
@@ -404,6 +408,29 @@ export default function EtchedMap() {
         }}
       >
         {mode === "day" ? "Night" : "Day"}
+      </button>
+
+      {/* Photo toggle — bottom right */}
+      <button
+        onClick={() => setShowPhotos(!showPhotos)}
+        className="absolute bottom-[52px] right-[4vw] z-20"
+        style={{
+          fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+          fontSize: 10,
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          transform: "scaleX(0.75)",
+          transformOrigin: "right",
+          color: t.textColor,
+          opacity: 0.5,
+          background: "none",
+          border: `1px solid ${t.borderColor}`,
+          padding: "6px 14px",
+          cursor: "none",
+          transition: "all 0.6s ease",
+        }}
+      >
+        {showPhotos ? "Hide Photos" : "Show Photos"}
       </button>
 
       {/* Bottom nav bar — covers Mapbox attribution */}
