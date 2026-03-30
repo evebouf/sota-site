@@ -772,7 +772,7 @@ export default function EtchedMap() {
         >
           Manifesto
         </button>
-        <span style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "right", display: "inline-block", pointerEvents: "none", textDecoration: "none", WebkitTapHighlightColor: "transparent", userSelect: "none" }}>San Francisco, CA</span>
+        <span style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "right", display: "inline-block", pointerEvents: "none", textDecoration: "none", WebkitTapHighlightColor: "transparent", userSelect: "none" }}>San Francisco</span>
       </div>
     </div>
   )
