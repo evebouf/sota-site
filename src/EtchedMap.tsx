@@ -146,7 +146,7 @@ const themes = {
     dotOpacity: 0.15,
     linePatternColor: "#2a4080",
     linePatternOpacity: 0.1,
-    textColor: "#6a80b8",
+    textColor: "#ffffff",
     borderColor: "rgba(40,60,120,0.3)",
     photoBorder: "rgba(40,60,120,0.3)",
     photoShadow: "rgba(0,0,0,0.4)",
