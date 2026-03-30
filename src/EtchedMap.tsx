@@ -768,7 +768,7 @@ export default function EtchedMap() {
         <span style={{ transform: "scaleX(0.75)", transformOrigin: "left", display: "inline-block", pointerEvents: "none", textDecoration: "none", WebkitTapHighlightColor: "transparent", userSelect: "none" }}>EDITION 01 — 2026</span>
         <button
           onClick={() => showManifesto ? closeManifesto() : setShowManifesto(true)}
-          style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", display: "inline-block", color: t.textColor, background: "none", border: "none", cursor: "none", borderBottom: `1px solid ${t.borderColor}`, paddingBottom: 2, fontFamily: "inherit", fontSize: "inherit" }}
+          style={{ position: "absolute", left: "50%", top: "50%", transform: "translateX(-50%) translateY(-50%) scaleX(0.75)", letterSpacing: "0.25em", textTransform: "uppercase", display: "inline-block", color: t.textColor, background: "none", border: "none", cursor: "none", borderBottom: `1px solid ${t.borderColor}`, paddingBottom: 2, fontFamily: "inherit", fontSize: "inherit" }}
         >
           Manifesto
         </button>
