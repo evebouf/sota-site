@@ -417,8 +417,9 @@ export default function EtchedMap() {
           <div
             style={{
               background: "#ffffff",
-              padding: "60px 50px",
+              padding: "60px 32px",
               maxWidth: 440,
+              width: "85vw",
               textAlign: "center",
               cursor: "none",
             }}
