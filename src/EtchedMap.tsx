@@ -110,12 +110,12 @@ type MapMode = "day" | "night"
 
 const themes = {
   day: {
-    bg: "#f5f2ec",
-    water: "#e8e4de",
-    land: "#f5f2ec",
+    bg: "#ffffff",
+    water: "#f0eeea",
+    land: "#ffffff",
     line: "#1a1a1a",
     lineOpacity: 0.7,
-    fog: "#f5f2ec",
+    fog: "#ffffff",
     hillShadow: "#c8c0b4",
     hillHighlight: "#ffffff",
     hillAccent: "#b0a898",
@@ -215,10 +215,10 @@ export default function EtchedMap() {
       for (const layer of m.getStyle().layers || []) {
         if (layer.type === "fill") {
           if (layer["source-layer"] === "water") {
-            m.setPaintProperty(layer.id, "fill-color", "#e8e4de")
+            m.setPaintProperty(layer.id, "fill-color", "#f0eeea")
             m.setPaintProperty(layer.id, "fill-opacity", 1)
           } else {
-            m.setPaintProperty(layer.id, "fill-color", "#f5f2ec")
+            m.setPaintProperty(layer.id, "fill-color", "#ffffff")
           }
         }
         if (layer.type === "line") {
@@ -260,10 +260,10 @@ export default function EtchedMap() {
       // Fog — matches background
       m.setFog({
         range: [-2, 2],
-        color: "#f5f2ec",
+        color: "#ffffff",
         "horizon-blend": 1,
-        "high-color": "#f5f2ec",
-        "space-color": "#f5f2ec",
+        "high-color": "#ffffff",
+        "space-color": "#ffffff",
         "star-intensity": 0,
       })
 
