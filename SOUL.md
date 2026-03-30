@@ -68,6 +68,14 @@ SOTA has three pillars, each doing something different:
 
 The key thing: the map is not a side project or an afterthought. It's the proof of the thesis from the editor's note — that San Francisco rewards the attentive observer. We're crowdsourcing attentive observation. But it has to reflect the same editorial sensibility as the zine. If the pins are boring, it undermines everything. If they're good, it's the most compelling possible advertisement for the publication.
 
+## The dérive
+
+The map is built on the dérive — the unplanned walk through the city. People document what they encounter, not as tourists but as attentive observers. The pins are not places. They are moments, details, fragments of attention. The map is a collection of acts of attention.
+
+Not "Coffee Roastery" but "the chair next to the window at Coffee Roastery." Not "William Stout Architectural Books" but "a copy of Superstudio's 'Life Without Objects' that was face-out on the second shelf." Not the name of the bar but the name of the bartender. Not the building but the shadow it casts at 4pm.
+
+This is the discipline: to notice the small thing, the specific thing, the thing that only you would have seen because you were there at that moment and paying attention. The map trains this muscle. It rewards precision over generality, the particular over the categorical. A pin should make someone want to walk to that exact spot and see what you saw — or to understand that they never can, because the moment has passed, and that is also the point.
+
 ## On design
 
 The red dot is your presence on the page. It moves the way you move through streets — always somewhere specific, always in motion.
