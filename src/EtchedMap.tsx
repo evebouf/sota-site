@@ -84,17 +84,17 @@ function useRedCursor() {
 type Landmark = { name: string; coords: [number, number]; photo?: string; description?: string }
 
 const landmarks: Landmark[] = [
-  { name: "Transamerica Pyramid", coords: [-122.4027, 37.7952], photo: "/photos/transamerica.jpeg", description: "The way it catches light at 5pm — not the postcard angle, but from the alley on Merchant Street where it appears suddenly between fire escapes." },
-  { name: "Fort Mason", coords: [-122.4316, 37.8035], photo: "/photos/fort-mason.jpeg", description: "The bench on the hill facing east. You can see the entire bay and nobody ever sits there." },
-  { name: "Lombard Street", coords: [-122.4186, 37.8021], photo: "/photos/lombard.jpeg", description: "Not the switchbacks — the view from the top, looking down at blue hour when every window is lit and the city drops away beneath you." },
-  { name: "William Stout Architectural Books", coords: [-122.40334, 37.796582], description: "A copy of Superstudio's 'Life Without Objects' was face-out on the second shelf. The man behind the counter knew every book by spine." },
-  { name: "Holly the psychic", coords: [-122.409657, 37.799829], photo: "/photos/holly-psychic.png", description: "She told me I was carrying something I didn't need anymore. The neon sign buzzes even during the day." },
+  { name: "Transamerica Pyramid", coords: [-122.4027, 37.7952], photo: "/photos/transamerica.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+  { name: "Fort Mason", coords: [-122.4316, 37.8035], photo: "/photos/fort-mason.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+  { name: "Lombard Street", coords: [-122.4186, 37.8021], photo: "/photos/lombard.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+  { name: "William Stout Architectural Books", coords: [-122.40334, 37.796582], description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+  { name: "Holly the psychic", coords: [-122.409657, 37.799829], photo: "/photos/holly-psychic.png", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
   { name: "Alex's cap at Coffee Roastery", coords: [-122.441759, 37.800003], photo: "/photos/coffee-roastery.png", description: "I've been coming here every week for a year and I have never once seen Alex, the Cambodian owner who runs it with his family, without a cap on." },
-  { name: "Alcatraz View", coords: [-122.4120, 37.8060], photo: "/photos/alcatraz-view.jpeg", description: "A residential street in North Beach, perfectly aligned with the island. You'd walk past it a hundred times and never look up." },
-  { name: "Coit Tower", coords: [-122.4058, 37.8024], photo: "/photos/coit-tower.jpeg", description: "The murals inside, painted during the Depression. Workers and fields and docks. The city remembering what it was built on." },
-  { name: "Fort Point View Point", coords: [-122.4734, 37.8090], photo: "/photos/fort-point.jpeg", description: "The bridge from below, impossibly red against the gradient of the sky. The wind is always louder than you expect." },
-  { name: "Legion of Honor", coords: [-122.4997, 37.7846], description: "The courtyard on a foggy Tuesday morning. Rodin's Thinker, alone, thinking. The Pacific invisible behind the trees." },
-  { name: "The tucked-away café at Fort Mason", coords: [-122.428603, 37.807092], description: "Inside the HI hostel at Fort Mason. A small café with bay views that most San Franciscans have never heard of. Cozy and hidden in plain sight." },
+  { name: "Alcatraz View", coords: [-122.4120, 37.8060], photo: "/photos/alcatraz-view.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+  { name: "Coit Tower", coords: [-122.4058, 37.8024], photo: "/photos/coit-tower.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+  { name: "Fort Point View Point", coords: [-122.4734, 37.8090], photo: "/photos/fort-point.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+  { name: "Legion of Honor", coords: [-122.4997, 37.7846], description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+  { name: "The tucked-away café at Fort Mason", coords: [-122.428603, 37.807092], description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
   { name: "Betsy at the Bison Paddock", coords: [-122.473904, 37.771229], photo: "/photos/bison.png", description: "There are bison in Golden Gate Park. This is not a metaphor. Betsy stands at the fence most afternoons, unbothered by joggers, indifferent to tourists, chewing." },
 ]
 
