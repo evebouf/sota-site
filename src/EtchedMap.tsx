@@ -452,7 +452,7 @@ export default function EtchedMap() {
               marginBottom: 24,
               fontStyle: "normal",
             }}>
-              Welcome to the superstition machine
+              Enter the superstition machine
             </div>
             <div style={{
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
