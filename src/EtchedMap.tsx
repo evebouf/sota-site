@@ -28,6 +28,11 @@ fontStyle.textContent = `
     font-style: normal;
     font-display: swap;
   }
+  a[href^="tel"], a[href^="mailto"], a[x-apple-data-detectors], a[href^="x-apple-mapitem"], a[href^="maps:"] {
+    color: inherit !important;
+    text-decoration: none !important;
+    pointer-events: none !important;
+  }
   @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
   @keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
   @keyframes slideUp { from { opacity: 0; transform: translateY(40px) } to { opacity: 1; transform: translateY(0) } }
@@ -769,14 +774,14 @@ export default function EtchedMap() {
           transition: "all 0.6s ease",
         }}
       >
-        <span style={{ transform: "scaleX(0.75)", transformOrigin: "left", display: "inline-block", pointerEvents: "none", textDecoration: "none", WebkitTapHighlightColor: "transparent", userSelect: "none" }}>EDITION 01 — 2026</span>
+        <span aria-hidden="true" data-nosnippet style={{ transform: "scaleX(0.75)", transformOrigin: "left", display: "inline-block", pointerEvents: "none", textDecoration: "none !important" as any, WebkitTapHighlightColor: "transparent", userSelect: "none" }}>EDITION 01 — 20&#8203;26</span>
         <button
           onClick={() => showManifesto ? closeManifesto() : setShowManifesto(true)}
           style={{ position: "absolute", left: "50%", top: "50%", transform: "translateX(-50%) translateY(-50%) scaleX(0.75)", letterSpacing: "0.25em", textTransform: "uppercase", display: "inline-block", color: t.textColor, background: "none", border: "none", cursor: "none", borderBottom: `1px solid ${t.borderColor}`, paddingBottom: 2, fontFamily: "inherit", fontSize: "inherit" }}
         >
           Manifesto
         </button>
-        <span style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "right", display: "inline-block", pointerEvents: "none", textDecoration: "none", WebkitTapHighlightColor: "transparent", userSelect: "none" }}>San Francisco</span>
+        <span aria-hidden="true" data-nosnippet style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "right", display: "inline-block", pointerEvents: "none", textDecoration: "none !important" as any, WebkitTapHighlightColor: "transparent", userSelect: "none" }}>San&nbsp;Fran&#8203;cisco</span>
       </div>
     </div>
   )
