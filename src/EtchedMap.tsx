@@ -28,6 +28,9 @@ fontStyle.textContent = `
     font-style: normal;
     font-display: swap;
   }
+  @media (min-width: 768px) {
+    * { cursor: none !important; }
+  }
   .sota-btn {
     transition: all 0.2s ease;
   }
@@ -377,7 +380,7 @@ export default function EtchedMap() {
   return (
     <div
       className={`w-screen overflow-hidden relative${showPhotos ? "" : " photos-hidden"}`}
-      style={{ fontFamily: "'Space Mono', monospace", height: "100dvh", background: t.bg, cursor: "none", transition: "background 0.6s ease" }}
+      style={{ fontFamily: "'Space Mono', monospace", height: "100dvh", background: t.bg, transition: "background 0.6s ease" }}
     >
       {/* Halftone SVG pattern definition */}
       <svg width="0" height="0" style={{ position: "absolute" }}>
@@ -484,9 +487,9 @@ export default function EtchedMap() {
         </div>
       )}
 
-      {/* Red cursor */}
+      {/* Red cursor — desktop only */}
       <div
-        className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
+        className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50 hidden md:block"
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
       />
 
