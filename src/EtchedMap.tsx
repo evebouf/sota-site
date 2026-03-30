@@ -558,22 +558,22 @@ export default function EtchedMap() {
           animation: closingManifesto ? "fadeOut 0.4s ease forwards" : "fadeIn 0.4s ease",
         }}
       >
+        <button
+          className="sota-btn"
+          onClick={closeManifesto}
+          style={{
+            position: "fixed", top: "4vh", right: "4vw",
+            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+            fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+            transform: "scaleX(0.75)", transformOrigin: "right",
+            color: t.textColor, background: mode === "day" ? "#ffffff" : "#0a0e1a",
+            border: `1px solid ${t.borderColor}`,
+            padding: "6px 14px", cursor: "none", zIndex: 50,
+          }}
+        >
+          Close
+        </button>
         <div style={{ maxWidth: 520, margin: "0 auto", padding: "80px 40px 120px", animation: closingManifesto ? "slideDown 0.4s ease forwards" : "slideUp 0.5s ease" }}>
-          <button
-            className="sota-btn"
-            onClick={closeManifesto}
-            style={{
-              position: "fixed", top: "4vh", right: "4vw",
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
-              transform: "scaleX(0.75)", transformOrigin: "right",
-              color: t.textColor, background: "none",
-              border: `1px solid ${t.borderColor}`,
-              padding: "6px 14px", cursor: "none", zIndex: 50,
-            }}
-          >
-            Close
-          </button>
 
           <div style={{
             fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
