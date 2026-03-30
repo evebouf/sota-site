@@ -463,7 +463,7 @@ export default function EtchedMap() {
               maxWidth: 320,
               margin: "0 auto 32px",
             }}>
-              The pins are not places. They are moments, details, fragments of attention. Not the building but the shadow it casts at 4pm. Not the name of the bar but the name of the bartender. San Francisco rewards the attentive observer.
+              The pins are not places. They are moments, details, fragments of attention. San Francisco rewards the attentive observer.
             </div>
             <button
               className="sota-btn"
