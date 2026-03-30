@@ -93,6 +93,14 @@ const landmarks: Landmark[] = [
   { name: "Betsy at the Bison Paddock", coords: [-122.473904, 37.771229], photo: "/photos/bison.png", description: "There are bison in Golden Gate Park. This is not a metaphor. Betsy stands at the fence most afternoons, unbothered by joggers, indifferent to tourists, chewing." },
 ]
 
+// Preload all pin images so they appear instantly on click
+landmarks.forEach(lm => {
+  if (lm.photo) {
+    const img = new Image()
+    img.src = lm.photo
+  }
+})
+
 type MapMode = "day" | "night"
 
 const themes = {
