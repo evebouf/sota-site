@@ -28,6 +28,10 @@ fontStyle.textContent = `
     font-style: normal;
     font-display: swap;
   }
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(40px) } to { opacity: 1; transform: translateY(0) } }
+  @keyframes slideDown { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(40px) } }
   @media (min-width: 768px) {
     * { cursor: none !important; }
   }
@@ -680,12 +684,6 @@ export default function EtchedMap() {
           }}
           onClick={closeLandmark}
         >
-          <style>{`
-            @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-            @keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
-            @keyframes slideUp { from { opacity: 0; transform: translateY(40px) } to { opacity: 1; transform: translateY(0) } }
-            @keyframes slideDown { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(40px) } }
-          `}</style>
           <button
             className="sota-btn"
             onClick={closeLandmark}
