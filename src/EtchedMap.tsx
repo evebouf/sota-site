@@ -160,7 +160,7 @@ export default function EtchedMap() {
   const [closingManifesto, setClosingManifesto] = useState(false)
   const closeManifesto = () => {
     setClosingManifesto(true)
-    setTimeout(() => { setShowManifesto(false); setClosingManifesto(false) }, 400)
+    setTimeout(() => { setShowManifesto(false); setClosingManifesto(false) }, 500)
   }
   const [coords, setCoords] = useState({ lat: 37.7749, lng: -122.4194 })
   const cursor = useRedCursor()
@@ -551,10 +551,9 @@ export default function EtchedMap() {
           background: mode === "day" ? "#ffffff" : "#0a0e1a",
           overflowY: "auto",
           cursor: "none",
-          animation: closingManifesto ? "fadeOut 0.4s ease forwards" : "fadeIn 0.4s ease",
         }}
       >
-        <div style={{ maxWidth: 520, margin: "0 auto", padding: "80px 40px 120px", animation: closingManifesto ? "slideDown 0.4s ease forwards" : "slideUp 0.5s ease" }}>
+        <div style={{ maxWidth: 520, margin: "0 auto", padding: "80px 40px 120px", animation: closingManifesto ? "slideDown 0.5s ease forwards" : "slideUp 0.6s ease" }}>
           <button
             className="sota-btn"
             onClick={closeManifesto}
