@@ -537,14 +537,10 @@ export default function EtchedMap() {
         onClick={() => setMode(mode === "day" ? "night" : "day")}
         className="absolute top-[4vh] right-[4vw] z-20 sota-btn"
         style={{
-          fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-          fontSize: 10,
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          transform: "scaleX(0.75)",
-          transformOrigin: "right",
+          fontSize: 16,
+          lineHeight: 1,
           color: t.textColor,
-          opacity: 0.5,
+          opacity: 0.7,
           background: "none",
           border: `1px solid ${t.borderColor}`,
           padding: "6px 14px",
@@ -552,7 +548,7 @@ export default function EtchedMap() {
           transition: "all 0.6s ease",
         }}
       >
-        {mode === "day" ? "Night" : "Day"}
+        {mode === "day" ? "☽" : "☀"}
       </button>
 
       {/* Manifesto — full screen takeover */}
