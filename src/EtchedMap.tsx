@@ -28,9 +28,28 @@ fontStyle.textContent = `
     font-style: normal;
     font-display: swap;
   }
+  .sota-btn {
+    transition: all 0.2s ease;
+  }
+  .sota-btn:hover {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #000 !important;
+  }
+  .sota-btn:active {
+    transform: scaleX(0.72) scale(0.95) !important;
+  }
   .photos-hidden .photo-marker {
     opacity: 0 !important;
     pointer-events: none !important;
+  }
+  ::selection {
+    background: #FF2A00;
+    color: #ffffff;
+  }
+  ::-moz-selection {
+    background: #FF2A00;
+    color: #ffffff;
   }
 `
 if (!document.querySelector('[data-trade-gothic]')) {
@@ -50,18 +69,21 @@ function useRedCursor() {
   return pos
 }
 
-const landmarks: { name: string; coords: [number, number]; photo?: string }[] = [
-  { name: "Transamerica Pyramid", coords: [-122.4027, 37.7952], photo: "/photos/transamerica.jpeg" },
-  { name: "Fort Mason", coords: [-122.4316, 37.8035], photo: "/photos/fort-mason.jpeg" },
-  { name: "Lombard Street", coords: [-122.4186, 37.8021], photo: "/photos/lombard.jpeg" },
-  { name: "William Stout Architectural Books", coords: [-122.4028, 37.7962] },
-  { name: "North Beach Psychic", coords: [-122.4084, 37.7999] },
-  { name: "Coffee Roastery", coords: [-122.4400, 37.8005] },
-  { name: "Alcatraz View", coords: [-122.4120, 37.8060], photo: "/photos/alcatraz-view.jpeg" },
-  { name: "Coit Tower", coords: [-122.4058, 37.8024], photo: "/photos/coit-tower.jpeg" },
-  { name: "Fort Point View Point", coords: [-122.4734, 37.8090], photo: "/photos/fort-point.jpeg" },
-  { name: "Legion of Honor", coords: [-122.4997, 37.7846] },
-  { name: "Golden Gate Bridge", coords: [-122.4783, 37.8199] },
+type Landmark = { name: string; coords: [number, number]; photo?: string; description?: string }
+
+const landmarks: Landmark[] = [
+  { name: "Transamerica Pyramid", coords: [-122.4027, 37.7952], photo: "/photos/transamerica.jpeg", description: "The way it catches light at 5pm — not the postcard angle, but from the alley on Merchant Street where it appears suddenly between fire escapes." },
+  { name: "Fort Mason", coords: [-122.4316, 37.8035], photo: "/photos/fort-mason.jpeg", description: "The bench on the hill facing east. You can see the entire bay and nobody ever sits there." },
+  { name: "Lombard Street", coords: [-122.4186, 37.8021], photo: "/photos/lombard.jpeg", description: "Not the switchbacks — the view from the top, looking down at blue hour when every window is lit and the city drops away beneath you." },
+  { name: "William Stout Architectural Books", coords: [-122.40334, 37.796582], description: "A copy of Superstudio's 'Life Without Objects' was face-out on the second shelf. The man behind the counter knew every book by spine." },
+  { name: "Holly the psychic", coords: [-122.409657, 37.799829], photo: "/photos/holly-psychic.png", description: "She told me I was carrying something I didn't need anymore. The neon sign buzzes even during the day." },
+  { name: "Alex's cap at Coffee Roastery", coords: [-122.441759, 37.800003], photo: "/photos/coffee-roastery.png", description: "I've been coming here every week for a year and I have never once seen Alex, the Cambodian owner who runs it with his family, without a cap on." },
+  { name: "Alcatraz View", coords: [-122.4120, 37.8060], photo: "/photos/alcatraz-view.jpeg", description: "A residential street in North Beach, perfectly aligned with the island. You'd walk past it a hundred times and never look up." },
+  { name: "Coit Tower", coords: [-122.4058, 37.8024], photo: "/photos/coit-tower.jpeg", description: "The murals inside, painted during the Depression. Workers and fields and docks. The city remembering what it was built on." },
+  { name: "Fort Point View Point", coords: [-122.4734, 37.8090], photo: "/photos/fort-point.jpeg", description: "The bridge from below, impossibly red against the gradient of the sky. The wind is always louder than you expect." },
+  { name: "Legion of Honor", coords: [-122.4997, 37.7846], description: "The courtyard on a foggy Tuesday morning. Rodin's Thinker, alone, thinking. The Pacific invisible behind the trees." },
+  { name: "The tucked-away café at Fort Mason", coords: [-122.428603, 37.807092], description: "Inside the HI hostel at Fort Mason. A small café with bay views that most San Franciscans have never heard of. Cozy and hidden in plain sight." },
+  { name: "Betsy at the Bison Paddock", coords: [-122.473904, 37.771229], photo: "/photos/bison.png", description: "There are bison in Golden Gate Park. This is not a metaphor. Betsy stands at the fence most afternoons, unbothered by joggers, indifferent to tourists, chewing." },
 ]
 
 type MapMode = "day" | "night"
@@ -125,6 +147,18 @@ export default function EtchedMap() {
   const [mode, setMode] = useState<MapMode>("day")
   const [showPhotos, setShowPhotos] = useState(false)
   const [showManifesto, setShowManifesto] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(true)
+  const [selectedLandmark, setSelectedLandmark] = useState<Landmark | null>(null)
+  const [closingLandmark, setClosingLandmark] = useState(false)
+  const closeLandmark = () => {
+    setClosingLandmark(true)
+    setTimeout(() => { setSelectedLandmark(null); setClosingLandmark(false) }, 400)
+  }
+  const [closingManifesto, setClosingManifesto] = useState(false)
+  const closeManifesto = () => {
+    setClosingManifesto(true)
+    setTimeout(() => { setShowManifesto(false); setClosingManifesto(false) }, 600)
+  }
   const [coords, setCoords] = useState({ lat: 37.7749, lng: -122.4194 })
   const cursor = useRedCursor()
 
@@ -249,28 +283,26 @@ export default function EtchedMap() {
       setReady(true)
     })
 
-    // Markers
+    // Markers — image only on map, click to reveal details
     for (const lm of landmarks) {
       const el = document.createElement("div")
-      if (lm.photo) {
-        el.className = "photo-marker"
-        el.style.cssText = `width: 70px; height: 70px; cursor: none; transition: opacity 0.3s ease;`
-        const inner = document.createElement("div")
-        inner.style.cssText = `
-          width: 100%; height: 100%; border: 1px solid rgba(0,0,0,0.1);
-          overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1); transform-origin: center center;
-        `
-        inner.innerHTML = `<img src="${lm.photo}" style="width:100%;height:100%;object-fit:cover;filter:saturate(1.8) contrast(1.1);" />`
-        inner.onmouseenter = () => { inner.style.transform = "scale(1.8)"; inner.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)" }
-        inner.onmouseleave = () => { inner.style.transform = "scale(1)"; inner.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)" }
-        el.appendChild(inner)
-      } else {
-        el.style.cssText = `
+      el.addEventListener("click", (e) => {
+        e.stopPropagation()
+        setSelectedLandmark(lm)
+      })
+
+      {
+        el.style.cssText = `cursor: none; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;`
+        const dot = document.createElement("div")
+        dot.style.cssText = `
           width: 10px; height: 10px; border-radius: 50%;
           background: #FF2A00; box-shadow: 0 0 6px rgba(255,42,0,0.3);
           border: 1.5px solid rgba(0,0,0,0.15);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         `
+        el.onmouseenter = () => { dot.style.transform = "scale(1.6)"; dot.style.boxShadow = "0 0 14px rgba(255,42,0,0.5)" }
+        el.onmouseleave = () => { dot.style.transform = "scale(1)"; dot.style.boxShadow = "0 0 6px rgba(255,42,0,0.3)" }
+        el.appendChild(dot)
       }
       new mapboxgl.Marker({ element: el })
         .setLngLat(lm.coords)
@@ -360,7 +392,7 @@ export default function EtchedMap() {
       </svg>
 
       {/* Map */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" onClick={() => setSelectedLandmark(null)}>
         <div
           ref={mapContainer}
           className="w-full h-full"
@@ -374,6 +406,82 @@ export default function EtchedMap() {
           </svg>
         </div>
       </div>
+
+      {/* Welcome modal */}
+      {showWelcome && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(0,0,0,0.6)", cursor: "none" }}
+          onClick={() => setShowWelcome(false)}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              padding: "60px 50px",
+              maxWidth: 440,
+              textAlign: "center",
+              cursor: "none",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src="/sota-emblem.png"
+              alt="SOTA"
+              style={{ width: 260, margin: "0 auto 32px", display: "block" }}
+            />
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 14,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              transform: "scaleX(0.72)",
+              marginBottom: 4,
+              color: "#000",
+            }}>
+              State of the Art
+            </div>
+            <div style={{
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 13,
+              lineHeight: 1.5,
+              color: "#000",
+              marginBottom: 24,
+              fontStyle: "normal",
+            }}>
+              Welcome to the superstition machine
+            </div>
+            <div style={{
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 12,
+              lineHeight: 1.7,
+              color: "#000",
+              marginBottom: 32,
+              maxWidth: 320,
+              margin: "0 auto 32px",
+            }}>
+              The pins are not places. They are moments, details, fragments of attention. Not the building but the shadow it casts at 4pm. Not the name of the bar but the name of the bartender. San Francisco rewards the attentive observer.
+            </div>
+            <button
+              className="sota-btn"
+              onClick={() => setShowWelcome(false)}
+              style={{
+                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontSize: 10,
+                letterSpacing: "0.25em",
+                textTransform: "uppercase",
+                transform: "scaleX(0.75)",
+                color: "#000",
+                background: "none",
+                border: "1px solid #000",
+                padding: "10px 28px",
+                cursor: "none",
+              }}
+            >
+              Enter
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Red cursor */}
       <div
@@ -402,7 +510,7 @@ export default function EtchedMap() {
         </div>
         <div
           className="text-[9px] tracking-[0.15em]"
-          style={{ fontFamily: "'Space Mono', monospace", color: t.textColor, opacity: 0.3, transition: "color 0.6s" }}
+          style={{ fontFamily: "'Space Mono', monospace", color: mode === "day" ? "#000000" : t.textColor, opacity: mode === "day" ? 1 : 0.3, transition: "color 0.6s" }}
         >
           {coords.lat.toFixed(4)}°N {Math.abs(coords.lng).toFixed(4)}°W
         </div>
@@ -411,7 +519,7 @@ export default function EtchedMap() {
       {/* Day/Night toggle */}
       <button
         onClick={() => setMode(mode === "day" ? "night" : "day")}
-        className="absolute top-[4vh] right-[4vw] z-20"
+        className="absolute top-[4vh] right-[4vw] z-20 sota-btn"
         style={{
           fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
           fontSize: 10,
@@ -431,35 +539,32 @@ export default function EtchedMap() {
         {mode === "day" ? "Night" : "Day"}
       </button>
 
-      {/* Manifesto panel */}
+      {/* Manifesto — full screen takeover */}
+      {showManifesto && (
       <div
-        className="absolute top-0 right-0 z-30"
+        className="fixed inset-0 z-40"
         style={{
-          width: 420,
-          height: "100dvh",
-          transform: showManifesto ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-          background: mode === "day"
-            ? "rgba(255, 255, 255, 0.92)"
-            : "rgba(12, 16, 32, 0.92)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderLeft: `1px solid ${t.borderColor}`,
+          background: mode === "day" ? "#ffffff" : "#0a0e1a",
           overflowY: "auto",
           cursor: "none",
+          opacity: closingManifesto ? 0 : 1,
+          transform: closingManifesto ? "translateY(40px)" : "translateY(0)",
+          transition: "opacity 0.6s ease, transform 0.6s ease",
+          animation: "slideUp 0.8s ease",
         }}
       >
-        <div style={{ padding: "60px 40px 80px" }}>
+        <div style={{ maxWidth: 520, margin: "0 auto", padding: "80px 40px 120px" }}>
           <button
-            onClick={() => setShowManifesto(false)}
+            className="sota-btn"
+            onClick={closeManifesto}
             style={{
-              position: "absolute", top: 24, right: 24,
+              position: "fixed", top: "4vh", right: "4vw",
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
               transform: "scaleX(0.75)", transformOrigin: "right",
-              color: t.textColor, opacity: 0.5,
-              background: "none", border: `1px solid ${t.borderColor}`,
-              padding: "6px 14px", cursor: "none",
+              color: t.textColor, background: "none",
+              border: `1px solid ${t.borderColor}`,
+              padding: "6px 14px", cursor: "none", zIndex: 50,
             }}
           >
             Close
@@ -469,14 +574,14 @@ export default function EtchedMap() {
             fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
             fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
             transform: "scaleX(0.72)", transformOrigin: "left",
-            color: t.textColor, opacity: 0.4, marginBottom: 8,
+            color: t.textColor, opacity: 1, marginBottom: 8,
           }}>
             What is SOTA ZINE?
           </div>
           <div style={{
             fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
             fontSize: 11, letterSpacing: "0.1em",
-            color: t.textColor, opacity: 0.5, marginBottom: 32,
+            color: t.textColor, opacity: 1, marginBottom: 32,
           }}>
             Sanjana Friedman — Editor and Publisher
           </div>
@@ -509,7 +614,7 @@ export default function EtchedMap() {
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
               transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, opacity: 0.6, marginBottom: 8, marginTop: 32,
+              color: t.textColor, opacity: 1, marginBottom: 8, marginTop: 32,
             }}>
               Red Meat
             </div>
@@ -521,7 +626,7 @@ export default function EtchedMap() {
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
               transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, opacity: 0.6, marginBottom: 8, marginTop: 32,
+              color: t.textColor, opacity: 1, marginBottom: 8, marginTop: 32,
             }}>
               All Killer No Filler
             </div>
@@ -533,7 +638,7 @@ export default function EtchedMap() {
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
               transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, opacity: 0.6, marginBottom: 8, marginTop: 32,
+              color: t.textColor, opacity: 1, marginBottom: 8, marginTop: 32,
             }}>
               Faber Ludens
             </div>
@@ -545,7 +650,7 @@ export default function EtchedMap() {
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
               transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, opacity: 0.6, marginBottom: 8, marginTop: 32,
+              color: t.textColor, opacity: 1, marginBottom: 8, marginTop: 32,
             }}>
               Sharp Lines, No Approximation
             </div>
@@ -561,29 +666,90 @@ export default function EtchedMap() {
           </div>
         </div>
       </div>
+      )}
 
-      {/* Photo toggle — bottom right */}
-      <button
-        onClick={() => setShowPhotos(!showPhotos)}
-        className="absolute bottom-[52px] right-[4vw] z-20"
-        style={{
-          fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-          fontSize: 10,
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          transform: "scaleX(0.75)",
-          transformOrigin: "right",
-          color: t.textColor,
-          opacity: 0.5,
-          background: "none",
-          border: `1px solid ${t.borderColor}`,
-          padding: "6px 14px",
-          cursor: "none",
-          transition: "all 0.6s ease",
-        }}
-      >
-        {showPhotos ? "Hide Photos" : "Show Photos"}
-      </button>
+      {/* Detail overlay — immersive, like opening a letter */}
+      {selectedLandmark && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center"
+          style={{
+            background: mode === "day" ? "#ffffff" : "#0a0e1a",
+            cursor: "none",
+            animation: closingLandmark ? "fadeOut 0.4s ease forwards" : "fadeIn 0.4s ease",
+          }}
+          onClick={closeLandmark}
+        >
+          <style>{`
+            @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+            @keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
+            @keyframes slideUp { from { opacity: 0; transform: translateY(40px) } to { opacity: 1; transform: translateY(0) } }
+            @keyframes slideDown { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(40px) } }
+          `}</style>
+          <button
+            className="sota-btn"
+            onClick={closeLandmark}
+            style={{
+              position: "absolute", top: "4vh", right: "4vw",
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+              transform: "scaleX(0.75)", transformOrigin: "right",
+              color: t.textColor, background: "none",
+              border: `1px solid ${t.borderColor}`,
+              padding: "6px 14px", cursor: "none",
+            }}
+          >
+            Close
+          </button>
+          <div
+            style={{
+              maxWidth: 480,
+              width: "90vw",
+              cursor: "none",
+              animation: closingLandmark ? "slideDown 0.4s ease forwards" : "slideUp 0.5s ease",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selectedLandmark.photo && (
+                <img
+                  src={selectedLandmark.photo}
+                  alt={selectedLandmark.name}
+                  style={{
+                    maxWidth: selectedLandmark.photo.endsWith('.png') ? 120 : "100%",
+                    maxHeight: "50vh",
+                    display: "block",
+                    marginBottom: 20,
+                  }}
+                />
+            )}
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 12, letterSpacing: "0.25em", textTransform: "uppercase",
+              transform: "scaleX(0.72)", transformOrigin: "left",
+              color: t.textColor, marginBottom: 14,
+            }}>
+              {selectedLandmark.name}
+            </div>
+            {selectedLandmark.description && (
+              <div style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 15, lineHeight: 1.8,
+                color: t.textColor,
+                maxWidth: 400,
+              }}>
+                {selectedLandmark.description}
+              </div>
+            )}
+            <div style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 9, letterSpacing: "0.1em",
+              color: t.textColor, opacity: 1,
+              marginTop: 24,
+            }}>
+              {selectedLandmark.coords[1].toFixed(4)}°N {Math.abs(selectedLandmark.coords[0]).toFixed(4)}°W
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom nav bar — covers Mapbox attribution */}
       <div
@@ -602,13 +768,12 @@ export default function EtchedMap() {
       >
         <span style={{ transform: "scaleX(0.75)", transformOrigin: "left", display: "inline-block" }}>EDITION 01 — 2026</span>
         <button
-          onClick={() => setShowManifesto(!showManifesto)}
+          onClick={() => showManifesto ? closeManifesto() : setShowManifesto(true)}
           style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", display: "inline-block", color: t.textColor, background: "none", border: "none", cursor: "none", borderBottom: `1px solid ${t.borderColor}`, paddingBottom: 2, fontFamily: "inherit", fontSize: "inherit" }}
         >
           Manifesto
         </button>
         <span style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", display: "inline-block" }}>San Francisco, CA</span>
-        <span style={{ transform: "scaleX(0.75)", transformOrigin: "right", display: "inline-block" }}>STATE OF THE ART</span>
       </div>
     </div>
   )
