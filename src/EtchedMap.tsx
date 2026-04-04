@@ -199,6 +199,9 @@ export default function EtchedMap() {
   const [composeText, setComposeText] = useState("")
   const composeMaxChars = 200
 
+  // Confirmation state
+  const [showConfirmation, setShowConfirmation] = useState(false)
+
   // About state
   const [showAbout, setShowAbout] = useState(false)
   const [closingAbout, setClosingAbout] = useState(false)
@@ -648,6 +651,8 @@ export default function EtchedMap() {
       observationMarkersRef.current.push(marker)
     }
     closeCompose()
+    setShowConfirmation(true)
+    setTimeout(() => setShowConfirmation(false), 2000)
   }, [composeText, dropCoords, addObservationMarker, closeCompose])
 
   // Delete observation
@@ -1398,6 +1403,38 @@ export default function EtchedMap() {
           >
             Drop
           </button>
+        </div>
+      )}
+
+      {/* Confirmation message */}
+      {showConfirmation && (
+        <div
+          className="fixed z-40"
+          style={{
+            top: 40, right: 0, bottom: 40, width: 340,
+            background: mode === "day" ? "#ffffff" : "#0e1428",
+            borderLeft: `1.5px solid ${t.textColor}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            animation: "fadeIn 0.15s ease",
+          }}
+        >
+          <div style={{ textAlign: "center", padding: 28 }}>
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 14, letterSpacing: "0.2em", textTransform: "uppercase",
+              transform: "scaleX(0.72)",
+              color: t.textColor, marginBottom: 8,
+            }}>
+              Dropped
+            </div>
+            <div style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 9, letterSpacing: "0.1em",
+              color: t.textColor, opacity: 0.4,
+            }}>
+              Your act of attention is on the map.
+            </div>
+          </div>
         </div>
       )}
 
