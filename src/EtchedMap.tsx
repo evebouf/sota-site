@@ -770,6 +770,8 @@ export default function EtchedMap() {
               setClosingAbout(false)
             }
           }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
           style={{
             width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
