@@ -249,6 +249,8 @@ export default function EtchedMap() {
       setShowCompose(false)
       setClosingCompose(false)
       setEditingObservation(false)
+      const m = mapRef.current
+      if (m) m.flyTo({ center: [obs.lng, obs.lat], duration: 800 })
     })
     el.appendChild(dot)
     const marker = new mapboxgl.Marker({ element: el })
