@@ -800,7 +800,7 @@ export default function EtchedMap() {
           style={{
             width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
-            background: plusIsX ? "none" : (mode === "day" ? "#000" : "#fff"),
+            background: plusIsX ? "none" : (mode === "day" ? "#000" : "none"),
             border: "none", borderLeft: `1.5px solid ${t.textColor}`,
             cursor: "none",
             transition: "all 0.2s ease",
