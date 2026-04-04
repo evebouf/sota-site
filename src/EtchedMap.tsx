@@ -95,7 +95,8 @@ fontStyle.textContent = `
     /* removed */
   }
   .icon-btn:hover {
-    opacity: 0.5 !important;
+    background: #000 !important;
+    color: #fff !important;
   }
   ::selection {
     background: #FF2A00;
