@@ -1434,7 +1434,19 @@ export default function EtchedMap() {
               transition: "background 0.15s ease, color 0.15s ease",
             }}
           >
-            {mode === "day" ? "☽" : "☀"}
+            {mode === "day" ? (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M10.5 7a5 5 0 01-7.3 4.4 6 6 0 004.4-7.3A5 5 0 0110.5 7z" stroke="currentColor" strokeWidth="1.2" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle cx="7" cy="7" r="3" stroke="currentColor" strokeWidth="1.2" />
+                <line x1="7" y1="0.5" x2="7" y2="2.5" stroke="currentColor" strokeWidth="1.2" />
+                <line x1="7" y1="11.5" x2="7" y2="13.5" stroke="currentColor" strokeWidth="1.2" />
+                <line x1="0.5" y1="7" x2="2.5" y2="7" stroke="currentColor" strokeWidth="1.2" />
+                <line x1="11.5" y1="7" x2="13.5" y2="7" stroke="currentColor" strokeWidth="1.2" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
