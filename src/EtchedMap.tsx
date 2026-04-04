@@ -1202,11 +1202,21 @@ export default function EtchedMap() {
             )}
           </div>
 
-          {/* Footer: edit/save + delete */}
+          {/* Footer: edit/save + delete (admin) */}
           <div style={{
             padding: "12px 24px",
             borderTop: `1.5px solid ${t.textColor}`,
             display: "flex", justifyContent: "space-between", alignItems: "center",
+          }}>
+            <span style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 8, letterSpacing: "0.15em", textTransform: "uppercase",
+              color: t.textColor, opacity: 0.15,
+            }}>admin</span>
+          </div>
+          <div style={{
+            padding: "0 24px 12px",
+            display: "flex", gap: 16, alignItems: "center",
           }}>
             {editingObservation ? (
               <button
