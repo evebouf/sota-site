@@ -72,6 +72,10 @@ fontStyle.textContent = `
   textarea::placeholder {
     color: rgba(0,0,0,0.15);
   }
+  .mapboxgl-ctrl-bottom-left,
+  .mapboxgl-ctrl-bottom-right,
+  .mapboxgl-ctrl-logo,
+  .mapboxgl-ctrl-attrib { display: none !important; }
   .sota-btn {
     transition: all 0.2s ease;
   }
@@ -176,6 +180,7 @@ export default function EtchedMap() {
   const [ready, setReady] = useState(false)
   const [mode, setMode] = useState<MapMode>("day")
   const [coords, setCoords] = useState({ lat: 37.7749, lng: -122.4194 })
+  const [altitude, setAltitude] = useState({ zoom: 15.5, pitch: 45, bearing: -15 })
   const cursor = useRedCursor()
 
   // Observations state
@@ -213,18 +218,15 @@ export default function EtchedMap() {
   const observationMarkersRef = useRef<mapboxgl.Marker[]>([])
 
   const closeCompose = useCallback(() => {
-    setClosingCompose(true)
-    setTimeout(() => { setShowCompose(false); setClosingCompose(false); setComposeText(""); setDropCoords(null) }, 400)
+    setShowCompose(false); setClosingCompose(false); setComposeText(""); setDropCoords(null)
   }, [])
 
   const closeAbout = useCallback(() => {
-    setClosingAbout(true)
-    setTimeout(() => { setShowAbout(false); setClosingAbout(false) }, 400)
+    setShowAbout(false); setClosingAbout(false)
   }, [])
 
   const closeManifesto = useCallback(() => {
-    setClosingManifesto(true)
-    setTimeout(() => { setShowManifesto(false); setClosingManifesto(false) }, 400)
+    setShowManifesto(false); setClosingManifesto(false)
   }, [])
 
   const addObservationMarker = useCallback((obs: Observation, map: mapboxgl.Map) => {
@@ -233,12 +235,12 @@ export default function EtchedMap() {
     el.style.cssText = `cursor: none; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;`
     const dot = document.createElement("div")
     dot.style.cssText = `
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #1a1a1a; opacity: 0.4;
-      transition: transform 0.2s ease, opacity 0.2s ease;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #FF2A00;
+      transition: transform 0.2s ease;
     `
-    el.onmouseenter = () => { dot.style.transform = "scale(1.8)"; dot.style.opacity = "0.7" }
-    el.onmouseleave = () => { dot.style.transform = "scale(1)"; dot.style.opacity = "0.4" }
+    el.onmouseenter = () => { dot.style.transform = "scale(1.6)" }
+    el.onmouseleave = () => { dot.style.transform = "scale(1)" }
     el.addEventListener("click", (e) => {
       e.stopPropagation()
       setSelectedObservation(obs)
@@ -282,7 +284,7 @@ export default function EtchedMap() {
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/light-v11",
       center: [-122.405609, 37.791686],
-      zoom: 14,
+      zoom: 15.5,
       pitch: 45,
       bearing: -15,
       antialias: true,
@@ -297,6 +299,7 @@ export default function EtchedMap() {
     m.on("move", () => {
       const c = m.getCenter()
       setCoords({ lat: c.lat, lng: c.lng })
+      setAltitude({ zoom: m.getZoom(), pitch: m.getPitch(), bearing: m.getBearing() })
     })
 
     m.on("style.load", () => {
@@ -375,13 +378,13 @@ export default function EtchedMap() {
         paint: { "line-color": "#FF2A00", "line-width": 2.5, "line-opacity": 1 },
       })
 
-      // Buildings — full height extrusions
+      // Buildings — 3D extrusions (building data only available at zoom 15+)
       m.addLayer({
         id: "buildings-3d",
         source: "composite",
         "source-layer": "building",
         type: "fill-extrusion",
-        minzoom: 9,
+        minzoom: 14,
         paint: {
           "fill-extrusion-color": "#1a1a1a",
           "fill-extrusion-height": ["*", ["get", "height"], 1],
@@ -709,7 +712,7 @@ export default function EtchedMap() {
         style={{
           height: 40,
           background: mode === "day" ? "#ffffff" : "#0c1020",
-          borderBottom: `1.5px solid ${t.borderColor}`,
+          borderBottom: `1.5px solid ${t.textColor}`,
           transition: "all 0.6s ease",
         }}
       >
@@ -727,21 +730,21 @@ export default function EtchedMap() {
           style={{
             width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
-            background: "none", border: "none", borderRight: `1.5px solid ${t.borderColor}`,
-            cursor: "none",
-            transition: "all 0.2s ease",
+            background: "none", border: "none", borderRight: `1.5px solid ${t.textColor}`,
+            cursor: "none", color: t.textColor,
+            transition: "background 0.15s ease, color 0.15s ease",
           }}
         >
           {hamburgerIsX ? (
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <line x1="1" y1="1" x2="13" y2="13" stroke={t.textColor} strokeWidth="1.5" />
-              <line x1="13" y1="1" x2="1" y2="13" stroke={t.textColor} strokeWidth="1.5" />
+              <line x1="1" y1="1" x2="13" y2="13" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.5" />
             </svg>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 3, alignItems: "center" }}>
-              <div className="icon-line" style={{ width: 14, height: 1.5, background: t.textColor, transition: "background 0.2s" }} />
-              <div className="icon-line" style={{ width: 14, height: 1.5, background: t.textColor, transition: "background 0.2s" }} />
-              <div className="icon-line" style={{ width: 14, height: 1.5, background: t.textColor, transition: "background 0.2s" }} />
+              <div className="icon-line" style={{ width: 14, height: 1.5, background: "currentColor", transition: "background 0.2s" }} />
+              <div className="icon-line" style={{ width: 14, height: 1.5, background: "currentColor", transition: "background 0.2s" }} />
+              <div className="icon-line" style={{ width: 14, height: 1.5, background: "currentColor", transition: "background 0.2s" }} />
             </div>
           )}
         </button>
@@ -781,11 +784,13 @@ export default function EtchedMap() {
               setDropCoords(null)
             }
           }}
+          onMouseEnter={(e) => { if (!plusIsX) e.currentTarget.style.opacity = "0.8" }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
           style={{
             width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
-            background: plusIsX ? "none" : "#000",
-            border: "none", borderLeft: `1.5px solid ${t.borderColor}`,
+            background: plusIsX ? "none" : (mode === "day" ? "#000" : "#fff"),
+            border: "none", borderLeft: `1.5px solid ${t.textColor}`,
             cursor: "none",
             transition: "all 0.2s ease",
           }}
@@ -812,7 +817,7 @@ export default function EtchedMap() {
             top: 40, left: 0, bottom: 40,
             width: 340,
             background: mode === "day" ? "#ffffff" : "#0c1020",
-            borderRight: `1.5px solid ${t.borderColor}`,
+            borderRight: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             overflowY: "auto",
             cursor: "none",
@@ -882,7 +887,7 @@ export default function EtchedMap() {
                 transform: "scaleX(0.75)", transformOrigin: "left",
                 color: t.textColor,
                 background: "none",
-                border: `1px solid ${t.borderColor}`,
+                border: `1px solid ${t.textColor}`,
                 padding: "10px 20px",
                 cursor: "none",
                 display: "inline-block",
@@ -902,7 +907,7 @@ export default function EtchedMap() {
             top: 40, left: 0, bottom: 40,
             width: 420,
             background: mode === "day" ? "#ffffff" : "#0c1020",
-            borderRight: `1.5px solid ${t.borderColor}`,
+            borderRight: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             overflowY: "auto",
             cursor: "none",
@@ -918,7 +923,7 @@ export default function EtchedMap() {
               width: 40, height: 40,
               display: "flex", alignItems: "center", justifyContent: "center",
               background: mode === "day" ? "#ffffff" : "#0c1020",
-              border: "none", borderBottom: `1.5px solid ${t.borderColor}`,
+              border: "none", borderBottom: `1.5px solid ${t.textColor}`,
               cursor: "none",
               marginLeft: "auto",
               zIndex: 2,
@@ -1037,7 +1042,7 @@ export default function EtchedMap() {
             top: 40, right: 0, bottom: 40,
             width: 340,
             background: mode === "day" ? "#ffffff" : "#0c1020",
-            borderLeft: `1.5px solid ${t.borderColor}`,
+            borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             display: "flex", flexDirection: "column",
             cursor: "none",
@@ -1078,7 +1083,7 @@ export default function EtchedMap() {
                   fontWeight: 500,
                   color: t.textColor,
                   background: "none",
-                  border: "none", borderBottom: `1px solid ${t.borderColor}`,
+                  border: "none", borderBottom: `1px solid ${t.textColor}`,
                   outline: "none",
                   width: "100%",
                   resize: "none",
@@ -1102,7 +1107,7 @@ export default function EtchedMap() {
           {/* Footer: edit/save + delete */}
           <div style={{
             padding: "12px 24px",
-            borderTop: `1.5px solid ${t.borderColor}`,
+            borderTop: `1.5px solid ${t.textColor}`,
             display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
             {editingObservation ? (
@@ -1162,7 +1167,7 @@ export default function EtchedMap() {
             top: 40, right: 0, bottom: 40,
             width: 340,
             background: mode === "day" ? "#ffffff" : "#0c1020",
-            borderLeft: `1.5px solid ${t.borderColor}`,
+            borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             display: "flex", flexDirection: "column",
             cursor: "none",
@@ -1172,7 +1177,7 @@ export default function EtchedMap() {
           {/* Location indicator */}
           <div style={{
             padding: "16px 24px",
-            borderBottom: `1.5px solid ${t.borderColor}`,
+            borderBottom: `1.5px solid ${t.textColor}`,
           }}>
             <div style={{
               fontFamily: "'Space Mono', monospace",
@@ -1236,13 +1241,12 @@ export default function EtchedMap() {
             style={{
               width: "100%",
               padding: "14px 24px",
-              background: composeText.trim() ? "#000" : "rgba(0,0,0,0.05)",
-              color: composeText.trim() ? "#fff" : "rgba(0,0,0,0.2)",
+              background: composeText.trim() ? (mode === "day" ? "#000000" : "#ffffff") : "rgba(0,0,0,0.05)",
+              color: composeText.trim() ? (mode === "day" ? "#ffffff" : "#0e1428") : "rgba(0,0,0,0.2)",
               border: "none",
-              borderTop: `1.5px solid ${t.borderColor}`,
+              borderTop: `1.5px solid ${t.textColor}`,
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
-              transform: "scaleX(0.75)",
               cursor: "none",
               transition: "all 0.2s",
             }}
@@ -1258,7 +1262,7 @@ export default function EtchedMap() {
         style={{
           height: 40,
           background: mode === "day" ? "#ffffff" : "#0c1020",
-          borderTop: `1.5px solid ${t.borderColor}`,
+          borderTop: `1.5px solid ${t.textColor}`,
           fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
           fontSize: 10,
           letterSpacing: "0.15em",
@@ -1289,7 +1293,7 @@ export default function EtchedMap() {
           color: t.textColor, opacity: 1,
           whiteSpace: "nowrap",
         }}>
-          {coords.lat.toFixed(4)}°N {Math.abs(coords.lng).toFixed(4)}°W
+          {coords.lat.toFixed(4)}°N {Math.abs(coords.lng).toFixed(4)}°W &nbsp;&nbsp; ALT {Math.round(Math.pow(2, 20 - altitude.zoom) * 0.5)}ft &nbsp; {altitude.pitch.toFixed(0)}° &nbsp; {((altitude.bearing % 360 + 360) % 360).toFixed(0)}°
         </div>
 
         {/* Right: SOTA text + day/night toggle */}
@@ -1309,15 +1313,17 @@ export default function EtchedMap() {
           </span>
           <button
             onClick={() => setMode(mode === "day" ? "night" : "day")}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
             style={{
               width: 40, height: 40,
               display: "flex", alignItems: "center", justifyContent: "center",
               background: "none",
-              border: "none", borderLeft: `1.5px solid ${t.borderColor}`,
+              border: "none", borderLeft: `1.5px solid ${t.textColor}`,
               cursor: "none",
               fontSize: 16,
               color: t.textColor,
-              transition: "all 0.6s ease",
+              transition: "background 0.15s ease, color 0.15s ease",
             }}
           >
             {mode === "day" ? "☽" : "☀"}
