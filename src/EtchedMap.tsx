@@ -1,10 +1,35 @@
-// Etched Map — white background, black outlined streets & buildings, no shaders
+// Etched Map — Acts of Attention
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
+import { createClient } from "@supabase/supabase-js"
 
-// Inject Trade Gothic Heavy font-face + photo toggle styles
+// Supabase client
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+)
+
+type Observation = {
+  id: string
+  text: string
+  lat: number
+  lng: number
+  created_at: string
+  observer_id: number
+}
+
+function getObserverId(): number {
+  const key = "sota-observer-id"
+  const stored = localStorage.getItem(key)
+  if (stored) return parseInt(stored, 10)
+  const id = Math.floor(Math.random() * 9000) + 1000
+  localStorage.setItem(key, String(id))
+  return id
+}
+
+// Inject Trade Gothic Heavy font-face + styles
 const fontStyle = document.createElement("style")
 fontStyle.textContent = `
   @font-face {
@@ -37,8 +62,15 @@ fontStyle.textContent = `
   @keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
   @keyframes slideUp { from { opacity: 0; transform: translateY(40px) } to { opacity: 1; transform: translateY(0) } }
   @keyframes slideDown { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(40px) } }
+  @keyframes slideInLeft { from { opacity: 0; transform: translateX(-40px) } to { opacity: 1; transform: translateX(0) } }
+  @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(-40px) } }
+  @keyframes slideInRight { from { opacity: 0; transform: translateX(40px) } to { opacity: 1; transform: translateX(0) } }
+  @keyframes slideOutRight { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(40px) } }
   @media (min-width: 768px) {
     * { cursor: none !important; }
+  }
+  textarea::placeholder {
+    color: rgba(0,0,0,0.15);
   }
   .sota-btn {
     transition: all 0.2s ease;
@@ -49,12 +81,15 @@ fontStyle.textContent = `
     border-color: #000 !important;
   }
   .sota-btn:active {
-    transform: scaleX(0.72) scale(0.95) !important;
+    /* removed */
   }
-  .photos-hidden .photo-marker {
-    opacity: 0 !important;
-    pointer-events: none !important;
+  .icon-btn:hover {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #000 !important;
   }
+  .icon-btn:hover svg line { stroke: #fff !important; }
+  .icon-btn:hover .icon-line { background: #fff !important; }
   ::selection {
     background: #FF2A00;
     color: #ffffff;
@@ -81,31 +116,6 @@ function useRedCursor() {
   return pos
 }
 
-type Landmark = { name: string; coords: [number, number]; photo?: string; description?: string }
-
-const landmarks: Landmark[] = [
-  { name: "Transamerica Pyramid", coords: [-122.4027, 37.7952], photo: "/photos/transamerica.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "Fort Mason", coords: [-122.4316, 37.8035], photo: "/photos/fort-mason.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "Lombard Street", coords: [-122.4186, 37.8021], photo: "/photos/lombard.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "William Stout Architectural Books", coords: [-122.40334, 37.796582], description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "Holly the psychic", coords: [-122.409657, 37.799829], photo: "/photos/holly-psychic.png", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "Alex's cap at Coffee Roastery", coords: [-122.441759, 37.800003], photo: "/photos/coffee-roastery.png", description: "I've been coming here every week for a year and I have never once seen Alex, the Cambodian owner who runs it with his family, without a cap on." },
-  { name: "Alcatraz View", coords: [-122.4120, 37.8060], photo: "/photos/alcatraz-view.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "Coit Tower", coords: [-122.4058, 37.8024], photo: "/photos/coit-tower.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "Fort Point View Point", coords: [-122.4734, 37.8090], photo: "/photos/fort-point.jpeg", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "Legion of Honor", coords: [-122.4997, 37.7846], description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "The tucked-away café at Fort Mason", coords: [-122.428603, 37.807092], description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { name: "Betsy at the Bison Paddock", coords: [-122.473904, 37.771229], photo: "/photos/bison.png", description: "There are bison in Golden Gate Park. This is not a metaphor. Betsy stands at the fence most afternoons, unbothered by joggers, indifferent to tourists, chewing." },
-]
-
-// Preload all pin images so they appear instantly on click
-landmarks.forEach(lm => {
-  if (lm.photo) {
-    const img = new Image()
-    img.src = lm.photo
-  }
-})
-
 type MapMode = "day" | "night"
 
 const themes = {
@@ -120,7 +130,7 @@ const themes = {
     hillHighlight: "#ffffff",
     hillAccent: "#b0a898",
     building: "#1a1a1a",
-    buildingOpacity: 0.12,
+    buildingOpacity: 0.35,
     ggb: "#FF2A00",
     canvasFilter: "contrast(1.1) brightness(1.05) saturate(0)",
     dotColor: "#1a1a1a",
@@ -144,7 +154,7 @@ const themes = {
     hillHighlight: "#1a2448",
     hillAccent: "#0c1020",
     building: "#1e2d5c",
-    buildingOpacity: 0.25,
+    buildingOpacity: 0.45,
     ggb: "#FF2A00",
     canvasFilter: "contrast(1.2) brightness(0.9) saturate(0.4)",
     dotColor: "#3a5aa0",
@@ -160,28 +170,112 @@ const themes = {
 }
 
 export default function EtchedMap() {
-  useEffect(() => { document.title = "Etched — State of the Art" }, [])
+  useEffect(() => { document.title = "Acts of Attention — State of the Art" }, [])
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [ready, setReady] = useState(false)
   const [mode, setMode] = useState<MapMode>("day")
-  const [showPhotos, setShowPhotos] = useState(false)
-  const [showManifesto, setShowManifesto] = useState(false)
-  const [showWelcome, setShowWelcome] = useState(true)
-  const [selectedLandmark, setSelectedLandmark] = useState<Landmark | null>(null)
-  const [closingLandmark, setClosingLandmark] = useState(false)
-  const closeLandmark = () => {
-    setClosingLandmark(true)
-    setTimeout(() => { setSelectedLandmark(null); setClosingLandmark(false) }, 400)
-  }
-  const [closingManifesto, setClosingManifesto] = useState(false)
-  const closeManifesto = () => {
-    setClosingManifesto(true)
-    setTimeout(() => { setShowManifesto(false); setClosingManifesto(false) }, 400)
-  }
   const [coords, setCoords] = useState({ lat: 37.7749, lng: -122.4194 })
   const cursor = useRedCursor()
 
+  // Observations state
+  const [observations, setObservations] = useState<Observation[]>([])
+  const [selectedObservation, setSelectedObservation] = useState<Observation | null>(null)
+  const [editingObservation, setEditingObservation] = useState(false)
+  const [editText, setEditText] = useState("")
+
+  // Compose state
+  const [showCompose, setShowCompose] = useState(false)
+  const [closingCompose, setClosingCompose] = useState(false)
+  const [composeText, setComposeText] = useState("")
+  const composeMaxChars = 200
+
+  // About state
+  const [showAbout, setShowAbout] = useState(false)
+  const [closingAbout, setClosingAbout] = useState(false)
+
+  // Manifesto state
+  const [showManifesto, setShowManifesto] = useState(false)
+  const [closingManifesto, setClosingManifesto] = useState(false)
+
+  // Long press state
+  const [longPress, setLongPress] = useState<{ x: number; y: number; progress: number } | null>(null)
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const longPressAnim = useRef<number | null>(null)
+
+  // Drop coords
+  const [dropCoords, setDropCoords] = useState<[number, number] | null>(null)
+
+  // Textarea ref
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Observation markers ref
+  const observationMarkersRef = useRef<mapboxgl.Marker[]>([])
+
+  const closeCompose = useCallback(() => {
+    setClosingCompose(true)
+    setTimeout(() => { setShowCompose(false); setClosingCompose(false); setComposeText(""); setDropCoords(null) }, 400)
+  }, [])
+
+  const closeAbout = useCallback(() => {
+    setClosingAbout(true)
+    setTimeout(() => { setShowAbout(false); setClosingAbout(false) }, 400)
+  }, [])
+
+  const closeManifesto = useCallback(() => {
+    setClosingManifesto(true)
+    setTimeout(() => { setShowManifesto(false); setClosingManifesto(false) }, 400)
+  }, [])
+
+  const addObservationMarker = useCallback((obs: Observation, map: mapboxgl.Map) => {
+    const el = document.createElement("div")
+    el.className = "mapboxgl-marker"
+    el.style.cssText = `cursor: none; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;`
+    const dot = document.createElement("div")
+    dot.style.cssText = `
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #1a1a1a; opacity: 0.4;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    `
+    el.onmouseenter = () => { dot.style.transform = "scale(1.8)"; dot.style.opacity = "0.7" }
+    el.onmouseleave = () => { dot.style.transform = "scale(1)"; dot.style.opacity = "0.4" }
+    el.addEventListener("click", (e) => {
+      e.stopPropagation()
+      setSelectedObservation(obs)
+      setShowCompose(false)
+      setClosingCompose(false)
+      setEditingObservation(false)
+    })
+    el.appendChild(dot)
+    const marker = new mapboxgl.Marker({ element: el })
+      .setLngLat([obs.lng, obs.lat])
+      .addTo(map)
+    return marker
+  }, [])
+
+  const loadObservations = useCallback(async (map: mapboxgl.Map) => {
+    const { data, error } = await supabase.from("observations").select("*").order("created_at", { ascending: false })
+    if (error) { console.error("Failed to load observations:", error); return }
+    if (!data) return
+    setObservations(data as Observation[])
+    // Clear old markers
+    observationMarkersRef.current.forEach(m => m.remove())
+    observationMarkersRef.current = []
+    // Add new markers
+    for (const obs of data as Observation[]) {
+      const marker = addObservationMarker(obs, map)
+      observationMarkersRef.current.push(marker)
+    }
+  }, [addObservationMarker])
+
+  // Focus textarea when compose opens
+  useEffect(() => {
+    if (showCompose && !closingCompose && textareaRef.current) {
+      setTimeout(() => textareaRef.current?.focus(), 100)
+    }
+  }, [showCompose, closingCompose])
+
+  // Map init
   useEffect(() => {
     if (mapRef.current || !mapContainer.current) return
     const m = new mapboxgl.Map({
@@ -281,18 +375,18 @@ export default function EtchedMap() {
         paint: { "line-color": "#FF2A00", "line-width": 2.5, "line-opacity": 1 },
       })
 
-      // Buildings — very light outlined extrusions
+      // Buildings — full height extrusions
       m.addLayer({
         id: "buildings-3d",
         source: "composite",
         "source-layer": "building",
         type: "fill-extrusion",
-        minzoom: 13,
+        minzoom: 9,
         paint: {
           "fill-extrusion-color": "#1a1a1a",
-          "fill-extrusion-height": ["*", ["get", "height"], 0.8],
+          "fill-extrusion-height": ["*", ["get", "height"], 1],
           "fill-extrusion-base": ["get", "min_height"],
-          "fill-extrusion-opacity": 0.12,
+          "fill-extrusion-opacity": 0.35,
         },
       })
 
@@ -300,18 +394,25 @@ export default function EtchedMap() {
       const canvas = m.getCanvas()
       if (canvas) canvas.style.filter = "contrast(1.1) brightness(1.05) saturate(0)"
 
-      setReady(true)
-    })
-
-    // Markers — image only on map, click to reveal details
-    for (const lm of landmarks) {
-      const el = document.createElement("div")
-      el.addEventListener("click", (e) => {
-        e.stopPropagation()
-        setSelectedLandmark(lm)
-      })
-
-      {
+      // Landmark markers (commented out — kept for reference)
+      /*
+      const landmarks = [
+        { name: "Transamerica Pyramid", coords: [-122.4027, 37.7952] },
+        { name: "Fort Mason", coords: [-122.4316, 37.8035] },
+        { name: "Lombard Street", coords: [-122.4186, 37.8021] },
+        { name: "William Stout Architectural Books", coords: [-122.40334, 37.796582] },
+        { name: "Holly the psychic", coords: [-122.409657, 37.799829] },
+        { name: "Alex's cap at Coffee Roastery", coords: [-122.441759, 37.800003] },
+        { name: "Alcatraz View", coords: [-122.4120, 37.8060] },
+        { name: "Coit Tower", coords: [-122.4058, 37.8024] },
+        { name: "Fort Point View Point", coords: [-122.4734, 37.8090] },
+        { name: "Legion of Honor", coords: [-122.4997, 37.7846] },
+        { name: "The tucked-away cafe at Fort Mason", coords: [-122.428603, 37.807092] },
+        { name: "Betsy at the Bison Paddock", coords: [-122.473904, 37.771229] },
+      ]
+      for (const lm of landmarks) {
+        const el = document.createElement("div")
+        el.addEventListener("click", (e) => { e.stopPropagation() })
         el.style.cssText = `cursor: none; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;`
         const dot = document.createElement("div")
         dot.style.cssText = `
@@ -323,15 +424,18 @@ export default function EtchedMap() {
         el.onmouseenter = () => { dot.style.transform = "scale(1.6)"; dot.style.boxShadow = "0 0 14px rgba(255,42,0,0.5)" }
         el.onmouseleave = () => { dot.style.transform = "scale(1)"; dot.style.boxShadow = "0 0 6px rgba(255,42,0,0.3)" }
         el.appendChild(dot)
+        new mapboxgl.Marker({ element: el }).setLngLat(lm.coords as [number, number]).addTo(m)
       }
-      new mapboxgl.Marker({ element: el })
-        .setLngLat(lm.coords)
-        .addTo(m)
-    }
+      */
+
+      // Load observations from Supabase
+      loadObservations(m)
+
+      setReady(true)
+    })
 
     return () => { m.remove(); mapRef.current = null }
-  }, [])
-
+  }, [loadObservations])
 
   // Apply theme when mode changes
   useEffect(() => {
@@ -392,11 +496,147 @@ export default function EtchedMap() {
     }
   }, [mode, ready])
 
+  // Long-press handlers
+  const cancelLongPress = useCallback(() => {
+    if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null }
+    if (longPressAnim.current) { cancelAnimationFrame(longPressAnim.current); longPressAnim.current = null }
+    setLongPress(null)
+  }, [])
+
+  const handleMapMouseDown = useCallback((e: React.MouseEvent) => {
+    // Ignore if clicking on a marker
+    const target = e.target as HTMLElement
+    if (target.closest(".mapboxgl-marker")) return
+
+    const startX = e.clientX
+    const startY = e.clientY
+    const startTime = Date.now()
+    const delayMs = 200
+    const durationMs = 600
+
+    const onMove = (ev: MouseEvent) => {
+      const dx = ev.clientX - startX
+      const dy = ev.clientY - startY
+      if (Math.sqrt(dx * dx + dy * dy) > 6) {
+        cancelLongPress()
+        window.removeEventListener("mousemove", onMove)
+        window.removeEventListener("mouseup", onUp)
+      }
+    }
+
+    const onUp = () => {
+      cancelLongPress()
+      window.removeEventListener("mousemove", onMove)
+      window.removeEventListener("mouseup", onUp)
+    }
+
+    window.addEventListener("mousemove", onMove)
+    window.addEventListener("mouseup", onUp)
+
+    longPressTimer.current = setTimeout(() => {
+      // Start ring animation
+      const animate = () => {
+        const elapsed = Date.now() - startTime - delayMs
+        const progress = Math.min(elapsed / durationMs, 1)
+        setLongPress({ x: startX, y: startY, progress })
+        if (progress < 1) {
+          longPressAnim.current = requestAnimationFrame(animate)
+        } else {
+          // Long press complete — open compose
+          setLongPress(null)
+          // Get map coords at click point
+          const m = mapRef.current
+          if (m) {
+            const lngLat = m.unproject([startX, startY - 40]) // offset for top bar
+            setDropCoords([lngLat.lng, lngLat.lat])
+          }
+          setSelectedObservation(null)
+          setEditingObservation(false)
+          setShowCompose(true)
+          setClosingCompose(false)
+          setComposeText("")
+          window.removeEventListener("mousemove", onMove)
+          window.removeEventListener("mouseup", onUp)
+        }
+      }
+      longPressAnim.current = requestAnimationFrame(animate)
+    }, delayMs)
+  }, [cancelLongPress])
+
+  const handleMapClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement
+    if (target.closest(".mapboxgl-marker")) return
+
+    if (showCompose && !closingCompose) {
+      // Set drop coords on map click while compose is open
+      const m = mapRef.current
+      if (m) {
+        const lngLat = m.unproject([e.clientX, e.clientY - 40])
+        setDropCoords([lngLat.lng, lngLat.lat])
+      }
+    } else {
+      // Dismiss selection
+      setSelectedObservation(null)
+      setEditingObservation(false)
+    }
+  }, [showCompose, closingCompose])
+
+  // Submit observation
+  const submitObservation = useCallback(async () => {
+    if (!composeText.trim()) return
+    const m = mapRef.current
+    if (!m) return
+    const finalCoords = dropCoords || [m.getCenter().lng, m.getCenter().lat]
+    const observerId = getObserverId()
+    const { data, error } = await supabase.from("observations").insert({
+      text: composeText.trim().toLowerCase(),
+      lng: finalCoords[0],
+      lat: finalCoords[1],
+      observer_id: observerId,
+    }).select().single()
+    if (error) { console.error("Failed to save observation:", error); return }
+    if (data) {
+      const obs = data as Observation
+      setObservations(prev => [obs, ...prev])
+      const marker = addObservationMarker(obs, m)
+      observationMarkersRef.current.push(marker)
+    }
+    closeCompose()
+  }, [composeText, dropCoords, addObservationMarker, closeCompose])
+
+  // Delete observation
+  const deleteObservation = useCallback(async (obs: Observation) => {
+    const { error } = await supabase.from("observations").delete().eq("id", obs.id)
+    if (error) { console.error("Failed to delete:", error); return }
+    setObservations(prev => prev.filter(o => o.id !== obs.id))
+    // Reload markers from Supabase
+    if (mapRef.current) loadObservations(mapRef.current)
+    setSelectedObservation(null)
+    setEditingObservation(false)
+  }, [observations, loadObservations])
+
+  // Save edit
+  const saveEdit = useCallback(async () => {
+    if (!selectedObservation || !editText.trim()) return
+    const { error } = await supabase.from("observations").update({ text: editText.trim().toLowerCase() }).eq("id", selectedObservation.id)
+    if (error) { console.error("Failed to update:", error); return }
+    const updated = { ...selectedObservation, text: editText.trim().toLowerCase() }
+    setObservations(prev => prev.map(o => o.id === updated.id ? updated : o))
+    setSelectedObservation(updated)
+    setEditingObservation(false)
+  }, [selectedObservation, editText])
+
   const t = themes[mode]
+
+  // Hamburger/X state
+  const hamburgerIsX = showAbout && !closingAbout
+
+  // Plus button state: becomes X when compose or observation is open
+  const plusIsX = showCompose || selectedObservation !== null
 
   return (
     <div
-      className={`w-screen overflow-hidden relative${showPhotos ? "" : " photos-hidden"}`}
+      className="w-screen overflow-hidden relative"
       style={{ fontFamily: "'Space Mono', monospace", height: "100dvh", background: t.bg, transition: "background 0.6s ease" }}
     >
       {/* Halftone SVG pattern definition */}
@@ -412,13 +652,17 @@ export default function EtchedMap() {
       </svg>
 
       {/* Map */}
-      <div className="absolute inset-0 z-0" onClick={() => setSelectedLandmark(null)}>
+      <div
+        className="absolute z-0"
+        style={{ top: 40, left: 0, right: 0, bottom: 40 }}
+        onClick={handleMapClick}
+        onMouseDown={handleMapMouseDown}
+      >
         <div
           ref={mapContainer}
           className="w-full h-full"
-          style={{}}
         />
-        {/* Halftone texture overlay — moves with page but gives printed feel */}
+        {/* Halftone texture overlay */}
         <div className="absolute inset-0 pointer-events-none" style={{ mixBlendMode: "multiply" }}>
           <svg width="100%" height="100%">
             <rect width="100%" height="100%" fill="url(#halftone-dots)" />
@@ -427,81 +671,30 @@ export default function EtchedMap() {
         </div>
       </div>
 
-      {/* Welcome modal */}
-      {showWelcome && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: "rgba(0,0,0,0.6)", cursor: "none" }}
-          onClick={() => setShowWelcome(false)}
+      {/* Long-press progress ring */}
+      {longPress && (
+        <svg
+          width="48" height="48"
+          style={{
+            position: "fixed",
+            left: longPress.x - 24,
+            top: longPress.y - 24,
+            zIndex: 60,
+            pointerEvents: "none",
+          }}
         >
-          <div
-            style={{
-              background: "#ffffff",
-              padding: "60px 32px",
-              maxWidth: 440,
-              width: "85vw",
-              textAlign: "center",
-              cursor: "none",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src="/sota-emblem.png"
-              alt="SOTA"
-              style={{ width: 260, margin: "0 auto 32px", display: "block" }}
-            />
-            <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 14,
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-              transform: "scaleX(0.72)",
-              marginBottom: 4,
-              color: "#000",
-            }}>
-              State of the Art
-            </div>
-            <div style={{
-              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 13,
-              lineHeight: 1.5,
-              color: "#000",
-              marginBottom: 24,
-              fontStyle: "normal",
-            }}>
-              Enter the superstition machine
-            </div>
-            <div style={{
-              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 12,
-              lineHeight: 1.7,
-              color: "#000",
-              marginBottom: 32,
-              maxWidth: 320,
-              margin: "0 auto 32px",
-            }}>
-              The pins are not places. They are moments, details, fragments of attention. San Francisco rewards the attentive observer.
-            </div>
-            <button
-              className="sota-btn"
-              onClick={() => setShowWelcome(false)}
-              style={{
-                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                fontSize: 10,
-                letterSpacing: "0.25em",
-                textTransform: "uppercase",
-                transform: "scaleX(0.75)",
-                color: "#000",
-                background: "none",
-                border: "1px solid #000",
-                padding: "10px 28px",
-                cursor: "none",
-              }}
-            >
-              Enter
-            </button>
-          </div>
-        </div>
+          <circle
+            cx="24" cy="24" r="20"
+            fill="none"
+            stroke="#1a1a1a"
+            strokeWidth="1.5"
+            opacity="0.3"
+            strokeDasharray={`${2 * Math.PI * 20}`}
+            strokeDashoffset={`${2 * Math.PI * 20 * (1 - longPress.progress)}`}
+            transform="rotate(-90 24 24)"
+            strokeLinecap="round"
+          />
+        </svg>
       )}
 
       {/* Red cursor — desktop only */}
@@ -510,278 +703,626 @@ export default function EtchedMap() {
         style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
       />
 
-      {/* Top-left legend */}
+      {/* ===== TOP BANNER BAR ===== */}
       <div
-        className="absolute top-[4vh] left-[4vw] z-10 pointer-events-none transition-all duration-600"
-        style={{ opacity: ready ? 1 : 0 }}
-      >
-        <div
-          className="text-[14px] uppercase mb-1"
-          style={{
-            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-            letterSpacing: "0.15em",
-            transform: "scaleX(0.72)",
-            transformOrigin: "left",
-            color: mode === "day" ? "#000000" : t.textColor,
-            opacity: 1,
-            transition: "color 0.6s",
-          }}
-        >
-          State of the Art
-        </div>
-        <div
-          className="text-[9px] tracking-[0.15em]"
-          style={{ fontFamily: "'Space Mono', monospace", color: mode === "day" ? "#000000" : t.textColor, opacity: mode === "day" ? 1 : 0.3, transition: "color 0.6s" }}
-        >
-          {coords.lat.toFixed(4)}°N {Math.abs(coords.lng).toFixed(4)}°W
-        </div>
-      </div>
-
-      {/* Day/Night toggle */}
-      <button
-        onClick={() => setMode(mode === "day" ? "night" : "day")}
-        className="absolute top-[4vh] right-[4vw] z-20 sota-btn"
-        style={{
-          fontSize: 16,
-          lineHeight: 1,
-          color: t.textColor,
-          opacity: 0.7,
-          background: "none",
-          border: `1px solid ${t.borderColor}`,
-          padding: "6px 14px",
-          cursor: "none",
-          transition: "all 0.6s ease",
-        }}
-      >
-        {mode === "day" ? "☽" : "☀"}
-      </button>
-
-      {/* Manifesto — full screen takeover */}
-      {showManifesto && (
-      <div
-        className="fixed inset-0 z-40"
-        style={{
-          background: mode === "day" ? "#ffffff" : "#0a0e1a",
-          overflowY: "auto",
-          cursor: "none",
-          animation: closingManifesto ? "fadeOut 0.4s ease forwards" : "fadeIn 0.4s ease",
-        }}
-      >
-        <button
-          className="sota-btn"
-          onClick={closeManifesto}
-          style={{
-            position: "fixed", top: "4vh", right: "4vw",
-            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-            fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
-            transform: "scaleX(0.75)", transformOrigin: "right",
-            color: t.textColor, background: mode === "day" ? "#ffffff" : "#0a0e1a",
-            border: `1px solid ${t.borderColor}`,
-            padding: "6px 14px", cursor: "none", zIndex: 50,
-          }}
-        >
-          Close
-        </button>
-        <div style={{ maxWidth: 520, margin: "0 auto", padding: "80px 40px 120px", animation: closingManifesto ? "slideDown 0.4s ease forwards" : "slideUp 0.5s ease" }}>
-
-          <div style={{
-            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-            fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
-            transform: "scaleX(0.72)", transformOrigin: "left",
-            color: t.textColor, opacity: 1, marginBottom: 8,
-          }}>
-            What is SOTA ZINE?
-          </div>
-          <div style={{
-            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-            fontSize: 11, letterSpacing: "0.1em",
-            color: t.textColor, opacity: 1, marginBottom: 32,
-          }}>
-            Sanjana Friedman — Editor and Publisher
-          </div>
-
-          <div style={{
-            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-            fontSize: 15, lineHeight: 1.7,
-            color: t.textColor,
-          }}>
-            <p style={{ marginBottom: 20 }}>
-              <strong style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 11, letterSpacing: "0.05em", transform: "scaleX(0.85)", display: "inline-block" }}>STATE OF THE ART</strong>, or <strong>SOTA ZINE</strong> is an indefensible project born out of the convictions of a megalomaniac. These convictions run as follows:
-            </p>
-            <div style={{ paddingLeft: 20, marginBottom: 20 }}>
-              1) No one reads anymore<br />
-              2) No one values good design<br />
-              3) No one cares<br />
-              4) We will die if we don't do the work
-            </div>
-            <p style={{ marginBottom: 20 }}>
-              Actually, <strong>SOTA ZINE</strong> was born out of a directive from a donor (hereafter referred to collectively as "THE DONORS") to "make a cool techno-optimist zine." Techno-optimism is, as far as we can tell, a recent coinage; it emerged near-simultaneously with the affirmation that "we are the media now." It is also a nonsense phrase. Techno-optimism? We are optimistic about technology? Technology doesn't accept predicates like "optimism" — technology is just the inevitable consequence of human organization and ingenuity. Technology exists. What does it mean for our lives?
-            </p>
-            <p style={{ marginBottom: 20 }}>
-              Ok, we are being obtuse. What the "techno-optimists" really mean to say is that they are sick of the mediocre schoolmarm critic class that regards every attempt to MAKE IT NEW as an attack. Right. This is our common enemy: the hand-wringers, the self-satisfied, and above all the mediocrities.
-            </p>
-            <p style={{ marginBottom: 20 }}>
-              <strong>SOTA ZINE</strong> believes in velocity and heat; <strong>SOTA ZINE</strong> believes in singular genius; <strong>SOTA ZINE</strong> believes that some things are better than others; <strong>SOTA ZINE</strong> believes in doing the work; <strong>SOTA ZINE</strong> believes in making new things; <strong>SOTA ZINE</strong> believes in tomorrow.
-            </p>
-
-            <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
-              transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, opacity: 1, marginBottom: 8, marginTop: 32,
-            }}>
-              Red Meat
-            </div>
-            <p style={{ marginBottom: 20 }}>
-              We should do things that look GOOD. Even an inside joke which operates on multiple levels (some of which will be inscrutable to all but us) should be legible to the drooling median social media user as, simply, "cool." This doesn't mean we dumb things down; it just means that everything should also work at some obvious level.
-            </p>
-
-            <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
-              transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, opacity: 1, marginBottom: 8, marginTop: 32,
-            }}>
-              All Killer No Filler
-            </div>
-            <p style={{ marginBottom: 20 }}>
-              We should strive to make everything we touch excellent — according to our very high standards. The goal should always be excellence in prose, visuals, ideas, execution. We obsess over details. We do not accept anything — a phrase, a design choice, a title — that doesn't make sense. In this we will never be satisfied, of course. That is our curse.
-            </p>
-
-            <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
-              transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, opacity: 1, marginBottom: 8, marginTop: 32,
-            }}>
-              Faber Ludens
-            </div>
-            <p style={{ marginBottom: 20 }}>
-              <span>Maker at play.</span> We are doing our life's work; how could we not have fun. Harry Mathews (member of our closest forebear, Oulipo) gives us this: "Literature and game playing, literature as game playing… The words evoke a weedy figure: the playful writer… sauntering down sunny boulevards... <span>Faber ludens</span> — a little ludicrous, too."
-            </p>
-
-            <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
-              transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, opacity: 1, marginBottom: 8, marginTop: 32,
-            }}>
-              Sharp Lines, No Approximation
-            </div>
-            <p style={{ marginBottom: 20 }}>
-              I keep coming back to this line from Bernhard's hallucination of Glenn Gould: "He loved things with sharp contours, detested approximation. One of his favorite words was self-discipline… He was the most ruthless person toward himself. He never allowed himself to be imprecise."
-            </p>
-            <p style={{ marginBottom: 20 }}>
-              Perhaps this is just my sensibility but I feel strongly that everything I touch should be sharp. It should be in focus. If I am ruthless toward myself, it is because I hold myself to high standards that I believe I will one day be capable of meeting.
-            </p>
-            <p style={{ marginBottom: 40 }}>
-              <strong>SOTA ZINE</strong> is not like the other girls; everything we do should be something that only we could do. We are in the business of remembering that we exist as human beings — as unique embodied subjectivities that exist in "the brief crack of light between two eternities of darkness." ➽
-            </p>
-          </div>
-        </div>
-      </div>
-      )}
-
-      {/* Detail overlay — immersive, like opening a letter */}
-      {selectedLandmark && (
-        <div
-          className="fixed inset-0 z-40 flex items-center justify-center"
-          style={{
-            background: mode === "day" ? "#ffffff" : "#0a0e1a",
-            cursor: "none",
-            animation: closingLandmark ? "fadeOut 0.4s ease forwards" : "fadeIn 0.4s ease",
-          }}
-          onClick={closeLandmark}
-        >
-          <button
-            className="sota-btn"
-            onClick={closeLandmark}
-            style={{
-              position: "absolute", top: "4vh", right: "4vw",
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
-              transform: "scaleX(0.75)", transformOrigin: "right",
-              color: t.textColor, background: "none",
-              border: `1px solid ${t.borderColor}`,
-              padding: "6px 14px", cursor: "none",
-            }}
-          >
-            Close
-          </button>
-          <div
-            style={{
-              maxWidth: 480,
-              width: "90vw",
-              cursor: "none",
-              animation: closingLandmark ? "slideDown 0.4s ease forwards" : "slideUp 0.5s ease",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {selectedLandmark.photo && (
-                <img
-                  src={selectedLandmark.photo}
-                  alt={selectedLandmark.name}
-                  style={{
-                    maxWidth: selectedLandmark.photo.endsWith('.png') ? 120 : "100%",
-                    maxHeight: "50vh",
-                    display: "block",
-                    marginBottom: 20,
-                  }}
-                />
-            )}
-            <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 12, letterSpacing: "0.25em", textTransform: "uppercase",
-              transform: "scaleX(0.72)", transformOrigin: "left",
-              color: t.textColor, marginBottom: 14,
-            }}>
-              {selectedLandmark.name}
-            </div>
-            {selectedLandmark.description && (
-              <div style={{
-                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 15, lineHeight: 1.8,
-                color: t.textColor,
-                maxWidth: 400,
-              }}>
-                {selectedLandmark.description}
-              </div>
-            )}
-            <div style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 9, letterSpacing: "0.1em",
-              color: t.textColor, opacity: 1,
-              marginTop: 24,
-            }}>
-              {selectedLandmark.coords[1].toFixed(4)}°N {Math.abs(selectedLandmark.coords[0]).toFixed(4)}°W
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Bottom nav bar — covers Mapbox attribution */}
-      <div
-        className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-[4vw]"
+        className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between"
         style={{
           height: 40,
           background: mode === "day" ? "#ffffff" : "#0c1020",
-          borderTop: `1px solid ${t.borderColor}`,
+          borderBottom: `1.5px solid ${t.borderColor}`,
+          transition: "all 0.6s ease",
+        }}
+      >
+        {/* Left: Hamburger / X */}
+        <button
+          className="icon-btn"
+          onClick={() => {
+            if (showAbout && !closingAbout) {
+              closeAbout()
+            } else if (!showAbout) {
+              setShowAbout(true)
+              setClosingAbout(false)
+            }
+          }}
+          style={{
+            width: 40, height: 40,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "none", border: "none", borderRight: `1.5px solid ${t.borderColor}`,
+            cursor: "none",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {hamburgerIsX ? (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <line x1="1" y1="1" x2="13" y2="13" stroke={t.textColor} strokeWidth="1.5" />
+              <line x1="13" y1="1" x2="1" y2="13" stroke={t.textColor} strokeWidth="1.5" />
+            </svg>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 3, alignItems: "center" }}>
+              <div className="icon-line" style={{ width: 14, height: 1.5, background: t.textColor, transition: "background 0.2s" }} />
+              <div className="icon-line" style={{ width: 14, height: 1.5, background: t.textColor, transition: "background 0.2s" }} />
+              <div className="icon-line" style={{ width: 14, height: 1.5, background: t.textColor, transition: "background 0.2s" }} />
+            </div>
+          )}
+        </button>
+
+        {/* Center: Title */}
+        <div
+          style={{
+            position: "absolute", left: "50%", top: "50%",
+            transform: "translateX(-50%) translateY(-50%) scaleX(0.75)",
+            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+            fontSize: 11,
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            color: t.textColor,
+            whiteSpace: "nowrap",
+            transition: "color 0.6s",
+          }}
+        >
+          Acts of Attention
+        </div>
+
+        {/* Right: + / X button */}
+        <button
+          className="icon-btn"
+          onClick={() => {
+            if (selectedObservation) {
+              setSelectedObservation(null)
+              setEditingObservation(false)
+            } else if (showCompose && !closingCompose) {
+              closeCompose()
+            } else if (!showCompose) {
+              setSelectedObservation(null)
+              setEditingObservation(false)
+              setShowCompose(true)
+              setClosingCompose(false)
+              setComposeText("")
+              setDropCoords(null)
+            }
+          }}
+          style={{
+            width: 40, height: 40,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: plusIsX ? "none" : "#000",
+            border: "none", borderLeft: `1.5px solid ${t.borderColor}`,
+            cursor: "none",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {plusIsX ? (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <line x1="1" y1="1" x2="13" y2="13" stroke={t.textColor} strokeWidth="1.5" />
+              <line x1="13" y1="1" x2="1" y2="13" stroke={t.textColor} strokeWidth="1.5" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <line x1="7" y1="1" x2="7" y2="13" stroke="#ffffff" strokeWidth="1.5" />
+              <line x1="1" y1="7" x2="13" y2="7" stroke="#ffffff" strokeWidth="1.5" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* ===== ABOUT PANEL (left sidebar) ===== */}
+      {showAbout && (
+        <div
+          style={{
+            position: "fixed",
+            top: 40, left: 0, bottom: 40,
+            width: 340,
+            background: mode === "day" ? "#ffffff" : "#0c1020",
+            borderRight: `1.5px solid ${t.borderColor}`,
+            zIndex: 25,
+            overflowY: "auto",
+            cursor: "none",
+            animation: closingAbout ? "slideOutLeft 0.4s ease forwards" : "slideInLeft 0.3s ease",
+            display: "flex", flexDirection: "column",
+          }}
+        >
+          <div style={{ padding: "40px 28px 28px", flex: 1 }}>
+            <img
+              src="/sota-emblem.png"
+              alt="SOTA"
+              style={{ width: 180, marginBottom: 32, display: "block" }}
+            />
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase",
+              transform: "scaleX(0.72)", transformOrigin: "left",
+              color: t.textColor, marginBottom: 20,
+            }}>
+              Acts of Attention
+            </div>
+            <div style={{
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 13, lineHeight: 1.7,
+              color: t.textColor, marginBottom: 28,
+            }}>
+              San Francisco reveals itself to those who look. This map collects moments of attention — small observations, fleeting details, fragments of the city that might otherwise go unnoticed.
+            </div>
+
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+              transform: "scaleX(0.75)", transformOrigin: "left",
+              color: t.textColor, marginBottom: 14,
+            }}>
+              How it works
+            </div>
+            <div style={{
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 12, lineHeight: 1.8,
+              color: t.textColor, marginBottom: 28,
+            }}>
+              <div style={{ marginBottom: 8 }}>1. Long-press on the map to drop a pin</div>
+              <div style={{ marginBottom: 8 }}>2. Write what caught your eye (200 chars max)</div>
+              <div style={{ marginBottom: 8 }}>3. Your observation joins the collective map</div>
+              <div>4. Click any dot to read what others noticed</div>
+            </div>
+
+            <div style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 9, letterSpacing: "0.1em",
+              color: t.textColor, opacity: 0.5,
+              marginBottom: 28,
+            }}>
+              Your observer ID: {getObserverId()}
+            </div>
+
+            <button
+              className="sota-btn"
+              onClick={() => {
+                closeAbout()
+                setTimeout(() => { setShowManifesto(true); setClosingManifesto(false) }, 450)
+              }}
+              style={{
+                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+                transform: "scaleX(0.75)", transformOrigin: "left",
+                color: t.textColor,
+                background: "none",
+                border: `1px solid ${t.borderColor}`,
+                padding: "10px 20px",
+                cursor: "none",
+                display: "inline-block",
+              }}
+            >
+              Read the Manifesto
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MANIFESTO PANEL (left sidebar) ===== */}
+      {showManifesto && (
+        <div
+          style={{
+            position: "fixed",
+            top: 40, left: 0, bottom: 40,
+            width: 420,
+            background: mode === "day" ? "#ffffff" : "#0c1020",
+            borderRight: `1.5px solid ${t.borderColor}`,
+            zIndex: 25,
+            overflowY: "auto",
+            cursor: "none",
+            animation: closingManifesto ? "slideOutLeft 0.4s ease forwards" : "slideInLeft 0.3s ease",
+          }}
+        >
+          {/* Close button */}
+          <button
+            className="icon-btn"
+            onClick={closeManifesto}
+            style={{
+              position: "sticky", top: 0, right: 0,
+              width: 40, height: 40,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: mode === "day" ? "#ffffff" : "#0c1020",
+              border: "none", borderBottom: `1.5px solid ${t.borderColor}`,
+              cursor: "none",
+              marginLeft: "auto",
+              zIndex: 2,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <line x1="1" y1="1" x2="13" y2="13" stroke={t.textColor} strokeWidth="1.5" />
+              <line x1="13" y1="1" x2="1" y2="13" stroke={t.textColor} strokeWidth="1.5" />
+            </svg>
+          </button>
+
+          <div style={{ padding: "20px 32px 60px" }}>
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
+              transform: "scaleX(0.72)", transformOrigin: "left",
+              color: t.textColor, marginBottom: 8,
+            }}>
+              What is SOTA ZINE?
+            </div>
+            <div style={{
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 11, letterSpacing: "0.1em",
+              color: t.textColor, marginBottom: 32,
+            }}>
+              Sanjana Friedman — Editor and Publisher
+            </div>
+
+            <div style={{
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 15, lineHeight: 1.7,
+              color: t.textColor,
+            }}>
+              <p style={{ marginBottom: 20 }}>
+                <strong style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 11, letterSpacing: "0.05em", transform: "scaleX(0.85)", display: "inline-block" }}>STATE OF THE ART</strong>, or <strong>SOTA ZINE</strong> is an indefensible project born out of the convictions of a megalomaniac. These convictions run as follows:
+              </p>
+              <div style={{ paddingLeft: 20, marginBottom: 20 }}>
+                1) No one reads anymore<br />
+                2) No one values good design<br />
+                3) No one cares<br />
+                4) We will die if we don't do the work
+              </div>
+              <p style={{ marginBottom: 20 }}>
+                Actually, <strong>SOTA ZINE</strong> was born out of a directive from a donor (hereafter referred to collectively as "THE DONORS") to "make a cool techno-optimist zine." Techno-optimism is, as far as we can tell, a recent coinage; it emerged near-simultaneously with the affirmation that "we are the media now." It is also a nonsense phrase. Techno-optimism? We are optimistic about technology? Technology doesn't accept predicates like "optimism" — technology is just the inevitable consequence of human organization and ingenuity. Technology exists. What does it mean for our lives?
+              </p>
+              <p style={{ marginBottom: 20 }}>
+                Ok, we are being obtuse. What the "techno-optimists" really mean to say is that they are sick of the mediocre schoolmarm critic class that regards every attempt to MAKE IT NEW as an attack. Right. This is our common enemy: the hand-wringers, the self-satisfied, and above all the mediocrities.
+              </p>
+              <p style={{ marginBottom: 20 }}>
+                <strong>SOTA ZINE</strong> believes in velocity and heat; <strong>SOTA ZINE</strong> believes in singular genius; <strong>SOTA ZINE</strong> believes that some things are better than others; <strong>SOTA ZINE</strong> believes in doing the work; <strong>SOTA ZINE</strong> believes in making new things; <strong>SOTA ZINE</strong> believes in tomorrow.
+              </p>
+
+              <div style={{
+                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+                transform: "scaleX(0.75)", transformOrigin: "left",
+                color: t.textColor, marginBottom: 8, marginTop: 32,
+              }}>
+                Red Meat
+              </div>
+              <p style={{ marginBottom: 20 }}>
+                We should do things that look GOOD. Even an inside joke which operates on multiple levels (some of which will be inscrutable to all but us) should be legible to the drooling median social media user as, simply, "cool." This doesn't mean we dumb things down; it just means that everything should also work at some obvious level.
+              </p>
+
+              <div style={{
+                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+                transform: "scaleX(0.75)", transformOrigin: "left",
+                color: t.textColor, marginBottom: 8, marginTop: 32,
+              }}>
+                All Killer No Filler
+              </div>
+              <p style={{ marginBottom: 20 }}>
+                We should strive to make everything we touch excellent — according to our very high standards. The goal should always be excellence in prose, visuals, ideas, execution. We obsess over details. We do not accept anything — a phrase, a design choice, a title — that doesn't make sense. In this we will never be satisfied, of course. That is our curse.
+              </p>
+
+              <div style={{
+                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+                transform: "scaleX(0.75)", transformOrigin: "left",
+                color: t.textColor, marginBottom: 8, marginTop: 32,
+              }}>
+                Faber Ludens
+              </div>
+              <p style={{ marginBottom: 20 }}>
+                <span>Maker at play.</span> We are doing our life's work; how could we not have fun. Harry Mathews (member of our closest forebear, Oulipo) gives us this: "Literature and game playing, literature as game playing... The words evoke a weedy figure: the playful writer... sauntering down sunny boulevards... <span>Faber ludens</span> — a little ludicrous, too."
+              </p>
+
+              <div style={{
+                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
+                transform: "scaleX(0.75)", transformOrigin: "left",
+                color: t.textColor, marginBottom: 8, marginTop: 32,
+              }}>
+                Sharp Lines, No Approximation
+              </div>
+              <p style={{ marginBottom: 20 }}>
+                I keep coming back to this line from Bernhard's hallucination of Glenn Gould: "He loved things with sharp contours, detested approximation. One of his favorite words was self-discipline... He was the most ruthless person toward himself. He never allowed himself to be imprecise."
+              </p>
+              <p style={{ marginBottom: 20 }}>
+                Perhaps this is just my sensibility but I feel strongly that everything I touch should be sharp. It should be in focus. If I am ruthless toward myself, it is because I hold myself to high standards that I believe I will one day be capable of meeting.
+              </p>
+              <p style={{ marginBottom: 40 }}>
+                <strong>SOTA ZINE</strong> is not like the other girls; everything we do should be something that only we could do. We are in the business of remembering that we exist as human beings — as unique embodied subjectivities that exist in "the brief crack of light between two eternities of darkness."
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== OBSERVATION DETAIL PANEL (right sidebar) ===== */}
+      {selectedObservation && !showCompose && (
+        <div
+          style={{
+            position: "fixed",
+            top: 40, right: 0, bottom: 40,
+            width: 340,
+            background: mode === "day" ? "#ffffff" : "#0c1020",
+            borderLeft: `1.5px solid ${t.borderColor}`,
+            zIndex: 25,
+            display: "flex", flexDirection: "column",
+            cursor: "none",
+            animation: "slideInRight 0.3s ease",
+          }}
+        >
+          <div style={{ padding: "28px 24px", flex: 1, overflowY: "auto" }}>
+            {/* Observer ID + date */}
+            <div style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 9, letterSpacing: "0.1em",
+              color: t.textColor, opacity: 0.5,
+              marginBottom: 4,
+            }}>
+              Observer #{selectedObservation.observer_id} — {new Date(selectedObservation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            </div>
+
+            {/* Coordinates */}
+            <div style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 9, letterSpacing: "0.1em",
+              color: t.textColor, opacity: 0.3,
+              marginBottom: 28,
+            }}>
+              {selectedObservation.lat.toFixed(4)}°N {Math.abs(selectedObservation.lng).toFixed(4)}°W
+            </div>
+
+            {/* Observation text or edit textarea */}
+            {editingObservation ? (
+              <textarea
+                ref={textareaRef}
+                value={editText}
+                onChange={(e) => setEditText(e.target.value.toLowerCase())}
+                maxLength={composeMaxChars}
+                style={{
+                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                  fontSize: 32, lineHeight: 1.3,
+                  fontWeight: 500,
+                  color: t.textColor,
+                  background: "none",
+                  border: "none", borderBottom: `1px solid ${t.borderColor}`,
+                  outline: "none",
+                  width: "100%",
+                  resize: "none",
+                  cursor: "none",
+                  padding: 0,
+                  minHeight: 120,
+                }}
+              />
+            ) : (
+              <div style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 32, lineHeight: 1.3,
+                fontWeight: 500,
+                color: t.textColor,
+              }}>
+                {selectedObservation.text.toLowerCase()}
+              </div>
+            )}
+          </div>
+
+          {/* Footer: edit/save + delete */}
+          <div style={{
+            padding: "12px 24px",
+            borderTop: `1.5px solid ${t.borderColor}`,
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+          }}>
+            {editingObservation ? (
+              <button
+                onClick={saveEdit}
+                style={{
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 9, letterSpacing: "0.1em",
+                  color: t.textColor, opacity: 0.5,
+                  background: "none", border: "none",
+                  cursor: "none",
+                  textTransform: "uppercase",
+                }}
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                onClick={() => { setEditingObservation(true); setEditText(selectedObservation.text) }}
+                style={{
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 9, letterSpacing: "0.1em",
+                  color: t.textColor, opacity: 0.5,
+                  background: "none", border: "none",
+                  cursor: "none",
+                  textTransform: "uppercase",
+                }}
+              >
+                Edit
+              </button>
+            )}
+            <button
+              onClick={() => deleteObservation(selectedObservation)}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#FF2A00")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = t.textColor, e.currentTarget.style.opacity = "0.5")}
+              style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: 9, letterSpacing: "0.1em",
+                color: t.textColor, opacity: 0.5,
+                background: "none", border: "none",
+                cursor: "none",
+                textTransform: "uppercase",
+                transition: "color 0.2s",
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ===== COMPOSE PANEL (right sidebar) ===== */}
+      {showCompose && (
+        <div
+          style={{
+            position: "fixed",
+            top: 40, right: 0, bottom: 40,
+            width: 340,
+            background: mode === "day" ? "#ffffff" : "#0c1020",
+            borderLeft: `1.5px solid ${t.borderColor}`,
+            zIndex: 25,
+            display: "flex", flexDirection: "column",
+            cursor: "none",
+            animation: closingCompose ? "slideOutRight 0.4s ease forwards" : "slideInRight 0.3s ease",
+          }}
+        >
+          {/* Location indicator */}
+          <div style={{
+            padding: "16px 24px",
+            borderBottom: `1.5px solid ${t.borderColor}`,
+          }}>
+            <div style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 9, letterSpacing: "0.1em",
+              color: t.textColor,
+              opacity: dropCoords ? 0.5 : 0.25,
+            }}>
+              {dropCoords
+                ? `${dropCoords[1].toFixed(4)}°N ${Math.abs(dropCoords[0]).toFixed(4)}°W`
+                : "click map to set location"
+              }
+            </div>
+          </div>
+
+          {/* Textarea */}
+          <div style={{ flex: 1, padding: "24px 24px 0", display: "flex", flexDirection: "column" }}>
+            <textarea
+              ref={textareaRef}
+              value={composeText}
+              onChange={(e) => {
+                const val = e.target.value.toLowerCase()
+                if (val.length <= composeMaxChars) setComposeText(val)
+              }}
+              placeholder="what caught your eye?"
+              maxLength={composeMaxChars}
+              style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 32, lineHeight: 1.3,
+                fontWeight: 500,
+                color: t.textColor,
+                background: "none",
+                border: "none",
+                outline: "none",
+                width: "100%",
+                flex: 1,
+                resize: "none",
+                cursor: "none",
+                padding: 0,
+              }}
+            />
+            {/* Character counter */}
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 28,
+              color: t.textColor,
+              opacity: composeMaxChars - composeText.length < 20 ? 0.3 : 0.06,
+              textAlign: "right",
+              padding: "8px 0 16px",
+              transition: "opacity 0.3s",
+              transform: "scaleX(0.75)",
+              transformOrigin: "right",
+            }}>
+              {composeMaxChars - composeText.length}
+            </div>
+          </div>
+
+          {/* Drop button */}
+          <button
+            onClick={submitObservation}
+            disabled={!composeText.trim()}
+            style={{
+              width: "100%",
+              padding: "14px 24px",
+              background: composeText.trim() ? "#000" : "rgba(0,0,0,0.05)",
+              color: composeText.trim() ? "#fff" : "rgba(0,0,0,0.2)",
+              border: "none",
+              borderTop: `1.5px solid ${t.borderColor}`,
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+              transform: "scaleX(0.75)",
+              cursor: "none",
+              transition: "all 0.2s",
+            }}
+          >
+            Drop
+          </button>
+        </div>
+      )}
+
+      {/* ===== BOTTOM BANNER BAR ===== */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between"
+        style={{
+          height: 40,
+          background: mode === "day" ? "#ffffff" : "#0c1020",
+          borderTop: `1.5px solid ${t.borderColor}`,
           fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
           fontSize: 10,
           letterSpacing: "0.15em",
           color: t.textColor,
-          opacity: 1,
           transition: "all 0.6s ease",
         }}
       >
-        <span aria-hidden="true" data-nosnippet style={{ transform: "scaleX(0.75)", transformOrigin: "left", display: "inline-block", pointerEvents: "none", textDecoration: "none !important" as any, WebkitTapHighlightColor: "transparent", userSelect: "none" }}>EDITION 01 — 20&#8203;26</span>
-        <button
-          onClick={() => showManifesto ? closeManifesto() : setShowManifesto(true)}
-          style={{ position: "absolute", left: "50%", top: "50%", transform: "translateX(-50%) translateY(-50%) scaleX(0.75)", letterSpacing: "0.25em", textTransform: "uppercase", display: "inline-block", color: t.textColor, background: "none", border: "none", cursor: "none", borderBottom: `1px solid ${t.borderColor}`, paddingBottom: 2, fontFamily: "inherit", fontSize: "inherit" }}
+        {/* Left: Edition */}
+        <span
+          aria-hidden="true"
+          data-nosnippet
+          style={{
+            transform: "scaleX(0.75)", transformOrigin: "left",
+            display: "inline-block", pointerEvents: "none",
+            paddingLeft: 16,
+            userSelect: "none",
+          }}
         >
-          Manifesto
-        </button>
-        <span aria-hidden="true" data-nosnippet style={{ letterSpacing: "0.25em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "right", display: "inline-block", pointerEvents: "none", textDecoration: "none !important" as any, WebkitTapHighlightColor: "transparent", userSelect: "none" }}>San&nbsp;Fran&#8203;cisco</span>
+          EDITION 01 — 20&#8203;26
+        </span>
+
+        {/* Center: Live coordinates */}
+        <div style={{
+          position: "absolute", left: "50%", top: "50%",
+          transform: "translateX(-50%) translateY(-50%)",
+          fontFamily: "'Space Mono', monospace",
+          fontSize: 9, letterSpacing: "0.1em",
+          color: t.textColor, opacity: 1,
+          whiteSpace: "nowrap",
+        }}>
+          {coords.lat.toFixed(4)}°N {Math.abs(coords.lng).toFixed(4)}°W
+        </div>
+
+        {/* Right: SOTA text + day/night toggle */}
+        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <span
+            aria-hidden="true"
+            data-nosnippet
+            style={{
+              letterSpacing: "0.25em", textTransform: "uppercase",
+              transform: "scaleX(0.75)", transformOrigin: "right",
+              display: "inline-block", pointerEvents: "none",
+              paddingRight: 12,
+              userSelect: "none",
+            }}
+          >
+            State of the Art
+          </span>
+          <button
+            onClick={() => setMode(mode === "day" ? "night" : "day")}
+            style={{
+              width: 40, height: 40,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: "none",
+              border: "none", borderLeft: `1.5px solid ${t.borderColor}`,
+              cursor: "none",
+              fontSize: 16,
+              color: t.textColor,
+              transition: "all 0.6s ease",
+            }}
+          >
+            {mode === "day" ? "☽" : "☀"}
+          </button>
+        </div>
       </div>
     </div>
   )
