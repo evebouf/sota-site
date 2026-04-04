@@ -827,7 +827,7 @@ export default function EtchedMap() {
               setDropCoords(null)
             }
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.7" }}
+          onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85" }}
           onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
           style={{
             width: 40, height: 40,
