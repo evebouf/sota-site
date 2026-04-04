@@ -1258,7 +1258,7 @@ export default function EtchedMap() {
                 fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
                 color: t.textColor, background: "none",
                 border: "none", borderRight: `0.75px solid ${t.textColor}`,
-                cursor: "none", textAlign: "center",
+                cursor: "none", textAlign: "center", opacity: 1,
                 transition: "background 0.15s, color 0.15s",
               }}
             >
@@ -1283,7 +1283,7 @@ export default function EtchedMap() {
                 fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
                 color: t.textColor, background: "none",
                 border: "none", borderLeft: `0.75px solid ${t.textColor}`,
-                cursor: "none", textAlign: "center",
+                cursor: "none", textAlign: "center", opacity: 1,
                 transition: "background 0.15s, color 0.15s",
               }}
             >
