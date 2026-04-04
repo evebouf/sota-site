@@ -829,21 +829,28 @@ export default function EtchedMap() {
               setDropCoords(null)
             }
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85" }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
+          onMouseEnter={(e) => {
+            if (plusIsX) { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }
+            else { e.currentTarget.style.opacity = "0.85" }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1"
+            e.currentTarget.style.background = plusIsX ? "none" : (mode === "day" ? "#000" : "none")
+            e.currentTarget.style.color = ""
+          }}
           style={{
             width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
             background: plusIsX ? "none" : (mode === "day" ? "#000" : "none"),
             border: "none", borderLeft: `1.5px solid ${t.textColor}`,
-            cursor: "none",
+            cursor: "none", color: t.textColor,
             transition: "all 0.2s ease",
           }}
         >
           {plusIsX ? (
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <line x1="1" y1="1" x2="13" y2="13" stroke={t.textColor} strokeWidth="1.5" />
-              <line x1="13" y1="1" x2="1" y2="13" stroke={t.textColor} strokeWidth="1.5" />
+              <line x1="1" y1="1" x2="13" y2="13" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.5" />
             </svg>
           ) : (
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
