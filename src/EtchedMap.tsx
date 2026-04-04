@@ -73,6 +73,11 @@ fontStyle.textContent = `
     color: rgba(0,0,0,0.15);
   }
   @keyframes pulse-ring { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.5; } }
+  @keyframes ripple-out { 0% { width: 8px; height: 8px; opacity: 1; } 100% { width: 36px; height: 36px; opacity: 0; } }
+  @keyframes blink-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+  @keyframes breathe { 0%, 100% { transform: scale(0.8); opacity: 0.3; } 50% { transform: scale(1.1); opacity: 0.7; } }
+  @keyframes dash-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  @keyframes fade-pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.6; } }
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .mapboxgl-ctrl-bottom-left,
   .mapboxgl-ctrl-bottom-right,
@@ -222,13 +227,13 @@ export default function EtchedMap() {
     // Add new preview marker if we have coords
     if (dropCoords) {
       const el = document.createElement("div")
-      el.style.cssText = `width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;`
+      el.style.cssText = `width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;`
       const ring = document.createElement("div")
       ring.style.cssText = `
-        width: 12px; height: 12px; border-radius: 50%;
+        width: 14px; height: 14px; border-radius: 50%;
         border: 1.5px solid #FF2A00;
-        background: rgba(255, 42, 0, 0.15);
-        animation: pulse-ring 1.5s ease infinite;
+        background: none;
+        animation: blink-dot 1.5s ease infinite;
       `
       el.appendChild(ring)
       previewMarkerRef.current = new mapboxgl.Marker({ element: el })
@@ -471,6 +476,7 @@ export default function EtchedMap() {
       loadObservations(m)
 
       setReady(true)
+
     })
 
     return () => { m.remove(); mapRef.current = null }
