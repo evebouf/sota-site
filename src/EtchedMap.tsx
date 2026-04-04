@@ -72,6 +72,7 @@ fontStyle.textContent = `
   textarea::placeholder {
     color: rgba(0,0,0,0.15);
   }
+  @keyframes pulse-ring { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.5; } }
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .mapboxgl-ctrl-bottom-left,
   .mapboxgl-ctrl-bottom-right,
@@ -206,8 +207,35 @@ export default function EtchedMap() {
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const longPressAnim = useRef<number | null>(null)
 
-  // Drop coords
+  // Drop coords + preview marker
   const [dropCoords, setDropCoords] = useState<[number, number] | null>(null)
+  const previewMarkerRef = useRef<mapboxgl.Marker | null>(null)
+
+  useEffect(() => {
+    const m = mapRef.current
+    if (!m) return
+    // Remove old preview marker
+    if (previewMarkerRef.current) {
+      previewMarkerRef.current.remove()
+      previewMarkerRef.current = null
+    }
+    // Add new preview marker if we have coords
+    if (dropCoords) {
+      const el = document.createElement("div")
+      el.style.cssText = `width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;`
+      const ring = document.createElement("div")
+      ring.style.cssText = `
+        width: 12px; height: 12px; border-radius: 50%;
+        border: 1.5px solid #FF2A00;
+        background: rgba(255, 42, 0, 0.15);
+        animation: pulse-ring 1.5s ease infinite;
+      `
+      el.appendChild(ring)
+      previewMarkerRef.current = new mapboxgl.Marker({ element: el })
+        .setLngLat(dropCoords)
+        .addTo(m)
+    }
+  }, [dropCoords])
 
   // Textarea ref
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -217,6 +245,7 @@ export default function EtchedMap() {
 
   const closeCompose = useCallback(() => {
     setShowCompose(false); setClosingCompose(false); setComposeText(""); setDropCoords(null)
+    if (previewMarkerRef.current) { previewMarkerRef.current.remove(); previewMarkerRef.current = null }
   }, [])
 
   const closeAbout = useCallback(() => {
