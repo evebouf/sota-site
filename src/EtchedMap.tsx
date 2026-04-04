@@ -1250,8 +1250,8 @@ export default function EtchedMap() {
                   if (m) m.flyTo({ center: [prev.lng, prev.lat], duration: 800, padding: window.innerWidth < 768 ? { right: 280 } : { right: 360 } })
                 }
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
               style={{
                 flex: 1, padding: "12px 24px",
                 fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
@@ -1259,7 +1259,7 @@ export default function EtchedMap() {
                 color: t.textColor, background: "none",
                 border: "none", borderRight: `0.75px solid ${t.textColor}`,
                 cursor: "none", textAlign: "center",
-                transition: "opacity 0.15s",
+                transition: "background 0.15s, color 0.15s",
               }}
             >
               Prev
@@ -1275,8 +1275,8 @@ export default function EtchedMap() {
                   if (m) m.flyTo({ center: [next.lng, next.lat], duration: 800, padding: window.innerWidth < 768 ? { right: 280 } : { right: 360 } })
                 }
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
               style={{
                 flex: 1, padding: "12px 24px",
                 fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
@@ -1284,75 +1284,13 @@ export default function EtchedMap() {
                 color: t.textColor, background: "none",
                 border: "none", borderLeft: `0.75px solid ${t.textColor}`,
                 cursor: "none", textAlign: "center",
-                transition: "opacity 0.15s",
+                transition: "background 0.15s, color 0.15s",
               }}
             >
               Next
             </button>
           </div>
 
-          {/* Footer: edit/save + delete (admin) */}
-          <div style={{
-            padding: "12px 24px",
-            borderTop: `1.5px solid ${t.textColor}`,
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-          }}>
-            <span style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 8, letterSpacing: "0.15em", textTransform: "uppercase",
-              color: t.textColor, opacity: 0.15,
-            }}>admin</span>
-          </div>
-          <div style={{
-            padding: "0 24px 12px",
-            display: "flex", gap: 16, alignItems: "center",
-          }}>
-            {editingObservation ? (
-              <button
-                onClick={saveEdit}
-                style={{
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: 9, letterSpacing: "0.1em",
-                  color: t.textColor, opacity: 0.5,
-                  background: "none", border: "none",
-                  cursor: "none",
-                  textTransform: "uppercase",
-                }}
-              >
-                Save
-              </button>
-            ) : (
-              <button
-                onClick={() => { setEditingObservation(true); setEditText(selectedObservation.text) }}
-                style={{
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: 9, letterSpacing: "0.1em",
-                  color: t.textColor, opacity: 0.5,
-                  background: "none", border: "none",
-                  cursor: "none",
-                  textTransform: "uppercase",
-                }}
-              >
-                Edit
-              </button>
-            )}
-            <button
-              onClick={() => deleteObservation(selectedObservation)}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#FF2A00")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = t.textColor, e.currentTarget.style.opacity = "0.5")}
-              style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 9, letterSpacing: "0.1em",
-                color: t.textColor, opacity: 0.5,
-                background: "none", border: "none",
-                cursor: "none",
-                textTransform: "uppercase",
-                transition: "color 0.2s",
-              }}
-            >
-              Delete
-            </button>
-          </div>
         </div>
       )}
 
