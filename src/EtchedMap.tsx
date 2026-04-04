@@ -250,7 +250,11 @@ export default function EtchedMap() {
       setClosingCompose(false)
       setEditingObservation(false)
       const m = mapRef.current
-      if (m) m.flyTo({ center: [obs.lng, obs.lat], duration: 800 })
+      if (m) {
+        // Offset center to the left so pin isn't hidden behind the right sidebar
+        const padding = window.innerWidth < 768 ? { right: 280 } : { right: 360 }
+        m.flyTo({ center: [obs.lng, obs.lat], duration: 800, padding })
+      }
     })
     el.appendChild(dot)
     const marker = new mapboxgl.Marker({ element: el })
