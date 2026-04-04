@@ -72,6 +72,7 @@ fontStyle.textContent = `
   textarea::placeholder {
     color: rgba(0,0,0,0.15);
   }
+  .building-debug, .building-debug * { cursor: default !important; }
   .mapboxgl-ctrl-bottom-left,
   .mapboxgl-ctrl-bottom-right,
   .mapboxgl-ctrl-logo,
@@ -133,8 +134,8 @@ const themes = {
     hillShadow: "#c8c0b4",
     hillHighlight: "#ffffff",
     hillAccent: "#b0a898",
-    building: "#1a1a1a",
-    buildingOpacity: 0.35,
+    building: "#bfbfbf",
+    buildingOpacity: 0.4,
     ggb: "#FF2A00",
     canvasFilter: "contrast(1.1) brightness(1.05) saturate(0)",
     dotColor: "#1a1a1a",
@@ -179,9 +180,32 @@ export default function EtchedMap() {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [ready, setReady] = useState(false)
   const [mode, setMode] = useState<MapMode>("day")
-  const [coords, setCoords] = useState({ lat: 37.7749, lng: -122.4194 })
-  const [altitude, setAltitude] = useState({ zoom: 15.5, pitch: 45, bearing: -15 })
+  const [coords, setCoords] = useState({ lat: 37.8008, lng: -122.4058 })
+  const [altitude, setAltitude] = useState({ zoom: 15.8, pitch: 45, bearing: -15 })
   const cursor = useRedCursor()
+  const [showBuildingDebug, setShowBuildingDebug] = useState(false)
+  const [bldg, setBldg] = useState({
+    opacity: 0.4,
+    heightMult: 1.6,
+    vertGrad: true,
+    aoIntensity: 1.0,
+    aoRadius: 20,
+    color: "#bfbfbf",
+  })
+  const updateBuilding = (key: string, value: number | boolean | string) => {
+    const next = { ...bldg, [key]: value }
+    setBldg(next)
+    const m = mapRef.current
+    if (!m || !m.isStyleLoaded()) return
+    try {
+      m.setPaintProperty("buildings-3d", "fill-extrusion-opacity", next.opacity)
+      m.setPaintProperty("buildings-3d", "fill-extrusion-height", ["*", ["get", "height"], next.heightMult])
+      m.setPaintProperty("buildings-3d", "fill-extrusion-color", next.color)
+      m.setPaintProperty("buildings-3d", "fill-extrusion-vertical-gradient", next.vertGrad)
+      m.setPaintProperty("buildings-3d", "fill-extrusion-ambient-occlusion-intensity", next.aoIntensity)
+      m.setPaintProperty("buildings-3d", "fill-extrusion-ambient-occlusion-radius", next.aoRadius)
+    } catch (_) {}
+  }
 
   // Observations state
   const [observations, setObservations] = useState<Observation[]>([])
@@ -283,8 +307,8 @@ export default function EtchedMap() {
     const m = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/light-v11",
-      center: [-122.405609, 37.791686],
-      zoom: 15.5,
+      center: [-122.4058, 37.8008],
+      zoom: 15.8,
       pitch: 45,
       bearing: -15,
       antialias: true,
@@ -386,10 +410,13 @@ export default function EtchedMap() {
         type: "fill-extrusion",
         minzoom: 14,
         paint: {
-          "fill-extrusion-color": "#1a1a1a",
-          "fill-extrusion-height": ["*", ["get", "height"], 1],
+          "fill-extrusion-color": "#bfbfbf",
+          "fill-extrusion-height": ["*", ["get", "height"], 1.6],
           "fill-extrusion-base": ["get", "min_height"],
-          "fill-extrusion-opacity": 0.35,
+          "fill-extrusion-opacity": 0.4,
+          "fill-extrusion-vertical-gradient": true,
+          "fill-extrusion-ambient-occlusion-intensity": 1.0,
+          "fill-extrusion-ambient-occlusion-radius": 20,
         },
       })
 
@@ -698,6 +725,59 @@ export default function EtchedMap() {
             strokeLinecap="round"
           />
         </svg>
+      )}
+
+      {/* Building debug panel */}
+      <button
+        onClick={() => setShowBuildingDebug(!showBuildingDebug)}
+        style={{
+          position: "fixed", top: "50%", left: 0, zIndex: 60,
+          background: "#FF2A00", color: "#fff", border: "none",
+          padding: "10px 14px", fontSize: 11, fontFamily: "'Space Mono', monospace",
+          fontWeight: "bold", cursor: "pointer",
+          writingMode: "vertical-rl", textOrientation: "mixed",
+          letterSpacing: "0.1em",
+        }}
+      >
+        BUILDINGS
+      </button>
+      {showBuildingDebug && (
+        <div style={{
+          position: "fixed", top: "50%", left: 50, zIndex: 60, transform: "translateY(-50%)",
+          background: "#fff", border: "1.5px solid #000", padding: 16, width: 260,
+          fontFamily: "'Space Mono', monospace", fontSize: 10,
+          cursor: "default",
+        }} className="building-debug">
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+            <strong>Building Controls</strong>
+            <button onClick={() => setShowBuildingDebug(false)} style={{ background: "none", border: "none", cursor: "pointer" }}>&times;</button>
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            Opacity: {bldg.opacity.toFixed(2)}
+            <input type="range" min="0" max="1" step="0.05" value={bldg.opacity} onChange={(e) => updateBuilding("opacity", parseFloat(e.target.value))} style={{ width: "100%" }} />
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            Height: {bldg.heightMult.toFixed(1)}x
+            <input type="range" min="0.5" max="5" step="0.1" value={bldg.heightMult} onChange={(e) => updateBuilding("heightMult", parseFloat(e.target.value))} style={{ width: "100%" }} />
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            AO Intensity: {bldg.aoIntensity.toFixed(2)}
+            <input type="range" min="0" max="1" step="0.05" value={bldg.aoIntensity} onChange={(e) => updateBuilding("aoIntensity", parseFloat(e.target.value))} style={{ width: "100%" }} />
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            AO Radius: {bldg.aoRadius}
+            <input type="range" min="0" max="20" step="1" value={bldg.aoRadius} onChange={(e) => updateBuilding("aoRadius", parseFloat(e.target.value))} style={{ width: "100%" }} />
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            <label><input type="checkbox" checked={bldg.vertGrad} onChange={(e) => updateBuilding("vertGrad", e.target.checked)} /> Vertical Gradient</label>
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            Color: <input type="color" value={bldg.color} onChange={(e) => updateBuilding("color", e.target.value)} />
+          </div>
+          <div style={{ fontSize: 8, opacity: 0.4, marginTop: 8 }}>
+            Copy these values when you find settings you like
+          </div>
+        </div>
       )}
 
       {/* Red cursor — desktop only */}
@@ -1293,7 +1373,7 @@ export default function EtchedMap() {
           color: t.textColor, opacity: 1,
           whiteSpace: "nowrap",
         }}>
-          {coords.lat.toFixed(4)}°N {Math.abs(coords.lng).toFixed(4)}°W &nbsp;&nbsp; ALT {Math.round(Math.pow(2, 20 - altitude.zoom) * 0.5)}ft &nbsp; {altitude.pitch.toFixed(0)}° &nbsp; {((altitude.bearing % 360 + 360) % 360).toFixed(0)}°
+          {coords.lat.toFixed(4)}°N {Math.abs(coords.lng).toFixed(4)}°W &nbsp;&nbsp; ALT {Math.round(Math.pow(2, 20 - altitude.zoom) * 0.5)}ft
         </div>
 
         {/* Right: SOTA text + day/night toggle */}
