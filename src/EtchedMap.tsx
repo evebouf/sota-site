@@ -89,12 +89,8 @@ fontStyle.textContent = `
     /* removed */
   }
   .icon-btn:hover {
-    background: #000 !important;
-    color: #fff !important;
-    border-color: #000 !important;
+    opacity: 0.5 !important;
   }
-  .icon-btn:hover svg line { stroke: #fff !important; }
-  .icon-btn:hover .icon-line { background: #fff !important; }
   ::selection {
     background: #FF2A00;
     color: #ffffff;
@@ -795,7 +791,7 @@ export default function EtchedMap() {
               setDropCoords(null)
             }
           }}
-          onMouseEnter={(e) => { if (!plusIsX) e.currentTarget.style.opacity = "0.8" }}
+          onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
           onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
           style={{
             width: 40, height: 40,
@@ -953,8 +949,8 @@ export default function EtchedMap() {
               <button
                 onClick={() => aboutPage === "about" ? setAboutPage("manifesto") : setAboutPage("about")}
                 className="icon-btn"
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
                 style={{
                   fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
                   fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
@@ -976,8 +972,8 @@ export default function EtchedMap() {
                 target="_blank"
                 rel="noopener"
                 className="icon-btn"
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
                 style={{
                   fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
                   fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
@@ -1425,8 +1421,8 @@ export default function EtchedMap() {
           </span>
           <button
             onClick={() => setMode(mode === "day" ? "night" : "day")}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
             style={{
               width: 40, height: 40,
               display: "flex", alignItems: "center", justifyContent: "center",
