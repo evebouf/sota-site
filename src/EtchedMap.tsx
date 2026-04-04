@@ -72,7 +72,7 @@ fontStyle.textContent = `
   textarea::placeholder {
     color: rgba(0,0,0,0.15);
   }
-  .building-debug, .building-debug * { cursor: default !important; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
   .mapboxgl-ctrl-bottom-left,
   .mapboxgl-ctrl-bottom-right,
   .mapboxgl-ctrl-logo,
@@ -183,29 +183,6 @@ export default function EtchedMap() {
   const [coords, setCoords] = useState({ lat: 37.8008, lng: -122.4058 })
   const [altitude, setAltitude] = useState({ zoom: 15.8, pitch: 45, bearing: -15 })
   const cursor = useRedCursor()
-  const [showBuildingDebug, setShowBuildingDebug] = useState(false)
-  const [bldg, setBldg] = useState({
-    opacity: 0.4,
-    heightMult: 1.6,
-    vertGrad: true,
-    aoIntensity: 1.0,
-    aoRadius: 20,
-    color: "#bfbfbf",
-  })
-  const updateBuilding = (key: string, value: number | boolean | string) => {
-    const next = { ...bldg, [key]: value }
-    setBldg(next)
-    const m = mapRef.current
-    if (!m || !m.isStyleLoaded()) return
-    try {
-      m.setPaintProperty("buildings-3d", "fill-extrusion-opacity", next.opacity)
-      m.setPaintProperty("buildings-3d", "fill-extrusion-height", ["*", ["get", "height"], next.heightMult])
-      m.setPaintProperty("buildings-3d", "fill-extrusion-color", next.color)
-      m.setPaintProperty("buildings-3d", "fill-extrusion-vertical-gradient", next.vertGrad)
-      m.setPaintProperty("buildings-3d", "fill-extrusion-ambient-occlusion-intensity", next.aoIntensity)
-      m.setPaintProperty("buildings-3d", "fill-extrusion-ambient-occlusion-radius", next.aoRadius)
-    } catch (_) {}
-  }
 
   // Observations state
   const [observations, setObservations] = useState<Observation[]>([])
@@ -225,6 +202,7 @@ export default function EtchedMap() {
 
   // Manifesto state
   const [showManifesto, setShowManifesto] = useState(false)
+  const [aboutPage, setAboutPage] = useState<"about" | "manifesto">("about")
   const [closingManifesto, setClosingManifesto] = useState(false)
 
   // Long press state
@@ -246,7 +224,7 @@ export default function EtchedMap() {
   }, [])
 
   const closeAbout = useCallback(() => {
-    setShowAbout(false); setClosingAbout(false)
+    setShowAbout(false); setClosingAbout(false); setAboutPage("about")
   }, [])
 
   const closeManifesto = useCallback(() => {
@@ -727,59 +705,6 @@ export default function EtchedMap() {
         </svg>
       )}
 
-      {/* Building debug panel */}
-      <button
-        onClick={() => setShowBuildingDebug(!showBuildingDebug)}
-        style={{
-          position: "fixed", top: "50%", left: 0, zIndex: 60,
-          background: "#FF2A00", color: "#fff", border: "none",
-          padding: "10px 14px", fontSize: 11, fontFamily: "'Space Mono', monospace",
-          fontWeight: "bold", cursor: "pointer",
-          writingMode: "vertical-rl", textOrientation: "mixed",
-          letterSpacing: "0.1em",
-        }}
-      >
-        BUILDINGS
-      </button>
-      {showBuildingDebug && (
-        <div style={{
-          position: "fixed", top: "50%", left: 50, zIndex: 60, transform: "translateY(-50%)",
-          background: "#fff", border: "1.5px solid #000", padding: 16, width: 260,
-          fontFamily: "'Space Mono', monospace", fontSize: 10,
-          cursor: "default",
-        }} className="building-debug">
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-            <strong>Building Controls</strong>
-            <button onClick={() => setShowBuildingDebug(false)} style={{ background: "none", border: "none", cursor: "pointer" }}>&times;</button>
-          </div>
-          <div style={{ marginBottom: 8 }}>
-            Opacity: {bldg.opacity.toFixed(2)}
-            <input type="range" min="0" max="1" step="0.05" value={bldg.opacity} onChange={(e) => updateBuilding("opacity", parseFloat(e.target.value))} style={{ width: "100%" }} />
-          </div>
-          <div style={{ marginBottom: 8 }}>
-            Height: {bldg.heightMult.toFixed(1)}x
-            <input type="range" min="0.5" max="5" step="0.1" value={bldg.heightMult} onChange={(e) => updateBuilding("heightMult", parseFloat(e.target.value))} style={{ width: "100%" }} />
-          </div>
-          <div style={{ marginBottom: 8 }}>
-            AO Intensity: {bldg.aoIntensity.toFixed(2)}
-            <input type="range" min="0" max="1" step="0.05" value={bldg.aoIntensity} onChange={(e) => updateBuilding("aoIntensity", parseFloat(e.target.value))} style={{ width: "100%" }} />
-          </div>
-          <div style={{ marginBottom: 8 }}>
-            AO Radius: {bldg.aoRadius}
-            <input type="range" min="0" max="20" step="1" value={bldg.aoRadius} onChange={(e) => updateBuilding("aoRadius", parseFloat(e.target.value))} style={{ width: "100%" }} />
-          </div>
-          <div style={{ marginBottom: 8 }}>
-            <label><input type="checkbox" checked={bldg.vertGrad} onChange={(e) => updateBuilding("vertGrad", e.target.checked)} /> Vertical Gradient</label>
-          </div>
-          <div style={{ marginBottom: 8 }}>
-            Color: <input type="color" value={bldg.color} onChange={(e) => updateBuilding("color", e.target.value)} />
-          </div>
-          <div style={{ fontSize: 8, opacity: 0.4, marginTop: 8 }}>
-            Copy these values when you find settings you like
-          </div>
-        </div>
-      )}
-
       {/* Red cursor — desktop only */}
       <div
         className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50 hidden md:block"
@@ -905,11 +830,12 @@ export default function EtchedMap() {
             display: "flex", flexDirection: "column",
           }}
         >
-          <div style={{ padding: "40px 28px 28px", flex: 1 }}>
+          <div style={{ padding: "28px 28px 0", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            {aboutPage === "about" ? (<>
             <img
               src="/sota-emblem.png"
               alt="SOTA"
-              style={{ width: 180, marginBottom: 32, display: "block" }}
+              style={{ width: "100%", marginBottom: 20, display: "block" }}
             />
             <div style={{
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
@@ -955,26 +881,116 @@ export default function EtchedMap() {
               Your observer ID: {getObserverId()}
             </div>
 
-            <button
-              className="sota-btn"
-              onClick={() => {
-                closeAbout()
-                setTimeout(() => { setShowManifesto(true); setClosingManifesto(false) }, 450)
-              }}
-              style={{
-                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
-                transform: "scaleX(0.75)", transformOrigin: "left",
-                color: t.textColor,
-                background: "none",
-                border: `1px solid ${t.textColor}`,
-                padding: "10px 20px",
-                cursor: "none",
-                display: "inline-block",
-              }}
-            >
-              Read the Manifesto
-            </button>
+            </>) : (
+              <div style={{ flex: 1, overflowY: "auto", paddingBottom: 20, scrollbarWidth: "none", msOverflowStyle: "none" }} className="hide-scrollbar">
+                <div style={{
+                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                  fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
+                  transform: "scaleX(0.72)", transformOrigin: "left",
+                  color: t.textColor, marginBottom: 8,
+                }}>
+                  What is SOTA ZINE?
+                </div>
+                <div style={{
+                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                  fontSize: 11, letterSpacing: "0.1em",
+                  color: t.textColor, marginBottom: 24,
+                }}>
+                  Sanjana Friedman — Editor and Publisher
+                </div>
+                <div style={{
+                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                  fontSize: 13, lineHeight: 1.7, color: t.textColor,
+                }}>
+                  <p style={{ marginBottom: 16 }}>
+                    <strong style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 11, letterSpacing: "0.05em" }}>STATE OF THE ART</strong>, or <strong>SOTA ZINE</strong> is an indefensible project born out of the convictions of a megalomaniac. These convictions run as follows:
+                  </p>
+                  <div style={{ paddingLeft: 16, marginBottom: 16 }}>
+                    1) No one reads anymore<br />
+                    2) No one values good design<br />
+                    3) No one cares<br />
+                    4) We will die if we don't do the work
+                  </div>
+                  <p style={{ marginBottom: 16 }}>
+                    Actually, <strong>SOTA ZINE</strong> was born out of a directive from a donor (hereafter referred to collectively as "THE DONORS") to "make a cool techno-optimist zine." Techno-optimism is, as far as we can tell, a recent coinage; it emerged near-simultaneously with the affirmation that "we are the media now." It is also a nonsense phrase. Techno-optimism? We are optimistic about technology? Technology doesn't accept predicates like "optimism" — technology is just the inevitable consequence of human organization and ingenuity. Technology exists. What does it mean for our lives?
+                  </p>
+                  <p style={{ marginBottom: 16 }}>
+                    Ok, we are being obtuse. What the "techno-optimists" really mean to say is that they are sick of the mediocre schoolmarm critic class that regards every attempt to MAKE IT NEW as an attack. Right. This is our common enemy: the hand-wringers, the self-satisfied, and above all the mediocrities.
+                  </p>
+                  <p style={{ marginBottom: 16 }}>
+                    <strong>SOTA ZINE</strong> believes in velocity and heat; <strong>SOTA ZINE</strong> believes in singular genius; <strong>SOTA ZINE</strong> believes that some things are better than others; <strong>SOTA ZINE</strong> believes in doing the work; <strong>SOTA ZINE</strong> believes in making new things; <strong>SOTA ZINE</strong> believes in tomorrow.
+                  </p>
+                  <div style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "left", color: t.textColor, marginBottom: 8, marginTop: 24 }}>Red Meat</div>
+                  <p style={{ marginBottom: 16 }}>
+                    We should do things that look GOOD. Even an inside joke which operates on multiple levels (some of which will be inscrutable to all but us) should be legible to the drooling median social media user as, simply, "cool." This doesn't mean we dumb things down; it just means that everything should also work at some obvious level.
+                  </p>
+                  <div style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "left", color: t.textColor, marginBottom: 8, marginTop: 24 }}>All Killer No Filler</div>
+                  <p style={{ marginBottom: 16 }}>
+                    We should strive to make everything we touch excellent — according to our very high standards. The goal should always be excellence in prose, visuals, ideas, execution. We obsess over details. We do not accept anything — a phrase, a design choice, a title — that doesn't make sense. In this we will never be satisfied, of course. That is our curse.
+                  </p>
+                  <div style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "left", color: t.textColor, marginBottom: 8, marginTop: 24 }}>Faber Ludens</div>
+                  <p style={{ marginBottom: 16 }}>
+                    Maker at play. We are doing our life's work; how could we not have fun. Harry Mathews gives us this: "Literature and game playing, literature as game playing… The words evoke a weedy figure: the playful writer… sauntering down sunny boulevards... Faber ludens — a little ludicrous, too."
+                  </p>
+                  <div style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "left", color: t.textColor, marginBottom: 8, marginTop: 24 }}>Sharp Lines, No Approximation</div>
+                  <p style={{ marginBottom: 16 }}>
+                    I keep coming back to this line from Bernhard's hallucination of Glenn Gould: "He loved things with sharp contours, detested approximation. One of his favorite words was self-discipline… He was the most ruthless person toward himself. He never allowed himself to be imprecise."
+                  </p>
+                  <p style={{ marginBottom: 16 }}>
+                    <strong>SOTA ZINE</strong> is not like the other girls; everything we do should be something that only we could do. We are in the business of remembering that we exist as human beings — as unique embodied subjectivities that exist in "the brief crack of light between two eternities of darkness." ➽
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: "flex", flexDirection: "column", marginTop: "auto", marginLeft: -28, marginRight: -28 }}>
+              <button
+                onClick={() => aboutPage === "about" ? setAboutPage("manifesto") : setAboutPage("about")}
+                className="icon-btn"
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
+                style={{
+                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                  fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+                  color: t.textColor,
+                  background: "none",
+                  border: "none",
+                  borderTop: `1.5px solid ${t.textColor}`,
+                  padding: "14px 28px",
+                  cursor: "none",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.15s, color 0.15s",
+                }}
+              >
+                {aboutPage === "about" ? "Read the Manifesto" : "Back to About"}
+              </button>
+              <a
+                href="https://x.com/sotazine"
+                target="_blank"
+                rel="noopener"
+                className="icon-btn"
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
+                style={{
+                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                  fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+                  color: t.textColor,
+                  background: "none",
+                  border: "none",
+                  borderTop: `1.5px solid ${t.textColor}`,
+                  padding: "14px 28px",
+                  cursor: "none",
+                  width: "100%",
+                  textAlign: "left",
+                  textDecoration: "none",
+                  display: "block",
+                  transition: "background 0.15s, color 0.15s",
+                }}
+              >
+                @sotazine
+              </a>
+            </div>
           </div>
         </div>
       )}
