@@ -1237,6 +1237,60 @@ export default function EtchedMap() {
             )}
           </div>
 
+          {/* Prev / Next navigation */}
+          <div style={{ display: "flex", borderTop: `1.5px solid ${t.textColor}` }}>
+            <button
+              onClick={() => {
+                const idx = observations.findIndex(o => o.id === selectedObservation.id)
+                const prev = observations[idx - 1] || observations[observations.length - 1]
+                if (prev) {
+                  setSelectedObservation(prev)
+                  setEditingObservation(false)
+                  const m = mapRef.current
+                  if (m) m.flyTo({ center: [prev.lng, prev.lat], duration: 800, padding: window.innerWidth < 768 ? { right: 280 } : { right: 360 } })
+                }
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
+              style={{
+                flex: 1, padding: "12px 24px",
+                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
+                color: t.textColor, background: "none",
+                border: "none", borderRight: `0.75px solid ${t.textColor}`,
+                cursor: "none", textAlign: "center",
+                transition: "opacity 0.15s",
+              }}
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => {
+                const idx = observations.findIndex(o => o.id === selectedObservation.id)
+                const next = observations[idx + 1] || observations[0]
+                if (next) {
+                  setSelectedObservation(next)
+                  setEditingObservation(false)
+                  const m = mapRef.current
+                  if (m) m.flyTo({ center: [next.lng, next.lat], duration: 800, padding: window.innerWidth < 768 ? { right: 280 } : { right: 360 } })
+                }
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
+              style={{
+                flex: 1, padding: "12px 24px",
+                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
+                color: t.textColor, background: "none",
+                border: "none", borderLeft: `0.75px solid ${t.textColor}`,
+                cursor: "none", textAlign: "center",
+                transition: "opacity 0.15s",
+              }}
+            >
+              Next
+            </button>
+          </div>
+
           {/* Footer: edit/save + delete (admin) */}
           <div style={{
             padding: "12px 24px",
