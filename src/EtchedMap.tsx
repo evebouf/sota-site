@@ -769,6 +769,7 @@ export default function EtchedMap() {
   // Navigate observations
   const goToObservation = useCallback((direction: "prev" | "next") => {
     if (observations.length === 0) return
+    if (showCompose) closeCompose()
     const padding = window.innerWidth < 768 ? { right: 280 } : { right: 360 }
     if (!selectedObservation) {
       const obs = direction === "next" ? observations[0] : observations[observations.length - 1]
@@ -786,13 +787,11 @@ export default function EtchedMap() {
       setEditingObservation(false)
       if (mapRef.current) mapRef.current.flyTo({ center: [target.lng, target.lat], duration: 800, padding })
     }
-  }, [observations, selectedObservation])
+  }, [observations, selectedObservation, showCompose, closeCompose])
 
   // Hamburger/X state
   const hamburgerIsX = showAbout && !closingAbout
 
-  // Plus button state: becomes X when compose or observation is open
-  const plusIsX = showCompose || selectedObservation !== null
 
   return (
     <div
@@ -929,12 +928,9 @@ export default function EtchedMap() {
         <button
           className="icon-btn"
           onClick={() => {
-            if (selectedObservation) {
-              setSelectedObservation(null)
-              setEditingObservation(false)
-            } else if (showCompose && !closingCompose) {
+            if (showCompose && !closingCompose) {
               closeCompose()
-            } else if (!showCompose) {
+            } else {
               setSelectedObservation(null)
               setEditingObservation(false)
               setShowCompose(true)
@@ -944,24 +940,24 @@ export default function EtchedMap() {
             }
           }}
           onMouseEnter={(e) => {
-            if (plusIsX) { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }
+            if (showCompose) { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }
             else { e.currentTarget.style.opacity = "0.85" }
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.opacity = "1"
-            e.currentTarget.style.background = plusIsX ? "none" : (mode === "day" ? "#000" : "none")
+            e.currentTarget.style.background = showCompose ? "none" : (mode === "day" ? "#000" : "none")
             e.currentTarget.style.color = ""
           }}
           style={{
             width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
-            background: plusIsX ? "none" : (mode === "day" ? "#000" : "none"),
+            background: showCompose ? "none" : (mode === "day" ? "#000" : "none"),
             border: "none", borderLeft: `1.5px solid ${t.textColor}`,
             cursor: "none", color: t.textColor,
             transition: "all 0.2s ease",
           }}
         >
-          {plusIsX ? (
+          {showCompose ? (
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <line x1="1" y1="1" x2="13" y2="13" stroke="currentColor" strokeWidth="1.5" />
               <line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.5" />
@@ -987,7 +983,7 @@ export default function EtchedMap() {
             zIndex: 25,
             overflowY: "auto",
             cursor: "none",
-            animation: closingAbout ? "slideOutLeft 0.4s ease forwards" : "slideInLeft 0.3s ease",
+            animation: "none",
             display: "flex", flexDirection: "column",
           }}
         >
@@ -1168,7 +1164,7 @@ export default function EtchedMap() {
             zIndex: 25,
             overflowY: "auto",
             cursor: "none",
-            animation: closingManifesto ? "slideOutLeft 0.4s ease forwards" : "slideInLeft 0.3s ease",
+            animation: "none",
           }}
         >
           {/* Close button */}
@@ -1303,7 +1299,7 @@ export default function EtchedMap() {
             zIndex: 25,
             display: "flex", flexDirection: "column",
             cursor: "none",
-            animation: "slideInRight 0.3s ease",
+            animation: "none",
           }}
         >
           <div style={{ padding: "28px 24px", flex: 1, overflowY: "auto" }}>
@@ -1376,7 +1372,7 @@ export default function EtchedMap() {
             zIndex: 25,
             display: "flex", flexDirection: "column",
             cursor: "none",
-            animation: closingCompose ? "slideOutRight 0.4s ease forwards" : composeHasBeenClosed.current ? "slideInRight 0.3s ease" : "none",
+            animation: "none",
           }}
         >
           {/* Location indicator */}
