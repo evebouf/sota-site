@@ -21,6 +21,9 @@ const articles = [
 function PageTwo() {
   useEffect(() => { document.title = "D2 — Editorial" }, [])
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 })
+  const [mouseAngle, setMouseAngle] = useState(0)
+  const prevMousePos = useRef({ x: -100, y: -100 })
+  const mouseAngleRef = useRef(0)
   const [hoveredArticle, setHoveredArticle] = useState<number | null>(null)
   const [mode, setMode] = useState<"content" | "map">("content")
   const [peelHovered, setPeelHovered] = useState(false)
@@ -32,7 +35,19 @@ function PageTwo() {
   const closePeelSize = closePeelHovered ? 200 : 140
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY })
+    const handleMouseMove = (e: MouseEvent) => {
+      const dx = e.clientX - prevMousePos.current.x
+      const dy = e.clientY - prevMousePos.current.y
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+        const target = Math.atan2(dy, dx) * (180 / Math.PI)
+        let diff = target - mouseAngleRef.current
+        diff = ((diff + 180) % 360 + 360) % 360 - 180
+        mouseAngleRef.current += diff
+        setMouseAngle(mouseAngleRef.current)
+        prevMousePos.current = { x: e.clientX, y: e.clientY }
+      }
+      setMousePos({ x: e.clientX, y: e.clientY })
+    }
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [])
@@ -294,8 +309,9 @@ function PageTwo() {
       )}
 
       {/* Cursor */}
-      <div className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50 mix-blend-normal"
-        style={{ transform: `translate(${mousePos.x - 9}px, ${mousePos.y - 9}px)` }} />
+      <div className="fixed top-0 left-0 pointer-events-none z-50 hidden md:block"
+        style={{ transform: `translate(${mousePos.x}px, ${mousePos.y - 12}px) rotate(${mouseAngle}deg)`, color: "#FF2A00", fontSize: "24px", lineHeight: 1 }}
+      >➽</div>
     </div>
   )
 }

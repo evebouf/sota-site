@@ -111,11 +111,22 @@ export default function Direction3() {
   const [activeArticle, setActiveArticle] = useState<string | null>(null)
   const cursorRef = useRef<HTMLDivElement>(null)
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const prevMousePos = useRef({ x: -100, y: -100 })
+  const cursorAngleRef = useRef(0)
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${e.clientX - 9}px, ${e.clientY - 9}px)`
+        const dx = e.clientX - prevMousePos.current.x
+        const dy = e.clientY - prevMousePos.current.y
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+          const target = Math.atan2(dy, dx) * (180 / Math.PI)
+          let diff = target - cursorAngleRef.current
+          diff = ((diff + 180) % 360 + 360) % 360 - 180
+          cursorAngleRef.current += diff
+          prevMousePos.current = { x: e.clientX, y: e.clientY }
+        }
+        cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY - 12}px) rotate(${cursorAngleRef.current}deg)`
       }
     }
     window.addEventListener("mousemove", onMove)
@@ -337,9 +348,9 @@ export default function Direction3() {
       {/* Red dot cursor */}
       <div
         ref={cursorRef}
-        className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
-        style={{ transform: "translate(-100px, -100px)" }}
-      />
+        className="fixed top-0 left-0 pointer-events-none z-50 hidden md:block"
+        style={{ transform: "translate(-100px, -100px)", color: "#FF2A00", fontSize: "24px", lineHeight: 1 }}
+      >➽</div>
     </div>
   )
 }

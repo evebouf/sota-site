@@ -116,12 +116,27 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })
+  const [angle, setAngle] = useState(0)
+  const prevPos = useRef({ x: -100, y: -100 })
+  const angleRef = useRef(0)
   useEffect(() => {
-    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY })
+    const onMove = (e: MouseEvent) => {
+      const dx = e.clientX - prevPos.current.x
+      const dy = e.clientY - prevPos.current.y
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+        const target = Math.atan2(dy, dx) * (180 / Math.PI)
+        let diff = target - angleRef.current
+        diff = ((diff + 180) % 360 + 360) % 360 - 180
+        angleRef.current += diff
+        setAngle(angleRef.current)
+        prevPos.current = { x: e.clientX, y: e.clientY }
+      }
+      setPos({ x: e.clientX, y: e.clientY })
+    }
     window.addEventListener("mousemove", onMove)
     return () => window.removeEventListener("mousemove", onMove)
   }, [])
-  return pos
+  return { ...pos, angle }
 }
 
 type MapMode = "day" | "night"
@@ -177,6 +192,25 @@ const themes = {
   },
 }
 
+function renderTextWithMentions(text: string, textColor: string) {
+  const parts: { text: string; isMention: boolean }[] = []
+  const mentionRegex = /@\[([^\]]+)\]/g
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+  while ((match = mentionRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) parts.push({ text: text.slice(lastIndex, match.index), isMention: false })
+    parts.push({ text: `@${match[1]}`, isMention: true })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < text.length) parts.push({ text: text.slice(lastIndex), isMention: false })
+  if (parts.every(p => !p.isMention)) return text
+  return parts.map((p, i) =>
+    p.isMention ? (
+      <span key={i} style={{ color: "#FF2A00", borderBottom: "1.5px solid #FF2A00", paddingBottom: 1 }}>{p.text}</span>
+    ) : <span key={i} style={{ color: textColor }}>{p.text}</span>
+  )
+}
+
 export default function EtchedMap() {
   useEffect(() => { document.title = "Acts of Attention — State of the Art" }, [])
   const mapContainer = useRef<HTMLDivElement>(null)
@@ -193,11 +227,57 @@ export default function EtchedMap() {
   const [editingObservation, setEditingObservation] = useState(false)
   const [editText, setEditText] = useState("")
 
-  // Compose state
-  const [showCompose, setShowCompose] = useState(false)
+  // Compose state — open by default
+  const [showCompose, setShowCompose] = useState(true)
   const [closingCompose, setClosingCompose] = useState(false)
+  const composeHasBeenClosed = useRef(false)
   const [composeText, setComposeText] = useState("")
   const composeMaxChars = 200
+
+  // @ mention autocomplete state
+  type MentionResult = { name: string; address: string; mapbox_id: string }
+  const [mentionQuery, setMentionQuery] = useState("")
+  const [mentionResults, setMentionResults] = useState<MentionResult[]>([])
+  const [mentionActive, setMentionActive] = useState(false)
+  const [mentionStartIdx, setMentionStartIdx] = useState(-1)
+  const [mentionSelectedIdx, setMentionSelectedIdx] = useState(0)
+  const [confirmedMentions, setConfirmedMentions] = useState<string[]>([])
+  const mentionDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const mentionSessionToken = useRef(crypto.randomUUID())
+
+  // Fetch place suggestions from Mapbox Searchbox API
+  const fetchMentions = useCallback((query: string) => {
+    if (mentionDebounce.current) clearTimeout(mentionDebounce.current)
+    if (query.length < 2) { setMentionResults([]); return }
+    mentionDebounce.current = setTimeout(async () => {
+      const url = `https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(query)}&access_token=${mapboxgl.accessToken}&proximity=-122.4194,37.7749&bbox=-122.52,37.70,-122.35,37.85&limit=5&session_token=${mentionSessionToken.current}`
+      try {
+        const res = await fetch(url)
+        const data = await res.json()
+        if (data.suggestions) {
+          setMentionResults(data.suggestions.map((s: any) => ({ name: s.name, address: s.full_address || "", mapbox_id: s.mapbox_id })))
+          setMentionSelectedIdx(0)
+        }
+      } catch { setMentionResults([]) }
+    }, 200)
+  }, [])
+
+  // Retrieve place coordinates and fly map to it
+  const retrieveAndLocate = useCallback(async (mapboxId: string) => {
+    try {
+      const url = `https://api.mapbox.com/search/searchbox/v1/retrieve/${mapboxId}?access_token=${mapboxgl.accessToken}&session_token=${mentionSessionToken.current}`
+      const res = await fetch(url)
+      const data = await res.json()
+      const coords = data.features?.[0]?.geometry?.coordinates
+      if (coords) {
+        setDropCoords([coords[0], coords[1]])
+        const m = mapRef.current
+        if (m) {
+          m.flyTo({ center: [coords[0], coords[1]], zoom: 16, duration: 1200, padding: { right: 360 } })
+        }
+      }
+    } catch { /* silently fail — user can still click map */ }
+  }, [])
 
   // Confirmation state
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -254,6 +334,8 @@ export default function EtchedMap() {
 
   const closeCompose = useCallback(() => {
     setShowCompose(false); setClosingCompose(false); setComposeText(""); setDropCoords(null)
+    setMentionActive(false); setMentionResults([]); setConfirmedMentions([]); mentionSessionToken.current = crypto.randomUUID()
+    composeHasBeenClosed.current = true
     if (previewMarkerRef.current) { previewMarkerRef.current.remove(); previewMarkerRef.current = null }
   }, [])
 
@@ -650,10 +732,15 @@ export default function EtchedMap() {
       const marker = addObservationMarker(obs, m)
       observationMarkersRef.current.push(marker)
     }
-    closeCompose()
+    m.flyTo({ center: [finalCoords[0], finalCoords[1]], zoom: 16, duration: 1200, padding: { right: 360 } })
+    setComposeText(""); setDropCoords(null); setConfirmedMentions([])
+    if (previewMarkerRef.current) { previewMarkerRef.current.remove(); previewMarkerRef.current = null }
     setShowConfirmation(true)
-    setTimeout(() => setShowConfirmation(false), 2000)
-  }, [composeText, dropCoords, addObservationMarker, closeCompose])
+    setTimeout(() => {
+      setShowConfirmation(false)
+      if (textareaRef.current) textareaRef.current.focus()
+    }, 1500)
+  }, [composeText, dropCoords, addObservationMarker])
 
   // Delete observation
   const deleteObservation = useCallback(async (obs: Observation) => {
@@ -750,9 +837,9 @@ export default function EtchedMap() {
 
       {/* Red cursor — desktop only */}
       <div
-        className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50 hidden md:block"
-        style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
-      />
+        className="fixed top-0 left-0 pointer-events-none z-50 hidden md:block"
+        style={{ transform: `translate(${cursor.x}px, ${cursor.y - 12}px) rotate(${cursor.angle}deg)`, color: "#FF2A00", fontSize: "24px", lineHeight: 1 }}
+        >➽</div>
 
       {/* ===== TOP BANNER BAR ===== */}
       <div
@@ -1247,7 +1334,7 @@ export default function EtchedMap() {
                 fontWeight: 500,
                 color: t.textColor,
               }}>
-                {selectedObservation.text.toLowerCase()}
+                {renderTextWithMentions(selectedObservation.text.toLowerCase(), t.textColor)}
               </div>
             )}
           </div>
@@ -1321,13 +1408,14 @@ export default function EtchedMap() {
             zIndex: 25,
             display: "flex", flexDirection: "column",
             cursor: "none",
-            animation: closingCompose ? "slideOutRight 0.4s ease forwards" : "slideInRight 0.3s ease",
+            animation: closingCompose ? "slideOutRight 0.4s ease forwards" : composeHasBeenClosed.current ? "slideInRight 0.3s ease" : "none",
           }}
         >
           {/* Location indicator */}
           <div style={{
             padding: "16px 24px",
             borderBottom: `1.5px solid ${t.textColor}`,
+            display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
             <div style={{
               fontFamily: "'Space Mono', monospace",
@@ -1337,27 +1425,142 @@ export default function EtchedMap() {
             }}>
               {dropCoords
                 ? `${dropCoords[1].toFixed(4)}°N ${Math.abs(dropCoords[0]).toFixed(4)}°W`
-                : "click map to set location"
+                : "click map or type @place"
               }
             </div>
+            {!dropCoords && (
+              <div style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: 9, letterSpacing: "0.05em",
+                color: "#FF2A00",
+                opacity: 0.6,
+              }}>
+                @
+              </div>
+            )}
           </div>
 
-          {/* Textarea */}
-          <div style={{ flex: 1, padding: "24px 24px 0", display: "flex", flexDirection: "column" }}>
+          {/* Textarea with mention highlight overlay */}
+          <div style={{ flex: 1, padding: "24px 24px 0", display: "flex", flexDirection: "column", position: "relative" }}>
+            {/* Mirror overlay — renders confirmed @mentions in accent color */}
+            {composeText && (
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 24, left: 24, right: 24,
+                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                  fontSize: 32, lineHeight: 1.3,
+                  fontWeight: 500,
+                  color: "transparent",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  pointerEvents: "none",
+                  zIndex: 0,
+                }}
+              >
+                {(() => {
+                  if (confirmedMentions.length === 0) return null
+                  const parts: { text: string; isMention: boolean }[] = []
+                  let remaining = composeText
+                  while (remaining.length > 0) {
+                    let earliest = -1, earliestMention = ""
+                    for (const m of confirmedMentions) {
+                      const idx = remaining.indexOf(m)
+                      if (idx !== -1 && (earliest === -1 || idx < earliest)) {
+                        earliest = idx; earliestMention = m
+                      }
+                    }
+                    if (earliest === -1) { parts.push({ text: remaining, isMention: false }); break }
+                    if (earliest > 0) parts.push({ text: remaining.slice(0, earliest), isMention: false })
+                    parts.push({ text: earliestMention, isMention: true })
+                    remaining = remaining.slice(earliest + earliestMention.length)
+                  }
+                  return parts.map((p, i) =>
+                    p.isMention ? (
+                      <span key={i} style={{
+                        color: "#FF2A00",
+                        borderBottom: "1.5px solid #FF2A00",
+                        paddingBottom: 1,
+                      }}>{p.text}</span>
+                    ) : <span key={i} style={{ color: t.textColor }}>{p.text}</span>
+                  )
+                })()}
+              </div>
+            )}
             <textarea
               ref={textareaRef}
               value={composeText}
               onChange={(e) => {
                 const val = e.target.value.toLowerCase()
-                if (val.length <= composeMaxChars) setComposeText(val)
+                if (val.length > composeMaxChars) return
+                setComposeText(val)
+
+                const cursor = e.target.selectionStart
+                const before = val.slice(0, cursor)
+                // Find last @ that isn't part of an existing @[...] mention
+                let atIdx = -1
+                for (let i = before.length - 1; i >= 0; i--) {
+                  if (before[i] === "@" && before[i + 1] !== "[") {
+                    if (i === 0 || before[i - 1] === " " || before[i - 1] === "\n") { atIdx = i; break }
+                  }
+                }
+                if (atIdx !== -1) {
+                  const query = before.slice(atIdx + 1)
+                  if (!query.includes(" ") || query.length <= 30) {
+                    setMentionActive(true)
+                    setMentionStartIdx(atIdx)
+                    setMentionQuery(query)
+                    fetchMentions(query)
+                    return
+                  }
+                }
+                setMentionActive(false)
+                setMentionResults([])
               }}
-              placeholder="what caught your eye?"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && (!mentionActive || mentionResults.length === 0)) {
+                  e.preventDefault()
+                  submitObservation()
+                  return
+                }
+                if (!mentionActive || mentionResults.length === 0) return
+                if (e.key === "ArrowDown") {
+                  e.preventDefault()
+                  setMentionSelectedIdx(i => Math.min(i + 1, mentionResults.length - 1))
+                } else if (e.key === "ArrowUp") {
+                  e.preventDefault()
+                  setMentionSelectedIdx(i => Math.max(i - 1, 0))
+                } else if (e.key === "Enter") {
+                  e.preventDefault()
+                  const place = mentionResults[mentionSelectedIdx]
+                  if (place) {
+                    const mentionText = `@[${place.name.toLowerCase()}]`
+                    const before = composeText.slice(0, mentionStartIdx)
+                    const after = composeText.slice(mentionStartIdx + 1 + mentionQuery.length)
+                    const inserted = `${mentionText}${after.startsWith(" ") ? "" : " "}`
+                    const newText = before + inserted + after
+                    if (newText.length <= composeMaxChars) {
+                      setComposeText(newText)
+                      setConfirmedMentions(prev => prev.includes(mentionText) ? prev : [...prev, mentionText])
+                    }
+                    retrieveAndLocate(place.mapbox_id)
+                    setMentionActive(false)
+                    setMentionResults([])
+                  }
+                } else if (e.key === "Escape") {
+                  setMentionActive(false)
+                  setMentionResults([])
+                }
+              }}
+              placeholder="what caught your eye today?"
               maxLength={composeMaxChars}
               style={{
                 fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
                 fontSize: 32, lineHeight: 1.3,
                 fontWeight: 500,
-                color: t.textColor,
+                color: confirmedMentions.length > 0 ? "transparent" : t.textColor,
+                caretColor: t.textColor,
                 background: "none",
                 border: "none",
                 outline: "none",
@@ -1366,8 +1569,86 @@ export default function EtchedMap() {
                 resize: "none",
                 cursor: "none",
                 padding: 0,
+                position: "relative",
+                zIndex: 1,
               }}
             />
+
+            {/* @ mention dropdown */}
+            {mentionActive && mentionResults.length > 0 && (
+              <div style={{
+                position: "absolute",
+                left: 0, right: 0, top: 120,
+                background: mode === "day" ? "#ffffff" : "#0c1020",
+                border: `1.5px solid ${t.textColor}`,
+                zIndex: 30,
+                maxHeight: 220,
+                overflowY: "auto",
+              }}>
+                {mentionResults.map((r, i) => (
+                  <button
+                    key={i}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      const mentionText = `@[${r.name.toLowerCase()}]`
+                      const before = composeText.slice(0, mentionStartIdx)
+                      const after = composeText.slice(mentionStartIdx + 1 + mentionQuery.length)
+                      const inserted = `${mentionText}${after.startsWith(" ") ? "" : " "}`
+                      const newText = before + inserted + after
+                      if (newText.length <= composeMaxChars) {
+                        setComposeText(newText)
+                        setConfirmedMentions(prev => prev.includes(mentionText) ? prev : [...prev, mentionText])
+                      }
+                      retrieveAndLocate(r.mapbox_id)
+                      setMentionActive(false)
+                      setMentionResults([])
+                    }}
+                    onMouseEnter={() => setMentionSelectedIdx(i)}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "10px 16px",
+                      background: i === mentionSelectedIdx ? (mode === "day" ? "#f5f5f5" : "#1a2448") : "none",
+                      border: "none",
+                      borderBottom: i < mentionResults.length - 1 ? `1px solid ${t.borderColor}` : "none",
+                      cursor: "none",
+                      transition: "background 0.1s",
+                    }}
+                  >
+                    <div style={{
+                      fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                      fontSize: 13, fontWeight: 500,
+                      color: t.textColor,
+                    }}>
+                      {r.name}
+                    </div>
+                    {r.address && <div style={{
+                      fontFamily: "'Space Mono', monospace",
+                      fontSize: 9, letterSpacing: "0.05em",
+                      color: t.textColor,
+                      opacity: 0.4,
+                      marginTop: 2,
+                    }}>
+                      {r.address}
+                    </div>}
+                  </button>
+                ))}
+                <div style={{
+                  padding: "6px 16px",
+                  borderTop: `1px solid ${t.borderColor}`,
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 9, letterSpacing: "0.05em",
+                  color: t.textColor,
+                  opacity: 0.3,
+                  display: "flex", justifyContent: "space-between",
+                }}>
+                  <span>&#x2191;&#x2193; navigate</span>
+                  <span>&#x23CE; select</span>
+                </div>
+              </div>
+            )}
+
             {/* Character counter */}
             <div style={{
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
@@ -1402,6 +1683,7 @@ export default function EtchedMap() {
             }}
           >
             Drop
+            {composeText.trim() && <span style={{ opacity: 0.4, fontSize: 8, letterSpacing: "0.15em", marginLeft: 8 }}>&#x23CE; Enter</span>}
           </button>
         </div>
       )}

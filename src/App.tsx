@@ -1,4 +1,4 @@
-import { useState, useEffect, type MouseEvent } from "react"
+import { useState, useEffect, useRef, type MouseEvent } from "react"
 
 interface Word {
   text: string
@@ -97,10 +97,23 @@ function App() {
   const [activeArticle, setActiveArticle] = useState<string | null>(null)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 })
+  const [mouseAngle, setMouseAngle] = useState(0)
+  const prevMousePos = useRef({ x: -100, y: -100 })
+  const mouseAngleRef = useRef(0)
   const [dark, setDark] = useState(false)
 
   useEffect(() => {
     const handleMouseMove = (e: globalThis.MouseEvent) => {
+      const dx = e.clientX - prevMousePos.current.x
+      const dy = e.clientY - prevMousePos.current.y
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+        const target = Math.atan2(dy, dx) * (180 / Math.PI)
+        let diff = target - mouseAngleRef.current
+        diff = ((diff + 180) % 360 + 360) % 360 - 180
+        mouseAngleRef.current += diff
+        setMouseAngle(mouseAngleRef.current)
+        prevMousePos.current = { x: e.clientX, y: e.clientY }
+      }
       setMousePos({ x: e.clientX, y: e.clientY })
     }
     window.addEventListener("mousemove", handleMouseMove)
@@ -322,11 +335,9 @@ function App() {
 
       {/* Custom cursor */}
       <div
-        className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50 mix-blend-normal"
-        style={{
-          transform: `translate(${mousePos.x - 9}px, ${mousePos.y - 9}px)`,
-        }}
-      />
+        className="fixed top-0 left-0 pointer-events-none z-50 hidden md:block"
+        style={{ transform: `translate(${mousePos.x}px, ${mousePos.y - 12}px) rotate(${mouseAngle}deg)`, color: "#FF2A00", fontSize: "24px", lineHeight: 1 }}
+        >➽</div>
     </div>
   )
 }

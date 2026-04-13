@@ -5,12 +5,27 @@ import { useState, useEffect } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })
+  const [angle, setAngle] = useState(0)
+  const prevPos = useRef({ x: -100, y: -100 })
+  const angleRef = useRef(0)
   useEffect(() => {
-    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY })
+    const onMove = (e: MouseEvent) => {
+      const dx = e.clientX - prevPos.current.x
+      const dy = e.clientY - prevPos.current.y
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+        const target = Math.atan2(dy, dx) * (180 / Math.PI)
+        let diff = target - angleRef.current
+        diff = ((diff + 180) % 360 + 360) % 360 - 180
+        angleRef.current += diff
+        setAngle(angleRef.current)
+        prevPos.current = { x: e.clientX, y: e.clientY }
+      }
+      setPos({ x: e.clientX, y: e.clientY })
+    }
     window.addEventListener("mousemove", onMove)
     return () => window.removeEventListener("mousemove", onMove)
   }, [])
-  return pos
+  return { ...pos, angle }
 }
 
 export default function Direction5() {
@@ -19,9 +34,9 @@ export default function Direction5() {
   return (
     <div className="w-screen h-screen overflow-hidden relative flex">
       <div
-        className="fixed top-0 left-0 w-[18px] h-[18px] rounded-full bg-[#FF2A00] pointer-events-none z-50"
-        style={{ transform: `translate(${cursor.x - 9}px, ${cursor.y - 9}px)` }}
-      />
+        className="fixed top-0 left-0 pointer-events-none z-50 hidden md:block"
+        style={{ transform: `translate(${cursor.x}px, ${cursor.y - 12}px) rotate(${cursor.angle}deg)`, color: "#FF2A00", fontSize: "24px", lineHeight: 1 }}
+        >➽</div>
 
       {/* Left page — full bleed abstract texture */}
       <div className="w-1/2 h-full relative overflow-hidden bg-[#e8e4dc]">
