@@ -230,7 +230,7 @@ export default function EtchedMap() {
   // Compose state — open by default
   const [showCompose, setShowCompose] = useState(true)
   const [closingCompose, setClosingCompose] = useState(false)
-  const composeHasBeenClosed = useRef(false)
+
   const [composeText, setComposeText] = useState("")
   const composeMaxChars = 200
 
@@ -335,7 +335,7 @@ export default function EtchedMap() {
   const closeCompose = useCallback(() => {
     setShowCompose(false); setClosingCompose(false); setComposeText(""); setDropCoords(null)
     setMentionActive(false); setMentionResults([]); setConfirmedMentions([]); mentionSessionToken.current = crypto.randomUUID()
-    composeHasBeenClosed.current = true
+
     if (previewMarkerRef.current) { previewMarkerRef.current.remove(); previewMarkerRef.current = null }
   }, [])
 
@@ -1371,35 +1371,30 @@ export default function EtchedMap() {
             borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             display: "flex", flexDirection: "column",
+            overflow: "hidden",
             cursor: "none",
-            animation: "none",
           }}
         >
-          {/* Location indicator */}
+          {/* Location indicator / instructions */}
           <div style={{
-            padding: "16px 24px",
+            padding: dropCoords ? "16px 24px" : "14px 24px",
             borderBottom: `1.5px solid ${t.textColor}`,
-            display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
-            <div style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 9, letterSpacing: "0.1em",
-              color: t.textColor,
-              opacity: dropCoords ? 0.5 : 0.25,
-            }}>
-              {dropCoords
-                ? `${dropCoords[1].toFixed(4)}°N ${Math.abs(dropCoords[0]).toFixed(4)}°W`
-                : "click map or type @place"
-              }
-            </div>
-            {!dropCoords && (
+            {dropCoords ? (
               <div style={{
                 fontFamily: "'Space Mono', monospace",
-                fontSize: 9, letterSpacing: "0.05em",
-                color: "#FF2A00",
-                opacity: 0.6,
+                fontSize: 9, letterSpacing: "0.1em",
+                color: t.textColor, opacity: 0.5,
               }}>
-                @
+                {`${dropCoords[1].toFixed(4)}°N ${Math.abs(dropCoords[0]).toFixed(4)}°W`}
+              </div>
+            ) : (
+              <div style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 11, lineHeight: 1.7,
+                color: t.textColor, opacity: 0.4,
+              }}>
+                Click the map to drop a pin, or type <span style={{ color: "#FF2A00", opacity: 1 }}>@</span> to find a place
               </div>
             )}
           </div>
@@ -1542,13 +1537,21 @@ export default function EtchedMap() {
             {mentionActive && mentionResults.length > 0 && (
               <div style={{
                 position: "absolute",
-                left: 0, right: 0, top: 120,
+                left: 0, right: 0, bottom: 60,
                 background: mode === "day" ? "#ffffff" : "#0c1020",
-                border: `1.5px solid ${t.textColor}`,
+                borderTop: `1.5px solid ${t.textColor}`,
+                borderBottom: `1.5px solid ${t.textColor}`,
                 zIndex: 30,
-                maxHeight: 220,
-                overflowY: "auto",
               }}>
+                <div style={{
+                  padding: "10px 24px 6px",
+                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                  fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
+                  color: t.textColor, opacity: 0.35,
+                  transform: "scaleX(0.8)", transformOrigin: "left",
+                }}>
+                  Locations
+                </div>
                 {mentionResults.map((r, i) => (
                   <button
                     key={i}
@@ -1569,42 +1572,51 @@ export default function EtchedMap() {
                     }}
                     onMouseEnter={() => setMentionSelectedIdx(i)}
                     style={{
-                      display: "block",
+                      display: "flex", alignItems: "center", gap: 12,
                       width: "100%",
                       textAlign: "left",
-                      padding: "10px 16px",
+                      padding: "10px 24px",
                       background: i === mentionSelectedIdx ? (mode === "day" ? "#f5f5f5" : "#1a2448") : "none",
                       border: "none",
-                      borderBottom: i < mentionResults.length - 1 ? `1px solid ${t.borderColor}` : "none",
                       cursor: "none",
                       transition: "background 0.1s",
                     }}
                   >
                     <div style={{
-                      fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                      fontSize: 13, fontWeight: 500,
-                      color: t.textColor,
-                    }}>
-                      {r.name}
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: i === mentionSelectedIdx ? "#FF2A00" : t.textColor,
+                      opacity: i === mentionSelectedIdx ? 1 : 0.15,
+                      flexShrink: 0,
+                      transition: "all 0.15s",
+                    }} />
+                    <div>
+                      <div style={{
+                        fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                        fontSize: 13, fontWeight: 500,
+                        color: t.textColor,
+                        lineHeight: 1.2,
+                      }}>
+                        {r.name}
+                      </div>
+                      {r.address && <div style={{
+                        fontFamily: "'Space Mono', monospace",
+                        fontSize: 10, letterSpacing: "0.03em",
+                        color: t.textColor,
+                        opacity: 0.35,
+                        marginTop: 2,
+                        lineHeight: 1.3,
+                      }}>
+                        {r.address}
+                      </div>}
                     </div>
-                    {r.address && <div style={{
-                      fontFamily: "'Space Mono', monospace",
-                      fontSize: 9, letterSpacing: "0.05em",
-                      color: t.textColor,
-                      opacity: 0.4,
-                      marginTop: 2,
-                    }}>
-                      {r.address}
-                    </div>}
                   </button>
                 ))}
                 <div style={{
-                  padding: "6px 16px",
-                  borderTop: `1px solid ${t.borderColor}`,
+                  padding: "6px 24px 8px",
                   fontFamily: "'Space Mono', monospace",
-                  fontSize: 9, letterSpacing: "0.05em",
+                  fontSize: 8, letterSpacing: "0.05em",
                   color: t.textColor,
-                  opacity: 0.3,
+                  opacity: 0.2,
                   display: "flex", justifyContent: "space-between",
                 }}>
                   <span>&#x2191;&#x2193; navigate</span>
@@ -1689,10 +1701,10 @@ export default function EtchedMap() {
         <div
           className="fixed z-30"
           style={{
-            bottom: 40, left: 0,
+            bottom: 40,
+            left: showAbout && !closingAbout ? 340 : 0,
             right: (showCompose && !closingCompose) || (selectedObservation && !showCompose) ? 340 : 0,
             display: "flex",
-            transition: "right 0.3s ease",
           }}
         >
           <button
