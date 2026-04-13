@@ -1,7 +1,7 @@
 // Direction 12: Festival Poster
 // Inspired by: Other People @ Rewire — bold stacked lineup, scattered "RE" motif, black on white, typographic confetti
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

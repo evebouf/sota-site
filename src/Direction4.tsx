@@ -1,7 +1,7 @@
 // Direction 4: Index Book Cover
 // Inspired by: OMA NY Search Term — index list with huge overlaid title, Rizzoli book aesthetic
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

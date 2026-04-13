@@ -1,7 +1,7 @@
 // Direction 8: Portfolio Index
 // Inspired by: SierraPruitt — large bold lowercase text, superscript numbers, floating center image, green accent
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

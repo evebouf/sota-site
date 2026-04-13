@@ -1,7 +1,7 @@
 // Direction 7: Playlist / Radio Index
 // Inspired by: ofhundred.com — numbered rows, huge bold red type, play/pause circles, repeating overflow text
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

@@ -1,7 +1,7 @@
 // Direction 11: Chaos Catalog
 // Inspired by: Parcel Chaos Board (PCB) / Are.na — full small index as scaffold, selected entries blown up huge overlaid on top
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

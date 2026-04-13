@@ -1,7 +1,7 @@
 // Direction 9: Conversational
 // Inspired by: Fuzzco — large red italic serif paragraph, underlined links inline, circled markers, playful tone
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

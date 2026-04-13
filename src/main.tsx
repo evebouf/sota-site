@@ -30,6 +30,7 @@ const NeonMap = lazy(() => import('./NeonMap.tsx'))
 const EtchedMap = lazy(() => import('./EtchedMap.tsx'))
 const EtchedMap2 = lazy(() => import('./EtchedMap2.tsx'))
 const Glossary = lazy(() => import('./Glossary.tsx'))
+const Secret = lazy(() => import('./Secret.tsx'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -63,6 +64,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/etched-2" element={<EtchedMap2 />} />
           <Route path="/map-controls" element={<MapControls />} />
           <Route path="/glossary" element={<Glossary />} />
+          <Route path="/secret" element={<Secret />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

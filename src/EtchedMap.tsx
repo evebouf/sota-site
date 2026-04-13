@@ -766,6 +766,28 @@ export default function EtchedMap() {
 
   const t = themes[mode]
 
+  // Navigate observations
+  const goToObservation = useCallback((direction: "prev" | "next") => {
+    if (observations.length === 0) return
+    const padding = window.innerWidth < 768 ? { right: 280 } : { right: 360 }
+    if (!selectedObservation) {
+      const obs = direction === "next" ? observations[0] : observations[observations.length - 1]
+      setSelectedObservation(obs)
+      setEditingObservation(false)
+      if (mapRef.current) mapRef.current.flyTo({ center: [obs.lng, obs.lat], duration: 800, padding })
+      return
+    }
+    const idx = observations.findIndex(o => o.id === selectedObservation.id)
+    const target = direction === "prev"
+      ? observations[idx - 1] || observations[observations.length - 1]
+      : observations[idx + 1] || observations[0]
+    if (target) {
+      setSelectedObservation(target)
+      setEditingObservation(false)
+      if (mapRef.current) mapRef.current.flyTo({ center: [target.lng, target.lat], duration: 800, padding })
+    }
+  }, [observations, selectedObservation])
+
   // Hamburger/X state
   const hamburgerIsX = showAbout && !closingAbout
 
@@ -1339,60 +1361,6 @@ export default function EtchedMap() {
             )}
           </div>
 
-          {/* Prev / Next navigation */}
-          <div style={{ display: "flex", borderTop: `1.5px solid ${t.textColor}` }}>
-            <button
-              onClick={() => {
-                const idx = observations.findIndex(o => o.id === selectedObservation.id)
-                const prev = observations[idx - 1] || observations[observations.length - 1]
-                if (prev) {
-                  setSelectedObservation(prev)
-                  setEditingObservation(false)
-                  const m = mapRef.current
-                  if (m) m.flyTo({ center: [prev.lng, prev.lat], duration: 800, padding: window.innerWidth < 768 ? { right: 280 } : { right: 360 } })
-                }
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
-              style={{
-                flex: 1, padding: "12px 24px",
-                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
-                color: t.textColor, background: "none",
-                border: "none", borderRight: `0.75px solid ${t.textColor}`,
-                cursor: "none", textAlign: "center", opacity: 1,
-                transition: "background 0.15s, color 0.15s",
-              }}
-            >
-              Prev
-            </button>
-            <button
-              onClick={() => {
-                const idx = observations.findIndex(o => o.id === selectedObservation.id)
-                const next = observations[idx + 1] || observations[0]
-                if (next) {
-                  setSelectedObservation(next)
-                  setEditingObservation(false)
-                  const m = mapRef.current
-                  if (m) m.flyTo({ center: [next.lng, next.lat], duration: 800, padding: window.innerWidth < 768 ? { right: 280 } : { right: 360 } })
-                }
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
-              style={{
-                flex: 1, padding: "12px 24px",
-                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
-                color: t.textColor, background: "none",
-                border: "none", borderLeft: `0.75px solid ${t.textColor}`,
-                cursor: "none", textAlign: "center", opacity: 1,
-                transition: "background 0.15s, color 0.15s",
-              }}
-            >
-              Next
-            </button>
-          </div>
-
         </div>
       )}
 
@@ -1717,6 +1685,62 @@ export default function EtchedMap() {
               Your act of attention is on the map.
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ===== PREV / NEXT BAR (above bottom nav) ===== */}
+      {observations.length > 0 && (
+        <div
+          className="fixed z-30"
+          style={{
+            bottom: 40, left: 0,
+            right: (showCompose && !closingCompose) || (selectedObservation && !showCompose) ? 340 : 0,
+            display: "flex",
+            transition: "right 0.3s ease",
+          }}
+        >
+          <button
+            onClick={() => goToObservation("prev")}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; e.currentTarget.style.color = t.textColor }}
+            style={{
+              flex: 1,
+              padding: "14px 24px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: mode === "day" ? "#ffffff" : "#0c1020",
+              color: t.textColor,
+              border: "none",
+              borderTop: `1.5px solid ${t.textColor}`,
+              borderRight: `0.75px solid ${t.textColor}`,
+              cursor: "none",
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+              transition: "background 0.15s, color 0.15s",
+            }}
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => goToObservation("next")}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; e.currentTarget.style.color = t.textColor }}
+            style={{
+              flex: 1,
+              padding: "14px 24px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: mode === "day" ? "#ffffff" : "#0c1020",
+              color: t.textColor,
+              border: "none",
+              borderTop: `1.5px solid ${t.textColor}`,
+              borderLeft: `0.75px solid ${t.textColor}`,
+              cursor: "none",
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+              transition: "background 0.15s, color 0.15s",
+            }}
+          >
+            Next
+          </button>
         </div>
       )}
 

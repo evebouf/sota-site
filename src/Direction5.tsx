@@ -1,7 +1,7 @@
 // Direction 5: Editorial Spread
 // Inspired by: Vein Magazine — full bleed split, marble/texture left, clean serif right
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

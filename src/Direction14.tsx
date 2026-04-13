@@ -1,7 +1,7 @@
 // Direction 14: Text Wallpaper
 // Inspired by: Swiss Design Awards / Schweizer Designpreise — repeating text filling the background, bold words popping through at scale
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

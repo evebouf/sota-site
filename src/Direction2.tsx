@@ -1,7 +1,7 @@
 // Direction 2: Dark Cinematic
 // Inspired by: film festival archive, black background, numbered monospace list, floating image with timecode
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

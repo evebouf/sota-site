@@ -1,7 +1,7 @@
 // Direction 13: Scattered Program
 // Inspired by: Institute of Sport / Grocery Run — scattered info fields, random black dots, airy open layout
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })

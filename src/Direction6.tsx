@@ -1,7 +1,7 @@
 // Direction 6: Dark Stacked Nav
 // Inspired by: conference/event site, huge bold text zigzagging left/right, thin horizontal rules, black background
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function useRedCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })
