@@ -67,7 +67,7 @@ fontStyle.textContent = `
   @keyframes slideInRight { from { opacity: 0; transform: translateX(40px) } to { opacity: 1; transform: translateX(0) } }
   @keyframes slideOutRight { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(40px) } }
   @media (min-width: 768px) {
-    * { cursor: none !important; }
+    .etched-map-root, .etched-map-root * { cursor: none !important; }
   }
   textarea::placeholder {
     color: rgba(0,0,0,0.15);
@@ -795,7 +795,7 @@ export default function EtchedMap() {
 
   return (
     <div
-      className="w-screen overflow-hidden relative"
+      className="etched-map-root w-screen overflow-hidden relative"
       style={{ fontFamily: "'Space Mono', monospace", height: "100dvh", background: t.bg, transition: "background 0.6s ease" }}
     >
       {/* Halftone SVG pattern definition */}

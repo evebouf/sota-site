@@ -25,6 +25,8 @@ fontStyle.textContent = `
     font-style: normal;
     font-display: swap;
   }
+  .secret-root, .secret-root * { cursor: auto !important; }
+  .secret-root button, .secret-root a { cursor: pointer !important; }
 `
 if (!document.querySelector('[data-secret-fonts]')) {
   fontStyle.setAttribute('data-secret-fonts', '')
@@ -41,34 +43,9 @@ type Observation = {
   image_url: string | null
 }
 
-function useRedCursor() {
-  const [pos, setPos] = useState({ x: -100, y: -100 })
-  const [angle, setAngle] = useState(0)
-  const prevPos = useRef({ x: -100, y: -100 })
-  const angleRef = useRef(0)
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const dx = e.clientX - prevPos.current.x
-      const dy = e.clientY - prevPos.current.y
-      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
-        const target = Math.atan2(dy, dx) * (180 / Math.PI)
-        let diff = target - angleRef.current
-        diff = ((diff + 180) % 360 + 360) % 360 - 180
-        angleRef.current += diff
-        setAngle(angleRef.current)
-        prevPos.current = { x: e.clientX, y: e.clientY }
-      }
-      setPos({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener("mousemove", onMove)
-    return () => window.removeEventListener("mousemove", onMove)
-  }, [])
-  return { ...pos, angle }
-}
-
 export default function Secret() {
   useEffect(() => { document.title = "Admin — Acts of Attention" }, [])
-  const cursor = useRedCursor()
+
 
   const [observations, setObservations] = useState<Observation[]>([])
   const [loading, setLoading] = useState(true)
@@ -136,21 +113,13 @@ export default function Secret() {
 
   return (
     <div
+      className="secret-root"
       style={{
         minHeight: "100dvh",
         background: "#ffffff",
         fontFamily: "'Space Mono', monospace",
-        cursor: "none",
       }}
     >
-      {/* Red cursor */}
-      <div
-        className="fixed top-0 left-0 pointer-events-none z-50 hidden md:block"
-        style={{
-          transform: `translate(${cursor.x}px, ${cursor.y - 12}px) rotate(${cursor.angle}deg)`,
-          color: "#FF2A00", fontSize: "24px", lineHeight: 1,
-        }}
-      >➽</div>
 
       {/* Header */}
       <div
@@ -271,34 +240,40 @@ export default function Secret() {
                   <>
                     <button
                       onClick={saveEdit}
+                      onMouseEnter={e => { e.currentTarget.style.color = "#FF2A00" }}
+                      onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
                       style={{
                         fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
                         fontSize: 9,
                         letterSpacing: "0.15em",
                         textTransform: "uppercase",
                         transform: "scaleX(0.8)",
-                        color: "#FF2A00",
+                        color: "rgba(0,0,0,0.25)",
                         background: "none",
                         border: "none",
-                        cursor: "none",
+                        cursor: "pointer",
                         padding: "2px 0",
+                        transition: "color 0.15s",
                       }}
                     >
                       Save
                     </button>
                     <button
                       onClick={cancelEdit}
+                      onMouseEnter={e => { e.currentTarget.style.color = "#1a1a1a" }}
+                      onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
                       style={{
                         fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
                         fontSize: 9,
                         letterSpacing: "0.15em",
                         textTransform: "uppercase",
                         transform: "scaleX(0.8)",
-                        color: "rgba(0,0,0,0.3)",
+                        color: "rgba(0,0,0,0.25)",
                         background: "none",
                         border: "none",
-                        cursor: "none",
+                        cursor: "pointer",
                         padding: "2px 0",
+                        transition: "color 0.15s",
                       }}
                     >
                       Cancel
@@ -317,7 +292,7 @@ export default function Secret() {
                         color: "rgba(0,0,0,0.25)",
                         background: "none",
                         border: "none",
-                        cursor: "none",
+                        cursor: "pointer",
                         padding: "2px 0",
                         transition: "color 0.15s",
                       }}
@@ -349,7 +324,7 @@ export default function Secret() {
                             color: "#FF2A00",
                             background: "none",
                             border: "none",
-                            cursor: "none",
+                            cursor: "pointer",
                             padding: "2px 0",
                           }}
                         >
@@ -366,7 +341,7 @@ export default function Secret() {
                             color: "rgba(0,0,0,0.3)",
                             background: "none",
                             border: "none",
-                            cursor: "none",
+                            cursor: "pointer",
                             padding: "2px 0",
                           }}
                         >
@@ -385,7 +360,7 @@ export default function Secret() {
                           color: "rgba(0,0,0,0.25)",
                           background: "none",
                           border: "none",
-                          cursor: "none",
+                          cursor: "pointer",
                           padding: "2px 0",
                           transition: "color 0.15s",
                         }}
@@ -423,7 +398,6 @@ export default function Secret() {
                   outline: "none",
                   width: "100%",
                   resize: "none",
-                  cursor: "none",
                   padding: 0,
                   minHeight: 40,
                 }}
