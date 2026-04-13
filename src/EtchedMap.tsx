@@ -907,21 +907,32 @@ export default function EtchedMap() {
           )}
         </button>
 
-        {/* Center: Title */}
+        {/* Center: Stamp + Title */}
         <div
           style={{
             position: "absolute", left: "50%", top: "50%",
-            transform: "translateX(-50%) translateY(-50%) scaleX(0.75)",
+            transform: "translateX(-50%) translateY(-50%)",
+            display: "flex", alignItems: "center", gap: 8,
+            whiteSpace: "nowrap",
+            transition: "color 0.6s",
+            color: t.textColor,
+          }}
+        >
+          <img
+            src="/stamp-sota.png"
+            alt=""
+            style={{ height: 22, width: "auto", opacity: 1 }}
+          />
+          <span style={{
             fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
             fontSize: 11,
             letterSpacing: "0.25em",
             textTransform: "uppercase",
-            color: t.textColor,
-            whiteSpace: "nowrap",
-            transition: "color 0.6s",
-          }}
-        >
-          Acts of Attention
+            transform: "scaleX(0.75)",
+            transformOrigin: "left",
+          }}>
+            Acts of Attention
+          </span>
         </div>
 
         {/* Right: + / X button */}
@@ -987,6 +998,20 @@ export default function EtchedMap() {
             display: "flex", flexDirection: "column",
           }}
         >
+          {/* Stamp overlay — on the emblem */}
+          <img
+            src="/stamp-sota.png"
+            alt=""
+            style={{
+              position: "absolute",
+              right: 10, top: 30,
+              width: 160, height: "auto",
+              opacity: 0.25,
+              transform: "rotate(-8deg)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
           <div style={{ padding: "28px 28px 0", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
             {aboutPage === "about" ? (<>
             <img
@@ -1623,6 +1648,22 @@ export default function EtchedMap() {
               transformOrigin: "right",
             }}>
               {composeMaxChars - composeText.length}
+            </div>
+
+            {/* Stamp — fades when typing */}
+            <div style={{
+              marginTop: "auto",
+              display: "flex", justifyContent: "center",
+              padding: "0 0 16px",
+              opacity: composeText ? 0 : 0.15,
+              transition: "opacity 0.5s",
+              pointerEvents: "none",
+            }}>
+              <img
+                src="/stamp-sota.png"
+                alt=""
+                style={{ width: 140, height: "auto" }}
+              />
             </div>
           </div>
 
