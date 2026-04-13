@@ -206,7 +206,7 @@ function renderTextWithMentions(text: string, textColor: string) {
   if (parts.every(p => !p.isMention)) return text
   return parts.map((p, i) =>
     p.isMention ? (
-      <span key={i} style={{ color: "#FF2A00", borderBottom: "1.5px solid #FF2A00", paddingBottom: 1 }}>{p.text}</span>
+      <span key={i} style={{ color: "#FF2A00", textDecoration: "underline", textDecorationColor: "#FF2A00", textDecorationThickness: "1.5px", textUnderlineOffset: "1px" }}>{p.text}</span>
     ) : <span key={i} style={{ color: textColor }}>{p.text}</span>
   )
 }
@@ -1439,8 +1439,10 @@ export default function EtchedMap() {
                     p.isMention ? (
                       <span key={i} style={{
                         color: "#FF2A00",
-                        borderBottom: "1.5px solid #FF2A00",
-                        paddingBottom: 1,
+                        textDecoration: "underline",
+                        textDecorationColor: "#FF2A00",
+                        textDecorationThickness: "1.5px",
+                        textUnderlineOffset: "1px",
                       }}>{p.text}</span>
                     ) : <span key={i} style={{ color: t.textColor }}>{p.text}</span>
                   )
@@ -1540,18 +1542,8 @@ export default function EtchedMap() {
                 left: 0, right: 0, bottom: 60,
                 background: mode === "day" ? "#ffffff" : "#0c1020",
                 borderTop: `1.5px solid ${t.textColor}`,
-                borderBottom: `1.5px solid ${t.textColor}`,
                 zIndex: 30,
               }}>
-                <div style={{
-                  padding: "10px 24px 6px",
-                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                  fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
-                  color: t.textColor, opacity: 0.35,
-                  transform: "scaleX(0.8)", transformOrigin: "left",
-                }}>
-                  Locations
-                </div>
                 {mentionResults.map((r, i) => (
                   <button
                     key={i}
@@ -1572,56 +1564,49 @@ export default function EtchedMap() {
                     }}
                     onMouseEnter={() => setMentionSelectedIdx(i)}
                     style={{
-                      display: "flex", alignItems: "center", gap: 12,
+                      display: "flex", alignItems: "flex-start", gap: 0,
                       width: "100%",
                       textAlign: "left",
-                      padding: "10px 24px",
-                      background: i === mentionSelectedIdx ? (mode === "day" ? "#f5f5f5" : "#1a2448") : "none",
+                      padding: "14px 20px",
+                      background: i === mentionSelectedIdx ? (mode === "day" ? "#f7f7f7" : "#1a2448") : "none",
                       border: "none",
+                      borderBottom: `1px solid ${mode === "day" ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)"}`,
                       cursor: "none",
                       transition: "background 0.1s",
                     }}
                   >
                     <div style={{
-                      width: 6, height: 6, borderRadius: "50%",
-                      background: i === mentionSelectedIdx ? "#FF2A00" : t.textColor,
-                      opacity: i === mentionSelectedIdx ? 1 : 0.15,
-                      flexShrink: 0,
-                      transition: "all 0.15s",
-                    }} />
-                    <div>
+                      width: 20, flexShrink: 0, paddingTop: 4,
+                    }}>
+                      <div style={{
+                        width: 7, height: 7, borderRadius: "50%",
+                        background: "#FF2A00",
+                        opacity: i === mentionSelectedIdx ? 1 : 0,
+                        transition: "opacity 0.15s",
+                      }} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{
                         fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                        fontSize: 13, fontWeight: 500,
+                        fontSize: 14, fontWeight: 700,
                         color: t.textColor,
                         lineHeight: 1.2,
                       }}>
                         {r.name}
                       </div>
                       {r.address && <div style={{
-                        fontFamily: "'Space Mono', monospace",
-                        fontSize: 10, letterSpacing: "0.03em",
+                        fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                        fontSize: 11, fontWeight: 400,
                         color: t.textColor,
-                        opacity: 0.35,
-                        marginTop: 2,
-                        lineHeight: 1.3,
+                        opacity: 0.4,
+                        marginTop: 3,
+                        lineHeight: 1.4,
                       }}>
                         {r.address}
                       </div>}
                     </div>
                   </button>
                 ))}
-                <div style={{
-                  padding: "6px 24px 8px",
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: 8, letterSpacing: "0.05em",
-                  color: t.textColor,
-                  opacity: 0.2,
-                  display: "flex", justifyContent: "space-between",
-                }}>
-                  <span>&#x2191;&#x2193; navigate</span>
-                  <span>&#x23CE; select</span>
-                </div>
               </div>
             )}
 
