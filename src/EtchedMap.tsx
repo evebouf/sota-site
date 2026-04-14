@@ -1324,10 +1324,43 @@ export default function EtchedMap() {
                 color: t.textColor,
               }}>
                 {renderTextWithMentions(selectedObservation.text, t.textColor)}
+                <span style={{ color: t.textColor, marginLeft: 10, fontSize: "0.6em" }}>➽</span>
               </div>
             )}
           </div>
 
+          {/* Share button */}
+          <button
+            onClick={() => {
+              const text = selectedObservation.text.replace(/@\[([^\]]+)\]/g, "@$1")
+              const shareText = `"${text}" — spotted in San Francisco\n\nDrop your own noticing at sotazine.com`
+              if (navigator.share) {
+                navigator.share({ text: shareText }).catch(() => {})
+              } else {
+                navigator.clipboard.writeText(shareText)
+                const btn = document.getElementById("share-btn")
+                if (btn) { btn.textContent = "COPIED"; setTimeout(() => { btn.textContent = "SHARE" }, 1500) }
+              }
+            }}
+            id="share-btn"
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor }}
+            style={{
+              width: "100%", height: 44,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: "none",
+              color: t.textColor,
+              border: "none",
+              borderTop: `1.5px solid ${t.textColor}`,
+              cursor: "default",
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+              transition: "background 0.15s, color 0.15s",
+            }}
+          >
+            <span style={{ marginRight: 8, fontSize: 14, color: "#FF2A00", transform: "rotate(-90deg)", display: "inline-block" }}>➽</span>
+            Share
+          </button>
         </div>
       )}
 
