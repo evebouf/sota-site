@@ -66,7 +66,8 @@ fontStyle.textContent = `
   @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(-40px) } }
   @keyframes slideInRight { from { opacity: 0; transform: translateX(40px) } to { opacity: 1; transform: translateX(0) } }
   @keyframes slideOutRight { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(40px) } }
-  @media (min-width: 768px) {
+  .etched-map-root, .etched-map-root *, .etched-map-root button, .etched-map-root a {
+    cursor: default !important;
   }
   textarea::placeholder {
     color: rgba(0,0,0,0.15);
@@ -899,7 +900,7 @@ export default function EtchedMap() {
           )}
         </button>
 
-        {/* Center: Stamp + Title */}
+        {/* Center: Title */}
         <div
           style={{
             position: "absolute", left: "50%", top: "50%",
@@ -910,20 +911,15 @@ export default function EtchedMap() {
             color: t.textColor,
           }}
         >
-          <img
-            src="/stamp-sota.png"
-            alt=""
-            style={{ height: 22, width: "auto", opacity: 1 }}
-          />
           <span style={{
-            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-            fontSize: 11,
-            letterSpacing: "0.25em",
+            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+            fontSize: 13,
+            letterSpacing: "0.12em",
             textTransform: "uppercase",
-            transform: "scaleX(0.75)",
-            transformOrigin: "left",
           }}>
-            Acts of Attention
+            <span style={{ fontWeight: 700 }}>State of the Art</span>
+            {" "}
+            <span style={{ fontWeight: 400 }}>Noticings</span>
           </span>
         </div>
 
