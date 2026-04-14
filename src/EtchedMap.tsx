@@ -67,7 +67,6 @@ fontStyle.textContent = `
   @keyframes slideInRight { from { opacity: 0; transform: translateX(40px) } to { opacity: 1; transform: translateX(0) } }
   @keyframes slideOutRight { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(40px) } }
   @media (min-width: 768px) {
-    .etched-map-root, .etched-map-root * { cursor: none !important; }
   }
   textarea::placeholder {
     color: rgba(0,0,0,0.15);
@@ -114,30 +113,6 @@ if (!document.querySelector('[data-trade-gothic]')) {
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
-function useRedCursor() {
-  const [pos, setPos] = useState({ x: -100, y: -100 })
-  const [angle, setAngle] = useState(0)
-  const prevPos = useRef({ x: -100, y: -100 })
-  const angleRef = useRef(0)
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const dx = e.clientX - prevPos.current.x
-      const dy = e.clientY - prevPos.current.y
-      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
-        const target = Math.atan2(dy, dx) * (180 / Math.PI)
-        let diff = target - angleRef.current
-        diff = ((diff + 180) % 360 + 360) % 360 - 180
-        angleRef.current += diff
-        setAngle(angleRef.current)
-        prevPos.current = { x: e.clientX, y: e.clientY }
-      }
-      setPos({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener("mousemove", onMove)
-    return () => window.removeEventListener("mousemove", onMove)
-  }, [])
-  return { ...pos, angle }
-}
 
 type MapMode = "day" | "night"
 
@@ -219,7 +194,7 @@ export default function EtchedMap() {
   const [mode, setMode] = useState<MapMode>("day")
   const [coords, setCoords] = useState({ lat: 37.8008, lng: -122.4058 })
   const [altitude, setAltitude] = useState({ zoom: 15.8, pitch: 45, bearing: -15 })
-  const cursor = useRedCursor()
+
 
   // Observations state
   const [observations, setObservations] = useState<Observation[]>([])
@@ -242,6 +217,10 @@ export default function EtchedMap() {
   const [mentionStartIdx, setMentionStartIdx] = useState(-1)
   const [mentionSelectedIdx, setMentionSelectedIdx] = useState(0)
   const [confirmedMentions, setConfirmedMentions] = useState<string[]>([])
+  const [locationSearch, setLocationSearch] = useState("")
+  const [locationResults, setLocationResults] = useState<MentionResult[]>([])
+  const [locationSelectedIdx, setLocationSelectedIdx] = useState(0)
+  const locationDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
   const mentionDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
   const mentionSessionToken = useRef(crypto.randomUUID())
 
@@ -277,6 +256,23 @@ export default function EtchedMap() {
         }
       }
     } catch { /* silently fail — user can still click map */ }
+  }, [])
+
+  // Fetch location search results
+  const fetchLocationResults = useCallback((query: string) => {
+    if (locationDebounce.current) clearTimeout(locationDebounce.current)
+    if (query.length < 2) { setLocationResults([]); return }
+    locationDebounce.current = setTimeout(async () => {
+      const url = `https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(query)}&access_token=${mapboxgl.accessToken}&proximity=-122.4194,37.7749&bbox=-122.52,37.70,-122.35,37.85&limit=5&session_token=${mentionSessionToken.current}`
+      try {
+        const res = await fetch(url)
+        const data = await res.json()
+        if (data.suggestions) {
+          setLocationResults(data.suggestions.map((s: any) => ({ name: s.name, address: s.full_address || "", mapbox_id: s.mapbox_id })))
+          setLocationSelectedIdx(0)
+        }
+      } catch { setLocationResults([]) }
+    }, 200)
   }, [])
 
   // Confirmation state
@@ -335,6 +331,7 @@ export default function EtchedMap() {
   const closeCompose = useCallback(() => {
     setShowCompose(false); setClosingCompose(false); setComposeText(""); setDropCoords(null)
     setMentionActive(false); setMentionResults([]); setConfirmedMentions([]); mentionSessionToken.current = crypto.randomUUID()
+    setLocationSearch(""); setLocationResults([])
 
     if (previewMarkerRef.current) { previewMarkerRef.current.remove(); previewMarkerRef.current = null }
   }, [])
@@ -720,7 +717,7 @@ export default function EtchedMap() {
     const finalCoords = dropCoords || [m.getCenter().lng, m.getCenter().lat]
     const observerId = getObserverId()
     const { data, error } = await supabase.from("observations").insert({
-      text: composeText.trim().toLowerCase(),
+      text: composeText.trim(),
       lng: finalCoords[0],
       lat: finalCoords[1],
       observer_id: observerId,
@@ -756,9 +753,9 @@ export default function EtchedMap() {
   // Save edit
   const saveEdit = useCallback(async () => {
     if (!selectedObservation || !editText.trim()) return
-    const { error } = await supabase.from("observations").update({ text: editText.trim().toLowerCase() }).eq("id", selectedObservation.id)
+    const { error } = await supabase.from("observations").update({ text: editText.trim() }).eq("id", selectedObservation.id)
     if (error) { console.error("Failed to update:", error); return }
-    const updated = { ...selectedObservation, text: editText.trim().toLowerCase() }
+    const updated = { ...selectedObservation, text: editText.trim() }
     setObservations(prev => prev.map(o => o.id === updated.id ? updated : o))
     setSelectedObservation(updated)
     setEditingObservation(false)
@@ -856,12 +853,6 @@ export default function EtchedMap() {
         </svg>
       )}
 
-      {/* Red cursor — desktop only */}
-      <div
-        className="fixed top-0 left-0 pointer-events-none z-50 hidden md:block"
-        style={{ transform: `translate(${cursor.x}px, ${cursor.y - 12}px) rotate(${cursor.angle}deg)`, color: "#FF2A00", fontSize: "24px", lineHeight: 1 }}
-        >➽</div>
-
       {/* ===== TOP BANNER BAR ===== */}
       <div
         className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between"
@@ -870,6 +861,7 @@ export default function EtchedMap() {
           background: mode === "day" ? "#ffffff" : "#0c1020",
           borderBottom: `1.5px solid ${t.textColor}`,
           transition: "all 0.6s ease",
+          overflow: "hidden",
         }}
       >
         {/* Left: Hamburger / X */}
@@ -889,7 +881,7 @@ export default function EtchedMap() {
             width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
             background: "none", border: "none", borderRight: `1.5px solid ${t.textColor}`,
-            cursor: "none", color: t.textColor,
+            cursor: "default", color: t.textColor,
             transition: "background 0.15s ease, color 0.15s ease",
           }}
         >
@@ -951,20 +943,18 @@ export default function EtchedMap() {
             }
           }}
           onMouseEnter={(e) => {
-            if (showCompose) { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }
+            if (showCompose) { e.currentTarget.style.opacity = "0.5" }
             else { e.currentTarget.style.opacity = "0.85" }
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.opacity = "1"
-            e.currentTarget.style.background = showCompose ? "none" : (mode === "day" ? "#000" : "none")
-            e.currentTarget.style.color = ""
           }}
           style={{
             width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
-            background: showCompose ? "none" : (mode === "day" ? "#000" : "none"),
+            background: showCompose ? "none" : "#FF2A00",
             border: "none", borderLeft: `1.5px solid ${t.textColor}`,
-            cursor: "none", color: t.textColor,
+            cursor: "default", color: showCompose ? t.textColor : "#ffffff",
             transition: "all 0.2s ease",
           }}
         >
@@ -993,7 +983,7 @@ export default function EtchedMap() {
             borderRight: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             overflowY: "auto",
-            cursor: "none",
+            cursor: "default",
             animation: "none",
             display: "flex", flexDirection: "column",
           }}
@@ -1139,7 +1129,7 @@ export default function EtchedMap() {
                   border: "none",
                   borderTop: `1.5px solid ${t.textColor}`,
                   padding: "14px 28px",
-                  cursor: "none",
+                  cursor: "default",
                   width: "100%",
                   textAlign: "left",
                   transition: "background 0.15s, color 0.15s",
@@ -1162,7 +1152,7 @@ export default function EtchedMap() {
                   border: "none",
                   borderTop: `1.5px solid ${t.textColor}`,
                   padding: "14px 28px",
-                  cursor: "none",
+                  cursor: "default",
                   width: "100%",
                   textAlign: "left",
                   textDecoration: "none",
@@ -1188,7 +1178,7 @@ export default function EtchedMap() {
             borderRight: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             overflowY: "auto",
-            cursor: "none",
+            cursor: "default",
             animation: "none",
           }}
         >
@@ -1202,7 +1192,7 @@ export default function EtchedMap() {
               display: "flex", alignItems: "center", justifyContent: "center",
               background: mode === "day" ? "#ffffff" : "#0c1020",
               border: "none", borderBottom: `1.5px solid ${t.textColor}`,
-              cursor: "none",
+              cursor: "default",
               marginLeft: "auto",
               zIndex: 2,
             }}
@@ -1323,7 +1313,7 @@ export default function EtchedMap() {
             borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             display: "flex", flexDirection: "column",
-            cursor: "none",
+            cursor: "default",
             animation: "none",
           }}
         >
@@ -1353,7 +1343,7 @@ export default function EtchedMap() {
               <textarea
                 ref={textareaRef}
                 value={editText}
-                onChange={(e) => setEditText(e.target.value.toLowerCase())}
+                onChange={(e) => setEditText(e.target.value)}
                 maxLength={composeMaxChars}
                 style={{
                   fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
@@ -1365,7 +1355,7 @@ export default function EtchedMap() {
                   outline: "none",
                   width: "100%",
                   resize: "none",
-                  cursor: "none",
+                  cursor: "default",
                   padding: 0,
                   minHeight: 120,
                 }}
@@ -1377,7 +1367,7 @@ export default function EtchedMap() {
                 fontWeight: 500,
                 color: t.textColor,
               }}>
-                {renderTextWithMentions(selectedObservation.text.toLowerCase(), t.textColor)}
+                {renderTextWithMentions(selectedObservation.text, t.textColor)}
               </div>
             )}
           </div>
@@ -1397,42 +1387,174 @@ export default function EtchedMap() {
             zIndex: 25,
             display: "flex", flexDirection: "column",
             overflow: "hidden",
-            cursor: "none",
+            cursor: "default",
           }}
         >
-          {/* Location indicator / instructions */}
+          {/* Location search / coordinates */}
           <div style={{
-            padding: dropCoords ? "16px 24px" : "14px 24px",
             borderBottom: `1.5px solid ${t.textColor}`,
+            position: "relative",
           }}>
             {dropCoords ? (
               <div style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 9, letterSpacing: "0.1em",
-                color: t.textColor, opacity: 0.5,
+                padding: "16px 24px",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
               }}>
-                {`${dropCoords[1].toFixed(4)}°N ${Math.abs(dropCoords[0]).toFixed(4)}°W`}
+                <div style={{
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 9, letterSpacing: "0.1em",
+                  color: t.textColor, opacity: 0.5,
+                }}>
+                  {`${dropCoords[1].toFixed(4)}°N ${Math.abs(dropCoords[0]).toFixed(4)}°W`}
+                </div>
+                <button
+                  onClick={() => { setDropCoords(null); setLocationSearch(""); if (previewMarkerRef.current) { previewMarkerRef.current.remove(); previewMarkerRef.current = null } }}
+                  style={{
+                    fontFamily: "'Space Mono', monospace",
+                    fontSize: 9, color: t.textColor, opacity: 0.3,
+                    background: "none", border: "none", cursor: "pointer",
+                    transition: "opacity 0.15s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = "1" }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = "0.3" }}
+                >
+                  clear
+                </button>
               </div>
             ) : (
+              <div style={{ display: "flex", alignItems: "center", padding: "0 0 0 20px" }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, opacity: 0.3 }}>
+                  <circle cx="6" cy="6" r="4.5" stroke={t.textColor} strokeWidth="1.3" />
+                  <line x1="9.5" y1="9.5" x2="13" y2="13" stroke={t.textColor} strokeWidth="1.3" strokeLinecap="round" />
+                </svg>
+                <input
+                  type="text"
+                  value={locationSearch}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setLocationSearch(val)
+                    fetchLocationResults(val)
+                  }}
+                onKeyDown={(e) => {
+                  if (locationResults.length === 0) return
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault()
+                    setLocationSelectedIdx(i => Math.min(i + 1, locationResults.length - 1))
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault()
+                    setLocationSelectedIdx(i => Math.max(i - 1, 0))
+                  } else if (e.key === "Enter") {
+                    e.preventDefault()
+                    const place = locationResults[locationSelectedIdx]
+                    if (place) {
+                      retrieveAndLocate(place.mapbox_id)
+                      setLocationSearch(place.name)
+                      setLocationResults([])
+                    }
+                  } else if (e.key === "Escape") {
+                    setLocationResults([])
+                  }
+                }}
+                placeholder="set pin location"
+                style={{
+                  width: "100%",
+                  padding: "14px 12px",
+                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                  fontSize: 11,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: t.textColor,
+                  background: "none",
+                  border: "none",
+                  outline: "none",
+                  cursor: "default",
+                  flex: 1,
+                }}
+              />
+              </div>
+            )}
+
+            {/* Location search dropdown */}
+            {locationResults.length > 0 && (
               <div style={{
-                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 11, lineHeight: 1.7,
-                color: t.textColor, opacity: 0.4,
+                position: "absolute",
+                left: 0, right: 0, top: "100%",
+                background: mode === "day" ? "#ffffff" : "#0c1020",
+                borderBottom: `1.5px solid ${t.textColor}`,
+                zIndex: 30,
               }}>
-                Click the map to drop a pin, or type <span style={{ color: "#FF2A00", opacity: 1 }}>@</span> to find a place
+                {locationResults.map((r, i) => (
+                  <button
+                    key={i}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      retrieveAndLocate(r.mapbox_id)
+                      setLocationSearch(r.name)
+                      setLocationResults([])
+                    }}
+                    onMouseEnter={() => setLocationSelectedIdx(i)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 12,
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "10px 24px",
+                      background: i === locationSelectedIdx ? (mode === "day" ? "#f7f7f7" : "#1a2448") : "none",
+                      border: "none",
+                      borderBottom: `1px solid ${mode === "day" ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)"}`,
+                      cursor: "default",
+                      transition: "background 0.1s",
+                    }}
+                  >
+                    <div style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: "#FF2A00",
+                      opacity: i === locationSelectedIdx ? 1 : 0,
+                      flexShrink: 0,
+                      transition: "opacity 0.15s",
+                    }} />
+                    <div>
+                      <div style={{
+                        fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                        fontSize: 13, fontWeight: 700,
+                        color: t.textColor, lineHeight: 1.2,
+                      }}>
+                        {r.name}
+                      </div>
+                      {r.address && <div style={{
+                        fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                        fontSize: 11, fontWeight: 400,
+                        color: t.textColor, opacity: 0.4,
+                        marginTop: 2, lineHeight: 1.4,
+                      }}>
+                        {r.address}
+                      </div>}
+                    </div>
+                  </button>
+                ))}
               </div>
             )}
           </div>
 
           {/* Textarea with mention highlight overlay */}
-          <div style={{ flex: 1, padding: "24px 24px 0", display: "flex", flexDirection: "column", position: "relative" }}>
+          <div style={{ flex: 1, padding: "16px 24px 0", display: "flex", flexDirection: "column", position: "relative" }}>
+            {/* Section label */}
+            <div style={{
+              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+              color: t.textColor, opacity: 0.25,
+              transform: "scaleX(0.8)", transformOrigin: "center",
+              marginBottom: 12,
+              textAlign: "center",
+            }}>
+              Noticings
+            </div>
             {/* Mirror overlay — renders confirmed @mentions in accent color */}
             {composeText && (
               <div
                 aria-hidden
                 style={{
                   position: "absolute",
-                  top: 24, left: 24, right: 24,
+                  top: 46, left: 24, right: 24,
                   fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
                   fontSize: 32, lineHeight: 1.3,
                   fontWeight: 500,
@@ -1478,7 +1600,7 @@ export default function EtchedMap() {
               ref={textareaRef}
               value={composeText}
               onChange={(e) => {
-                const val = e.target.value.toLowerCase()
+                const val = e.target.value
                 if (val.length > composeMaxChars) return
                 setComposeText(val)
 
@@ -1521,7 +1643,7 @@ export default function EtchedMap() {
                   e.preventDefault()
                   const place = mentionResults[mentionSelectedIdx]
                   if (place) {
-                    const mentionText = `@[${place.name.toLowerCase()}]`
+                    const mentionText = `@[${place.name}]`
                     const before = composeText.slice(0, mentionStartIdx)
                     const after = composeText.slice(mentionStartIdx + 1 + mentionQuery.length)
                     const inserted = `${mentionText}${after.startsWith(" ") ? "" : " "}`
@@ -1539,7 +1661,7 @@ export default function EtchedMap() {
                   setMentionResults([])
                 }
               }}
-              placeholder="what caught your eye today?"
+              placeholder="Tell us a San Francisco story"
               maxLength={composeMaxChars}
               style={{
                 fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
@@ -1553,7 +1675,7 @@ export default function EtchedMap() {
                 width: "100%",
                 flex: 1,
                 resize: "none",
-                cursor: "none",
+                cursor: "default",
                 padding: 0,
                 position: "relative",
                 zIndex: 1,
@@ -1574,7 +1696,7 @@ export default function EtchedMap() {
                     key={i}
                     onMouseDown={(e) => {
                       e.preventDefault()
-                      const mentionText = `@[${r.name.toLowerCase()}]`
+                      const mentionText = `@[${r.name}]`
                       const before = composeText.slice(0, mentionStartIdx)
                       const after = composeText.slice(mentionStartIdx + 1 + mentionQuery.length)
                       const inserted = `${mentionText}${after.startsWith(" ") ? "" : " "}`
@@ -1596,7 +1718,7 @@ export default function EtchedMap() {
                       background: i === mentionSelectedIdx ? (mode === "day" ? "#f7f7f7" : "#1a2448") : "none",
                       border: "none",
                       borderBottom: `1px solid ${mode === "day" ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)"}`,
-                      cursor: "none",
+                      cursor: "default",
                       transition: "background 0.1s",
                     }}
                   >
@@ -1680,7 +1802,7 @@ export default function EtchedMap() {
               borderTop: `1.5px solid ${t.textColor}`,
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
-              cursor: "none",
+              cursor: "default",
               transition: "all 0.2s",
             }}
           >
@@ -1746,7 +1868,7 @@ export default function EtchedMap() {
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               borderRight: `0.75px solid ${t.textColor}`,
-              cursor: "none",
+              cursor: "default",
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
               transition: "background 0.15s, color 0.15s",
@@ -1767,7 +1889,7 @@ export default function EtchedMap() {
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               borderLeft: `0.75px solid ${t.textColor}`,
-              cursor: "none",
+              cursor: "default",
               fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
               fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
               transition: "background 0.15s, color 0.15s",
@@ -1842,7 +1964,7 @@ export default function EtchedMap() {
               display: "flex", alignItems: "center", justifyContent: "center",
               background: "none",
               border: "none", borderLeft: `1.5px solid ${t.textColor}`,
-              cursor: "none",
+              cursor: "default",
               fontSize: 16,
               color: t.textColor,
               transition: "background 0.15s ease, color 0.15s ease",

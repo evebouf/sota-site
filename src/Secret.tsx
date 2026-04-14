@@ -90,11 +90,11 @@ export default function Secret() {
     if (!editingId || !editText.trim()) return
     const { error } = await supabase
       .from("observations")
-      .update({ text: editText.trim().toLowerCase() })
+      .update({ text: editText.trim() })
       .eq("id", editingId)
     if (error) { console.error("Failed to update:", error); return }
     setObservations(prev =>
-      prev.map(o => o.id === editingId ? { ...o, text: editText.trim().toLowerCase() } : o)
+      prev.map(o => o.id === editingId ? { ...o, text: editText.trim() } : o)
     )
     setEditingId(null)
     setEditText("")
@@ -433,7 +433,7 @@ export default function Secret() {
               <textarea
                 ref={editRef}
                 value={editText}
-                onChange={e => setEditText(e.target.value.toLowerCase())}
+                onChange={e => setEditText(e.target.value)}
                 maxLength={200}
                 onKeyDown={e => {
                   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveEdit() }
