@@ -149,28 +149,28 @@ const themes = {
     pinBorder: "rgba(0,0,0,0.15)",
   },
   night: {
-    bg: "#0a0e1a",
-    water: "#060a14",
-    land: "#0e1428",
-    line: "#5a78c0",
+    bg: "#0e0e0e",
+    water: "#0a0a0a",
+    land: "#141414",
+    line: "#444444",
     lineOpacity: 0.8,
-    fog: "#0a0e1a",
-    hillShadow: "#060810",
-    hillHighlight: "#1a2448",
-    hillAccent: "#0c1020",
-    building: "#1e2d5c",
+    fog: "#0e0e0e",
+    hillShadow: "#080808",
+    hillHighlight: "#1a1a1a",
+    hillAccent: "#111111",
+    building: "#2a2a2a",
     buildingOpacity: 0.45,
     ggb: "#FF2A00",
     canvasFilter: "contrast(1.2) brightness(0.9) saturate(0.4)",
-    dotColor: "#3a5aa0",
+    dotColor: "#333333",
     dotOpacity: 0.15,
-    linePatternColor: "#2a4080",
+    linePatternColor: "#222222",
     linePatternOpacity: 0.1,
     textColor: "#ffffff",
-    borderColor: "rgba(40,60,120,0.3)",
-    photoBorder: "rgba(40,60,120,0.3)",
+    borderColor: "rgba(255,255,255,0.12)",
+    photoBorder: "rgba(255,255,255,0.12)",
     photoShadow: "rgba(0,0,0,0.4)",
-    pinBorder: "rgba(40,60,120,0.4)",
+    pinBorder: "rgba(255,255,255,0.15)",
   },
 }
 
@@ -198,10 +198,20 @@ export default function EtchedMap() {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [ready, setReady] = useState(false)
+  const [showLoading, setShowLoading] = useState(true)
+  const [loadingFading, setLoadingFading] = useState(false)
   const [mode, setMode] = useState<MapMode>("day")
   const [coords, setCoords] = useState({ lat: 37.8008, lng: -122.4058 })
   const [altitude, setAltitude] = useState({ zoom: 15.8, pitch: 45, bearing: -15 })
 
+
+  // Dismiss loading screen when map ready
+  useEffect(() => {
+    if (ready) {
+      setTimeout(() => setLoadingFading(true), 500)
+      setTimeout(() => setShowLoading(false), 1500)
+    }
+  }, [ready])
 
   // Observations state
   const [observations, setObservations] = useState<Observation[]>([])
@@ -875,7 +885,7 @@ export default function EtchedMap() {
         className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between"
         style={{
           height: 40,
-          background: mode === "day" ? "#ffffff" : "#0c1020",
+          background: mode === "day" ? "#ffffff" : "#111111",
           borderBottom: `1.5px solid ${t.textColor}`,
           transition: "all 0.6s ease",
           overflow: "hidden",
@@ -1026,7 +1036,7 @@ export default function EtchedMap() {
             position: "fixed",
             top: 40, left: 0, bottom: 84.25,
             width: "min(75vw, 800px)",
-            background: mode === "day" ? "#ffffff" : "#0c1020",
+            background: mode === "day" ? "#ffffff" : "#111111",
             borderRight: `1.5px solid ${t.textColor}`,
             zIndex: 35,
             overflowY: "auto",
@@ -1130,7 +1140,7 @@ export default function EtchedMap() {
             position: "fixed",
             top: 40, left: 0, bottom: 40,
             width: 420,
-            background: mode === "day" ? "#ffffff" : "#0c1020",
+            background: mode === "day" ? "#ffffff" : "#111111",
             borderRight: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             overflowY: "auto",
@@ -1146,7 +1156,7 @@ export default function EtchedMap() {
               position: "sticky", top: 0, right: 0,
               width: 40, height: 40,
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: mode === "day" ? "#ffffff" : "#0c1020",
+              background: mode === "day" ? "#ffffff" : "#111111",
               border: "none", borderBottom: `1.5px solid ${t.textColor}`,
               cursor: "default",
               marginLeft: "auto",
@@ -1265,7 +1275,7 @@ export default function EtchedMap() {
             position: "fixed",
             top: 40, right: 0, bottom: 40,
             width: 340,
-            background: mode === "day" ? "#ffffff" : "#0c1020",
+            background: mode === "day" ? "#ffffff" : "#111111",
             borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             display: "flex", flexDirection: "column",
@@ -1331,16 +1341,108 @@ export default function EtchedMap() {
 
           {/* Share button */}
           <button
-            onClick={() => {
-              const text = selectedObservation.text.replace(/@\[([^\]]+)\]/g, "@$1")
-              const shareText = `"${text}" — spotted in San Francisco\n\nDrop your own noticing at sotazine.com`
-              if (navigator.share) {
-                navigator.share({ text: shareText }).catch(() => {})
-              } else {
-                navigator.clipboard.writeText(shareText)
-                const btn = document.getElementById("share-btn")
-                if (btn) { btn.textContent = "COPIED"; setTimeout(() => { btn.textContent = "SHARE" }, 1500) }
+            onClick={async () => {
+              const obs = selectedObservation
+              const displayText = obs.text.replace(/@\[([^\]]+)\]/g, "@$1")
+              const canvas = document.createElement("canvas")
+              const scale = 3
+              const w = 340, pad = 24
+              // Measure text height first
+              const tempCanvas = document.createElement("canvas")
+              const tempCtx = tempCanvas.getContext("2d")!
+              tempCtx.font = "500 32px 'Helvetica Neue', Helvetica, sans-serif"
+              const maxW = w - pad * 2
+              const words = displayText.split(" ")
+              let tempLine = "", lines: string[] = []
+              for (const word of words) {
+                const test = tempLine + (tempLine ? " " : "") + word
+                if (tempCtx.measureText(test).width > maxW && tempLine) {
+                  lines.push(tempLine); tempLine = word
+                } else { tempLine = test }
               }
+              lines.push(tempLine + " ➽")
+              const textBlockH = lines.length * 42
+              const h = Math.max(400, 28 + 14 + 4 + 14 + 28 + textBlockH + 80 + 44)
+
+              canvas.width = w * scale; canvas.height = h * scale
+              const ctx = canvas.getContext("2d")!
+              ctx.scale(scale, scale)
+
+              // Background
+              ctx.fillStyle = "#ffffff"
+              ctx.fillRect(0, 0, w, h)
+
+              // Left border
+              ctx.strokeStyle = "#1a1a1a"
+              ctx.lineWidth = 1.5
+              ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, h); ctx.stroke()
+
+              // Date — matches sidebar: Space Mono 9px, opacity 0.5
+              ctx.font = "9px 'Courier New', monospace"
+              ctx.fillStyle = "rgba(0,0,0,0.5)"
+              const date = new Date(obs.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+              ctx.fillText(date, pad, 28 + 10)
+
+              // Coordinates — Space Mono 9px, opacity 0.3
+              ctx.font = "9px 'Courier New', monospace"
+              ctx.fillStyle = "rgba(0,0,0,0.3)"
+              ctx.fillText(`${obs.lat.toFixed(4)}°N ${Math.abs(obs.lng).toFixed(4)}°W`, pad, 28 + 10 + 18)
+
+              // Observation text — Neue Haas Grotesk 32px, weight 500
+              ctx.font = "500 32px 'Helvetica Neue', Helvetica, sans-serif"
+              ctx.fillStyle = "#1a1a1a"
+              let textY = 28 + 10 + 18 + 28 + 32
+              for (const l of lines) {
+                ctx.fillText(l, pad, textY)
+                textY += 42
+              }
+
+              // Bottom border line
+              ctx.strokeStyle = "#1a1a1a"
+              ctx.lineWidth = 1.5
+              ctx.beginPath(); ctx.moveTo(0, h - 44); ctx.lineTo(w, h - 44); ctx.stroke()
+
+              // Bottom branding — centered
+              ctx.font = "bold 10px 'Helvetica Neue', Helvetica, sans-serif"
+              ctx.fillStyle = "rgba(0,0,0,0.4)"
+              const brandBold = "STATE OF THE ART"
+              const brandLight = " NOTICINGS"
+              const brandBoldW = ctx.measureText(brandBold).width
+              ctx.font = "10px 'Helvetica Neue', Helvetica, sans-serif"
+              const brandLightW = ctx.measureText(brandLight).width
+              const brandTotalW = brandBoldW + brandLightW
+              const brandX = (w - brandTotalW) / 2
+              ctx.font = "bold 10px 'Helvetica Neue', Helvetica, sans-serif"
+              ctx.fillText(brandBold, brandX, h - 18)
+              ctx.font = "10px 'Helvetica Neue', Helvetica, sans-serif"
+              ctx.fillText(brandLight, brandX + brandBoldW, h - 18)
+
+              // Draw stamp
+              await new Promise<void>((resolve) => {
+                const stamp = new Image()
+                stamp.onload = () => {
+                  const stampW = 100, stampH = stampW * (stamp.height / stamp.width)
+                  ctx.save()
+                  ctx.globalAlpha = 0.1
+                  ctx.translate(w - pad - 20, textY + 10)
+                  ctx.rotate(-0.12)
+                  ctx.drawImage(stamp, -stampW / 2, -stampH / 2, stampW, stampH)
+                  ctx.restore()
+                  resolve()
+                }
+                stamp.onerror = () => resolve()
+                stamp.src = "/sota-stamp-black.png"
+              })
+
+              // Convert to blob and download
+              canvas.toBlob(async (blob) => {
+                if (!blob) return
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement("a"); a.href = url; a.download = "noticing.png"; a.click()
+                URL.revokeObjectURL(url)
+                const btn = document.getElementById("share-btn-text")
+                if (btn) { const orig = btn.textContent; btn.textContent = "SAVED"; setTimeout(() => { btn.textContent = orig }, 1500) }
+              }, "image/png")
             }}
             id="share-btn"
             onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
@@ -1364,7 +1466,7 @@ export default function EtchedMap() {
                 <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.6" xChannelSelector="R" yChannelSelector="G" />
               </filter>
             </svg>
-            <span style={{ filter: "url(#distress)", transform: "scaleX(0.85) skewX(-3deg)", display: "inline-block" }}>Share</span>
+            <span id="share-btn-text" style={{ filter: "url(#distress)", transform: "scaleX(0.85) skewX(-3deg)", display: "inline-block" }}>Share</span>
           </button>
         </div>
       )}
@@ -1376,7 +1478,7 @@ export default function EtchedMap() {
             position: "fixed",
             top: 40, right: 0, bottom: 40,
             width: 340,
-            background: mode === "day" ? "#ffffff" : "#0c1020",
+            background: mode === "day" ? "#ffffff" : "#111111",
             borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             display: "flex", flexDirection: "column",
@@ -1417,7 +1519,7 @@ export default function EtchedMap() {
               </div>
             ) : (
               <div
-                onMouseEnter={(e) => { e.currentTarget.style.background = mode === "day" ? "#f7f7f7" : "#1a2448" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = mode === "day" ? "#f7f7f7" : "#1a1a1a" }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "none" }}
                 style={{ display: "flex", alignItems: "center", padding: "0 0 0 20px", transition: "background 0.15s" }}
               >
@@ -1477,7 +1579,7 @@ export default function EtchedMap() {
               <div style={{
                 position: "absolute",
                 left: 0, right: 0, top: "100%",
-                background: mode === "day" ? "#ffffff" : "#0c1020",
+                background: mode === "day" ? "#ffffff" : "#111111",
                 borderBottom: `1.5px solid ${t.textColor}`,
                 zIndex: 30,
               }}>
@@ -1496,7 +1598,7 @@ export default function EtchedMap() {
                       width: "100%",
                       textAlign: "left",
                       padding: "10px 24px",
-                      background: i === locationSelectedIdx ? (mode === "day" ? "#f7f7f7" : "#1a2448") : "none",
+                      background: i === locationSelectedIdx ? (mode === "day" ? "#f7f7f7" : "#1a1a1a") : "none",
                       border: "none",
                       borderBottom: `1px solid ${mode === "day" ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)"}`,
                       cursor: "default",
@@ -1685,7 +1787,7 @@ export default function EtchedMap() {
               <div style={{
                 position: "absolute",
                 left: 0, right: 0, bottom: 60,
-                background: mode === "day" ? "#ffffff" : "#0c1020",
+                background: mode === "day" ? "#ffffff" : "#111111",
                 borderTop: `1.5px solid ${t.textColor}`,
                 zIndex: 30,
               }}>
@@ -1713,7 +1815,7 @@ export default function EtchedMap() {
                       width: "100%",
                       textAlign: "left",
                       padding: "14px 20px",
-                      background: i === mentionSelectedIdx ? (mode === "day" ? "#f7f7f7" : "#1a2448") : "none",
+                      background: i === mentionSelectedIdx ? (mode === "day" ? "#f7f7f7" : "#1a1a1a") : "none",
                       border: "none",
                       borderBottom: `1px solid ${mode === "day" ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)"}`,
                       cursor: "default",
@@ -1796,7 +1898,7 @@ export default function EtchedMap() {
               height: 44,
               display: "flex", alignItems: "center", justifyContent: "center",
               background: composeText.trim() ? (mode === "day" ? "#000000" : "#ffffff") : "rgba(0,0,0,0.05)",
-              color: composeText.trim() ? (mode === "day" ? "#ffffff" : "#0e1428") : "rgba(0,0,0,0.2)",
+              color: composeText.trim() ? (mode === "day" ? "#ffffff" : "#141414") : "rgba(0,0,0,0.2)",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
@@ -1817,7 +1919,7 @@ export default function EtchedMap() {
           className="fixed z-40"
           style={{
             top: 40, right: 0, bottom: 40, width: 340,
-            background: mode === "day" ? "#ffffff" : "#0e1428",
+            background: mode === "day" ? "#ffffff" : "#141414",
             borderLeft: `1.5px solid ${t.textColor}`,
             display: "flex", alignItems: "center", justifyContent: "center",
             animation: "fadeIn 0.15s ease",
@@ -1857,11 +1959,11 @@ export default function EtchedMap() {
           <button
             onClick={() => goToObservation("prev")}
             onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#111111"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = mode === "night" ? "invert(1)" : "none" }}
             style={{
               flex: 1, height: 44,
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: mode === "day" ? "#ffffff" : "#0c1020",
+              background: mode === "day" ? "#ffffff" : "#111111",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               borderRight: `0.5px solid ${t.textColor}`,
@@ -1869,16 +1971,16 @@ export default function EtchedMap() {
               transition: "background 0.15s",
             }}
           >
-            <img src="/left-hand.svg" alt="Previous" style={{ height: 20, transition: "filter 0.15s" }} />
+            <img src="/left-hand.svg" alt="Previous" style={{ height: 20, transition: "filter 0.15s", filter: mode === "night" ? "invert(1)" : "none" }} />
           </button>
           <button
             onClick={goToRandomObservation}
             onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#111111"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = mode === "night" ? "invert(1)" : "none" }}
             style={{
               flex: 1, height: 44,
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: mode === "day" ? "#ffffff" : "#0c1020",
+              background: mode === "day" ? "#ffffff" : "#111111",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               borderLeft: `0.5px solid ${t.textColor}`,
@@ -1887,16 +1989,16 @@ export default function EtchedMap() {
               transition: "background 0.15s",
             }}
           >
-            <img src="/random.svg" alt="Random" style={{ height: 20, transition: "filter 0.15s" }} />
+            <img src="/random.svg" alt="Random" style={{ height: 20, transition: "filter 0.15s", filter: mode === "night" ? "invert(1)" : "none" }} />
           </button>
           <button
             onClick={() => goToObservation("next")}
             onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#111111"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = mode === "night" ? "invert(1)" : "none" }}
             style={{
               flex: 1, height: 44,
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: mode === "day" ? "#ffffff" : "#0c1020",
+              background: mode === "day" ? "#ffffff" : "#111111",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               borderLeft: `0.5px solid ${t.textColor}`,
@@ -1904,7 +2006,7 @@ export default function EtchedMap() {
               transition: "background 0.15s",
             }}
           >
-            <img src="/right-hand.svg" alt="Next" style={{ height: 20, transition: "filter 0.15s" }} />
+            <img src="/right-hand.svg" alt="Next" style={{ height: 20, transition: "filter 0.15s", filter: mode === "night" ? "invert(1)" : "none" }} />
           </button>
         </div>
       )}
@@ -1944,7 +2046,7 @@ export default function EtchedMap() {
         className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between"
         style={{
           height: 40,
-          background: mode === "day" ? "#ffffff" : "#0c1020",
+          background: mode === "day" ? "#ffffff" : "#111111",
           borderTop: `1.5px solid ${t.textColor}`,
           fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
           fontSize: 10,
@@ -2025,6 +2127,41 @@ export default function EtchedMap() {
           </button>
         </div>
       </div>
+
+      {/* ===== LOADING SCREEN ===== */}
+      {showLoading && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100,
+            background: "#ffffff",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            opacity: loadingFading ? 0 : 1,
+            transition: "opacity 1s ease",
+            pointerEvents: loadingFading ? "none" : "auto",
+          }}
+        >
+          <img
+            src="/globe-illustration.png"
+            alt=""
+            style={{
+              width: 280, height: "auto",
+              marginBottom: 32,
+            }}
+          />
+          <div style={{
+            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+            fontSize: 14, letterSpacing: "0.2em", textTransform: "uppercase",
+            color: "#1a1a1a",
+          }}>
+            <span style={{ fontWeight: 700 }}>State of the Art</span>
+            {" "}
+            <span style={{ fontWeight: 400 }}>Noticings</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
