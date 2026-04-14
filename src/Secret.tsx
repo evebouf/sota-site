@@ -54,6 +54,7 @@ export default function Secret() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [deleteConfirmation, setDeleteConfirmation] = useState(false)
   const [editConfirmation, setEditConfirmation] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
   const editRef = useRef<HTMLTextAreaElement>(null)
 
   const loadObservations = useCallback(async () => {
@@ -205,7 +206,7 @@ export default function Secret() {
             color: "rgba(0,0,0,0.3)",
           }}
         >
-          {observations.length} observation{observations.length !== 1 ? "s" : ""}
+          {searchQuery ? `${observations.filter(o => o.text.toLowerCase().includes(searchQuery.toLowerCase())).length} / ` : ""}{observations.length} observation{observations.length !== 1 ? "s" : ""}
         </span>
         <a
           href="/"
@@ -227,6 +228,27 @@ export default function Secret() {
         </a>
       </div>
 
+      {/* Search */}
+      <div style={{ maxWidth: 720, margin: "0 auto", padding: "16px 32px 0" }}>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search observations..."
+          style={{
+            width: "100%",
+            padding: "10px 16px",
+            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+            fontSize: 13,
+            color: "#1a1a1a",
+            background: "#f5f5f5",
+            border: "1px solid #e0e0e0",
+            outline: "none",
+            borderRadius: 0,
+          }}
+        />
+      </div>
+
       {/* List */}
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 32px 80px" }}>
         {loading && (
@@ -243,7 +265,7 @@ export default function Secret() {
           </div>
         )}
 
-        {observations.map((obs, i) => (
+        {observations.filter(o => !searchQuery || o.text.toLowerCase().includes(searchQuery.toLowerCase())).map((obs, i) => (
           <div
             key={obs.id}
             style={{
