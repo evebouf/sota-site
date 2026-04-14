@@ -1029,14 +1029,14 @@ export default function EtchedMap() {
             {/* Intro */}
             <div style={{
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 18, lineHeight: 1.7,
+              fontSize: 18, lineHeight: 1.7, fontWeight: 500,
               color: t.textColor, marginBottom: 16, maxWidth: 700,
             }}>
               <strong style={{ fontWeight: 700 }}>STATE OF THE ART</strong> is a zine produced in San Francisco.
             </div>
             <div style={{
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 16, lineHeight: 1.7,
+              fontSize: 16, lineHeight: 1.7, fontWeight: 500,
               color: t.textColor, marginBottom: 32, maxWidth: 700,
             }}>
               We publish nonfiction, fiction, and the occasional poem, online and in print. We believe in singular visions, sharp prose, evasive design, red meat, the liberatory promise of technology, and tomorrow.
@@ -1071,7 +1071,7 @@ export default function EtchedMap() {
               />
               <div style={{
                 fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 16, lineHeight: 1.7,
+                fontSize: 16, lineHeight: 1.7, fontWeight: 500,
                 color: t.textColor,
               }}>
                 <p style={{ marginBottom: 16 }}>
@@ -1098,7 +1098,7 @@ export default function EtchedMap() {
               <div style={{
                 display: "flex", gap: 32, flex: 1,
                 fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 14, lineHeight: 1.6,
+                fontSize: 14, lineHeight: 1.6, fontWeight: 500,
                 color: t.textColor,
               }}>
                 <div>Long press on map or click (+) to drop a pin.</div>
@@ -1849,6 +1849,36 @@ export default function EtchedMap() {
           </button>
         </div>
       )}
+
+      {/* ===== RSVP POSTERS (bottom-left) ===== */}
+      <a
+        href="https://partiful.com/e/rUUpQAXN3eyR0TGtjCCA"
+        target="_blank"
+        rel="noopener"
+        style={{
+          position: "fixed",
+          bottom: 88, left: 12,
+          zIndex: 20,
+          display: "flex", gap: 4,
+          textDecoration: "none",
+        }}
+      >
+        {[
+          { src: "/rsvp-yellow.png", label: "RSVP LONG" },
+          { src: "/rsvp-pink.png", label: "RSVP LIVE" },
+          { src: "/rsvp-red.png", label: "RSVP SF" },
+        ].map((poster, i) => (
+          <img
+            key={i}
+            src={poster.src}
+            alt={poster.label}
+            style={{
+              width: 56, height: "auto",
+              display: "block",
+            }}
+          />
+        ))}
+      </a>
 
       {/* ===== BOTTOM BANNER BAR ===== */}
       <div
