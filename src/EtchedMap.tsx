@@ -1161,7 +1161,7 @@ export default function EtchedMap() {
 
           <div style={{ padding: "20px 32px 60px" }}>
             <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
               fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
               transform: "scaleX(0.72)", transformOrigin: "left",
               color: t.textColor, marginBottom: 8,
@@ -1182,7 +1182,7 @@ export default function EtchedMap() {
               color: t.textColor,
             }}>
               <p style={{ marginBottom: 20 }}>
-                <strong style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 11, letterSpacing: "0.05em", transform: "scaleX(0.85)", display: "inline-block" }}>STATE OF THE ART</strong>, or <strong>SOTA ZINE</strong> is an indefensible project born out of the convictions of a megalomaniac. These convictions run as follows:
+                <strong style={{ fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: "0.05em", transform: "scaleX(0.85)", display: "inline-block" }}>STATE OF THE ART</strong>, or <strong>SOTA ZINE</strong> is an indefensible project born out of the convictions of a megalomaniac. These convictions run as follows:
               </p>
               <div style={{ paddingLeft: 20, marginBottom: 20 }}>
                 1) No one reads anymore<br />
@@ -1201,7 +1201,7 @@ export default function EtchedMap() {
               </p>
 
               <div style={{
-                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
                 fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
                 transform: "scaleX(0.75)", transformOrigin: "left",
                 color: t.textColor, marginBottom: 8, marginTop: 32,
@@ -1213,7 +1213,7 @@ export default function EtchedMap() {
               </p>
 
               <div style={{
-                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
                 fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
                 transform: "scaleX(0.75)", transformOrigin: "left",
                 color: t.textColor, marginBottom: 8, marginTop: 32,
@@ -1225,7 +1225,7 @@ export default function EtchedMap() {
               </p>
 
               <div style={{
-                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
                 fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
                 transform: "scaleX(0.75)", transformOrigin: "left",
                 color: t.textColor, marginBottom: 8, marginTop: 32,
@@ -1237,7 +1237,7 @@ export default function EtchedMap() {
               </p>
 
               <div style={{
-                fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
                 fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
                 transform: "scaleX(0.75)", transformOrigin: "left",
                 color: t.textColor, marginBottom: 8, marginTop: 32,
@@ -1353,13 +1353,18 @@ export default function EtchedMap() {
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               cursor: "default",
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase", fontWeight: 700,
               transition: "background 0.15s, color 0.15s",
             }}
           >
-            <span style={{ marginRight: 8, fontSize: 14, color: "#FF2A00", transform: "rotate(-90deg)", display: "inline-block" }}>➽</span>
-            Share
+            <svg width="0" height="0" style={{ position: "absolute" }}>
+              <filter id="distress">
+                <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.6" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
+            </svg>
+            <span style={{ filter: "url(#distress)", transform: "scaleX(0.85) skewX(-3deg)", display: "inline-block" }}>Share</span>
           </button>
         </div>
       )}
@@ -1452,7 +1457,7 @@ export default function EtchedMap() {
                 style={{
                   width: "100%",
                   padding: "14px 12px",
-                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
                   fontSize: 11,
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
@@ -1532,7 +1537,7 @@ export default function EtchedMap() {
           <div style={{ flex: 1, padding: "16px 24px 0", display: "flex", flexDirection: "column", position: "relative" }}>
             {/* Section label */}
             <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
               fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
               color: t.textColor, opacity: 0.25,
               transform: "scaleX(0.8)", transformOrigin: "center",
@@ -1752,7 +1757,7 @@ export default function EtchedMap() {
 
             {/* Character counter */}
             <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
               fontSize: 28,
               color: t.textColor,
               opacity: composeMaxChars - composeText.length < 20 ? 0.3 : 0.06,
@@ -1794,7 +1799,7 @@ export default function EtchedMap() {
               color: composeText.trim() ? (mode === "day" ? "#ffffff" : "#0e1428") : "rgba(0,0,0,0.2)",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
               fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
               cursor: "default",
               transition: "all 0.2s",
@@ -1820,7 +1825,7 @@ export default function EtchedMap() {
         >
           <div style={{ textAlign: "center", padding: 28 }}>
             <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
               fontSize: 14, letterSpacing: "0.2em", textTransform: "uppercase",
               transform: "scaleX(0.72)",
               color: t.textColor, marginBottom: 8,
@@ -1941,7 +1946,7 @@ export default function EtchedMap() {
           height: 40,
           background: mode === "day" ? "#ffffff" : "#0c1020",
           borderTop: `1.5px solid ${t.textColor}`,
-          fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+          fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
           fontSize: 10,
           letterSpacing: "0.15em",
           color: t.textColor,
