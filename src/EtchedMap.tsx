@@ -1307,7 +1307,7 @@ export default function EtchedMap() {
                   fontWeight: 500,
                   color: t.textColor,
                   background: "none",
-                  border: "none", borderBottom: `1px solid ${t.textColor}`,
+                  border: "none", borderBottom: `1.5px solid ${t.textColor}`,
                   outline: "none",
                   width: "100%",
                   resize: "none",
@@ -1826,7 +1826,7 @@ export default function EtchedMap() {
               background: mode === "day" ? "#ffffff" : "#0c1020",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
-              borderRight: `0.75px solid ${t.textColor}`,
+              borderRight: `0.5px solid ${t.textColor}`,
               cursor: "default",
               transition: "background 0.15s",
             }}
@@ -1843,8 +1843,8 @@ export default function EtchedMap() {
               background: mode === "day" ? "#ffffff" : "#0c1020",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
-              borderLeft: `0.75px solid ${t.textColor}`,
-              borderRight: `0.75px solid ${t.textColor}`,
+              borderLeft: `0.5px solid ${t.textColor}`,
+              borderRight: `0.5px solid ${t.textColor}`,
               cursor: "default",
               transition: "background 0.15s",
             }}
@@ -1861,7 +1861,7 @@ export default function EtchedMap() {
               background: mode === "day" ? "#ffffff" : "#0c1020",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
-              borderLeft: `0.75px solid ${t.textColor}`,
+              borderLeft: `0.5px solid ${t.textColor}`,
               cursor: "default",
               transition: "background 0.15s",
             }}
