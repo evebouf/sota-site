@@ -918,11 +918,7 @@ export default function EtchedMap() {
               <line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.5" />
             </svg>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 3, alignItems: "center" }}>
-              <div className="icon-line" style={{ width: 14, height: 1.5, background: "currentColor", transition: "background 0.2s" }} />
-              <div className="icon-line" style={{ width: 14, height: 1.5, background: "currentColor", transition: "background 0.2s" }} />
-              <div className="icon-line" style={{ width: 14, height: 1.5, background: "currentColor", transition: "background 0.2s" }} />
-            </div>
+            <img src="/question-mark.svg" alt="?" style={{ height: 16, filter: mode === "night" ? "invert(1)" : "none" }} />
           )}
         </button>
 
@@ -1345,12 +1341,11 @@ export default function EtchedMap() {
               const obs = selectedObservation
               const displayText = obs.text.replace(/@\[([^\]]+)\]/g, "@$1")
               const canvas = document.createElement("canvas")
-              const scale = 3
-              const w = 340, pad = 24
-              // Measure text height first
+              const w = 1080, pad = 72
+              // Measure text height
               const tempCanvas = document.createElement("canvas")
               const tempCtx = tempCanvas.getContext("2d")!
-              tempCtx.font = "500 32px 'Helvetica Neue', Helvetica, sans-serif"
+              tempCtx.font = "500 96px 'Helvetica Neue', Helvetica, sans-serif"
               const maxW = w - pad * 2
               const words = displayText.split(" ")
               let tempLine = "", lines: string[] = []
@@ -1361,70 +1356,64 @@ export default function EtchedMap() {
                 } else { tempLine = test }
               }
               lines.push(tempLine + " ➽")
-              const textBlockH = lines.length * 42
-              const h = Math.max(400, 28 + 14 + 4 + 14 + 28 + textBlockH + 80 + 44)
+              const textBlockH = lines.length * 125
+              const h = Math.max(1200, 84 + 42 + 12 + 42 + 84 + textBlockH + 240 + 132)
 
-              canvas.width = w * scale; canvas.height = h * scale
+              canvas.width = w; canvas.height = h
               const ctx = canvas.getContext("2d")!
-              ctx.scale(scale, scale)
 
               // Background
               ctx.fillStyle = "#ffffff"
               ctx.fillRect(0, 0, w, h)
 
-              // Left border
-              ctx.strokeStyle = "#1a1a1a"
-              ctx.lineWidth = 1.5
-              ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, h); ctx.stroke()
-
-              // Date — matches sidebar: Space Mono 9px, opacity 0.5
-              ctx.font = "9px 'Courier New', monospace"
+              // Date
+              ctx.font = "27px 'Courier New', monospace"
               ctx.fillStyle = "rgba(0,0,0,0.5)"
               const date = new Date(obs.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-              ctx.fillText(date, pad, 28 + 10)
+              ctx.fillText(date, pad, 110)
 
-              // Coordinates — Space Mono 9px, opacity 0.3
-              ctx.font = "9px 'Courier New', monospace"
+              // Coordinates
+              ctx.font = "27px 'Courier New', monospace"
               ctx.fillStyle = "rgba(0,0,0,0.3)"
-              ctx.fillText(`${obs.lat.toFixed(4)}°N ${Math.abs(obs.lng).toFixed(4)}°W`, pad, 28 + 10 + 18)
+              ctx.fillText(`${obs.lat.toFixed(4)}°N ${Math.abs(obs.lng).toFixed(4)}°W`, pad, 156)
 
-              // Observation text — Neue Haas Grotesk 32px, weight 500
-              ctx.font = "500 32px 'Helvetica Neue', Helvetica, sans-serif"
+              // Observation text
+              ctx.font = "500 96px 'Helvetica Neue', Helvetica, sans-serif"
               ctx.fillStyle = "#1a1a1a"
-              let textY = 28 + 10 + 18 + 28 + 32
+              let textY = 320
               for (const l of lines) {
                 ctx.fillText(l, pad, textY)
-                textY += 42
+                textY += 125
               }
 
               // Bottom border line
               ctx.strokeStyle = "#1a1a1a"
-              ctx.lineWidth = 1.5
-              ctx.beginPath(); ctx.moveTo(0, h - 44); ctx.lineTo(w, h - 44); ctx.stroke()
+              ctx.lineWidth = 3
+              ctx.beginPath(); ctx.moveTo(0, h - 132); ctx.lineTo(w, h - 132); ctx.stroke()
 
               // Bottom branding — centered
-              ctx.font = "bold 10px 'Helvetica Neue', Helvetica, sans-serif"
+              ctx.font = "bold 30px 'Helvetica Neue', Helvetica, sans-serif"
               ctx.fillStyle = "rgba(0,0,0,0.4)"
               const brandBold = "STATE OF THE ART"
               const brandLight = " NOTICINGS"
               const brandBoldW = ctx.measureText(brandBold).width
-              ctx.font = "10px 'Helvetica Neue', Helvetica, sans-serif"
+              ctx.font = "30px 'Helvetica Neue', Helvetica, sans-serif"
               const brandLightW = ctx.measureText(brandLight).width
               const brandTotalW = brandBoldW + brandLightW
               const brandX = (w - brandTotalW) / 2
-              ctx.font = "bold 10px 'Helvetica Neue', Helvetica, sans-serif"
-              ctx.fillText(brandBold, brandX, h - 18)
-              ctx.font = "10px 'Helvetica Neue', Helvetica, sans-serif"
-              ctx.fillText(brandLight, brandX + brandBoldW, h - 18)
+              ctx.font = "bold 30px 'Helvetica Neue', Helvetica, sans-serif"
+              ctx.fillText(brandBold, brandX, h - 54)
+              ctx.font = "30px 'Helvetica Neue', Helvetica, sans-serif"
+              ctx.fillText(brandLight, brandX + brandBoldW, h - 54)
 
               // Draw stamp
               await new Promise<void>((resolve) => {
                 const stamp = new Image()
                 stamp.onload = () => {
-                  const stampW = 100, stampH = stampW * (stamp.height / stamp.width)
+                  const stampW = 300, stampH = stampW * (stamp.height / stamp.width)
                   ctx.save()
                   ctx.globalAlpha = 0.1
-                  ctx.translate(w - pad - 20, textY + 10)
+                  ctx.translate(w - pad - 60, textY + 30)
                   ctx.rotate(-0.12)
                   ctx.drawImage(stamp, -stampW / 2, -stampH / 2, stampW, stampH)
                   ctx.restore()
