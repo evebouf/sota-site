@@ -771,6 +771,16 @@ export default function EtchedMap() {
   const t = themes[mode]
 
   // Navigate observations
+  const goToRandomObservation = useCallback(() => {
+    if (observations.length === 0) return
+    if (showCompose) closeCompose()
+    const padding = window.innerWidth < 768 ? { right: 280 } : { right: 360 }
+    const random = observations[Math.floor(Math.random() * observations.length)]
+    setSelectedObservation(random)
+    setEditingObservation(false)
+    if (mapRef.current) mapRef.current.flyTo({ center: [random.lng, random.lat], duration: 800, padding })
+  }, [observations, showCompose, closeCompose])
+
   const goToObservation = useCallback((direction: "prev" | "next") => {
     if (observations.length === 0) return
     if (showCompose) closeCompose()
@@ -1014,7 +1024,7 @@ export default function EtchedMap() {
         <div
           style={{
             position: "fixed",
-            top: 40, left: 0, bottom: 84.5,
+            top: 40, left: 0, bottom: 81.5,
             width: "min(75vw, 800px)",
             background: mode === "day" ? "#ffffff" : "#0c1020",
             borderRight: `1.5px solid ${t.textColor}`,
@@ -1807,45 +1817,58 @@ export default function EtchedMap() {
         >
           <button
             onClick={() => goToObservation("prev")}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; e.currentTarget.style.color = t.textColor }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
             style={{
               flex: 1,
-              padding: "14px 24px",
+              padding: "10px 24px",
               display: "flex", alignItems: "center", justifyContent: "center",
               background: mode === "day" ? "#ffffff" : "#0c1020",
-              color: t.textColor,
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               borderRight: `0.75px solid ${t.textColor}`,
               cursor: "default",
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
-              transition: "background 0.15s, color 0.15s",
+              transition: "background 0.15s",
             }}
           >
-            Previous
+            <img src="/left-hand.svg" alt="Previous" style={{ height: 20, transition: "filter 0.15s" }} />
+          </button>
+          <button
+            onClick={goToRandomObservation}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
+            style={{
+              flex: 1,
+              padding: "10px 24px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: mode === "day" ? "#ffffff" : "#0c1020",
+              border: "none",
+              borderTop: `1.5px solid ${t.textColor}`,
+              borderLeft: `0.75px solid ${t.textColor}`,
+              borderRight: `0.75px solid ${t.textColor}`,
+              cursor: "default",
+              transition: "background 0.15s",
+            }}
+          >
+            <img src="/random.svg" alt="Random" style={{ height: 20, transition: "filter 0.15s" }} />
           </button>
           <button
             onClick={() => goToObservation("next")}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff" }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; e.currentTarget.style.color = t.textColor }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
             style={{
               flex: 1,
-              padding: "14px 24px",
+              padding: "10px 24px",
               display: "flex", alignItems: "center", justifyContent: "center",
               background: mode === "day" ? "#ffffff" : "#0c1020",
-              color: t.textColor,
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
               borderLeft: `0.75px solid ${t.textColor}`,
               cursor: "default",
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
-              transition: "background 0.15s, color 0.15s",
+              transition: "background 0.15s",
             }}
           >
-            Next
+            <img src="/right-hand.svg" alt="Next" style={{ height: 20, transition: "filter 0.15s" }} />
           </button>
         </div>
       )}
