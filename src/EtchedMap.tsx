@@ -1024,7 +1024,7 @@ export default function EtchedMap() {
         <div
           style={{
             position: "fixed",
-            top: 40, left: 0, bottom: 81.5,
+            top: 40, left: 0, bottom: 84.25,
             width: "min(75vw, 800px)",
             background: mode === "day" ? "#ffffff" : "#0c1020",
             borderRight: `1.5px solid ${t.textColor}`,
@@ -1755,7 +1755,8 @@ export default function EtchedMap() {
             disabled={!composeText.trim()}
             style={{
               width: "100%",
-              padding: "14px 24px",
+              height: 44,
+              display: "flex", alignItems: "center", justifyContent: "center",
               background: composeText.trim() ? (mode === "day" ? "#000000" : "#ffffff") : "rgba(0,0,0,0.05)",
               color: composeText.trim() ? (mode === "day" ? "#ffffff" : "#0e1428") : "rgba(0,0,0,0.2)",
               border: "none",
@@ -1766,7 +1767,7 @@ export default function EtchedMap() {
               transition: "all 0.2s",
             }}
           >
-            Drop
+            Drop Pin
             {composeText.trim() && <span style={{ opacity: 0.4, fontSize: 8, letterSpacing: "0.15em", marginLeft: 8 }}>&#x23CE; Enter</span>}
           </button>
         </div>
@@ -1820,8 +1821,7 @@ export default function EtchedMap() {
             onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
             onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
             style={{
-              flex: 1,
-              padding: "10px 24px",
+              flex: 1, height: 44,
               display: "flex", alignItems: "center", justifyContent: "center",
               background: mode === "day" ? "#ffffff" : "#0c1020",
               border: "none",
@@ -1838,8 +1838,7 @@ export default function EtchedMap() {
             onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
             onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
             style={{
-              flex: 1,
-              padding: "10px 24px",
+              flex: 1, height: 44,
               display: "flex", alignItems: "center", justifyContent: "center",
               background: mode === "day" ? "#ffffff" : "#0c1020",
               border: "none",
@@ -1857,8 +1856,7 @@ export default function EtchedMap() {
             onMouseEnter={(e) => { e.currentTarget.style.background = "#000"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "invert(1)" }}
             onMouseLeave={(e) => { e.currentTarget.style.background = mode === "day" ? "#ffffff" : "#0c1020"; (e.currentTarget.querySelector("img") as HTMLImageElement).style.filter = "none" }}
             style={{
-              flex: 1,
-              padding: "10px 24px",
+              flex: 1, height: 44,
               display: "flex", alignItems: "center", justifyContent: "center",
               background: mode === "day" ? "#ffffff" : "#0c1020",
               border: "none",
