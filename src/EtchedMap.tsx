@@ -1422,7 +1422,11 @@ export default function EtchedMap() {
                 </button>
               </div>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", padding: "0 0 0 20px" }}>
+              <div
+                onMouseEnter={(e) => { e.currentTarget.style.background = mode === "day" ? "#f7f7f7" : "#1a2448" }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "none" }}
+                style={{ display: "flex", alignItems: "center", padding: "0 0 0 20px", transition: "background 0.15s" }}
+              >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, opacity: 0.3 }}>
                   <circle cx="6" cy="6" r="4.5" stroke={t.textColor} strokeWidth="1.3" />
                   <line x1="9.5" y1="9.5" x2="13" y2="13" stroke={t.textColor} strokeWidth="1.3" strokeLinecap="round" />
