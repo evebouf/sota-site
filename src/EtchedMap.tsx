@@ -66,9 +66,14 @@ fontStyle.textContent = `
   @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(-40px) } }
   @keyframes slideInRight { from { opacity: 0; transform: translateX(40px) } to { opacity: 1; transform: translateX(0) } }
   @keyframes slideOutRight { from { opacity: 1; transform: translateX(0) } to { opacity: 0; transform: translateX(40px) } }
-  .etched-map-root, .etched-map-root *, .etched-map-root button, .etched-map-root a {
+  .etched-map-root, .etched-map-root *, .etched-map-root button {
     cursor: default !important;
   }
+  .etched-map-root a, .etched-map-root a * {
+    cursor: pointer !important;
+  }
+  .sota-badge { transition: filter 0.4s ease; }
+  .sota-badge:hover { filter: invert(22%) sepia(98%) saturate(7471%) hue-rotate(11deg) brightness(101%) contrast(108%); }
   textarea::placeholder {
     color: rgba(0,0,0,0.15);
   }
@@ -98,6 +103,7 @@ fontStyle.textContent = `
     background: #000 !important;
     color: #fff !important;
   }
+  @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   ::selection {
     background: #FF2A00;
     color: #ffffff;
@@ -967,6 +973,41 @@ export default function EtchedMap() {
           )}
         </button>
       </div>
+
+      {/* ===== SPINNING BADGE (top-left) ===== */}
+      <a
+        href="https://sotazine.substack.com/"
+        target="_blank"
+        rel="noopener"
+        className="sota-badge"
+        style={{
+          position: "fixed",
+          top: 52, left: 12,
+          width: 120, height: 120,
+          zIndex: 20,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          textDecoration: "none",
+        }}
+      >
+        <img
+          src="/hyperstition-machine.svg"
+          alt=""
+          className="sota-spinner"
+          style={{
+            position: "absolute",
+            width: 120, height: 120,
+            animation: "spin-slow 20s linear infinite",
+          }}
+        />
+        <img
+          src="/read-sota.svg"
+          alt="Read SOTA"
+          style={{
+            position: "relative",
+            width: 64, height: "auto",
+          }}
+        />
+      </a>
 
       {/* ===== ABOUT PANEL (left sidebar) ===== */}
       {showAbout && (
