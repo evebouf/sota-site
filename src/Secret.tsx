@@ -166,7 +166,7 @@ export default function Secret() {
           zIndex: 20,
           background: "#ffffff",
           borderBottom: "1.5px solid #1a1a1a",
-          padding: "20px 32px",
+          padding: "16px 32px",
           display: "flex",
           alignItems: "baseline",
           justifyContent: "space-between",
@@ -197,17 +197,6 @@ export default function Secret() {
             admin
           </span>
         </div>
-        <span
-          style={{
-            position: "absolute", left: "50%", top: "50%",
-            transform: "translateX(-50%) translateY(-50%)",
-            fontSize: 9,
-            letterSpacing: "0.1em",
-            color: "rgba(0,0,0,0.3)",
-          }}
-        >
-          {searchQuery ? `${observations.filter(o => o.text.toLowerCase().includes(searchQuery.toLowerCase())).length} / ` : ""}{observations.length} observation{observations.length !== 1 ? "s" : ""}
-        </span>
         <a
           href="/"
           style={{
@@ -228,29 +217,33 @@ export default function Secret() {
         </a>
       </div>
 
-      {/* Search */}
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "16px 32px 0" }}>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search observations..."
-          style={{
-            width: "100%",
-            padding: "10px 16px",
-            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-            fontSize: 13,
-            color: "#1a1a1a",
-            background: "#f5f5f5",
-            border: "1px solid #e0e0e0",
-            outline: "none",
-            borderRadius: 0,
-          }}
-        />
-      </div>
-
       {/* List */}
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 32px 80px" }}>
+        {/* Search */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 0" }}>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={`Search ${observations.length} observations...`}
+            style={{
+              width: "100%",
+              padding: "8px 14px",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 13,
+              color: "#1a1a1a",
+              background: "#f5f5f5",
+              border: "1px solid #e0e0e0",
+              outline: "none",
+              borderRadius: 0,
+            }}
+          />
+          {searchQuery && (
+            <span style={{ fontSize: 9, letterSpacing: "0.1em", color: "rgba(0,0,0,0.3)", whiteSpace: "nowrap" }}>
+              {observations.filter(o => o.text.toLowerCase().includes(searchQuery.toLowerCase())).length} found
+            </span>
+          )}
+        </div>
         {loading && (
           <div
             style={{
