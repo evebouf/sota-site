@@ -1038,15 +1038,15 @@ export default function EtchedMap() {
           <div style={{ padding: "48px 48px 0", flex: 1 }}>
             {/* Intro */}
             <div style={{
-              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 18, lineHeight: 1.7, fontWeight: 500,
+              fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 18, lineHeight: 1.7, fontWeight: 400,
               color: t.textColor, marginBottom: 16, maxWidth: 700,
             }}>
-              <strong style={{ fontWeight: 700 }}>STATE OF THE ART</strong> is a zine produced in San Francisco.
+              <strong style={{ fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', sans-serif", fontWeight: 700 }}>STATE OF THE ART</strong> is a zine produced in San Francisco.
             </div>
             <div style={{
-              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 16, lineHeight: 1.7, fontWeight: 500,
+              fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 16, lineHeight: 1.7, fontWeight: 400,
               color: t.textColor, marginBottom: 32, maxWidth: 700,
             }}>
               We publish nonfiction, fiction, and the occasional poem, online and in print. We believe in singular visions, sharp prose, evasive design, red meat, the liberatory promise of technology, and tomorrow.
@@ -1080,12 +1080,12 @@ export default function EtchedMap() {
                 style={{ width: 120, height: 120, objectFit: "cover", flexShrink: 0 }}
               />
               <div style={{
-                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 16, lineHeight: 1.7, fontWeight: 500,
+                fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 16, lineHeight: 1.7, fontWeight: 400,
                 color: t.textColor,
               }}>
                 <p style={{ marginBottom: 16 }}>
-                  <strong style={{ fontWeight: 700 }}>NOTICINGS</strong> is a project by <strong style={{ fontWeight: 700 }}>STATE OF THE ART</strong>.
+                  <strong style={{ fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', sans-serif", fontWeight: 700 }}>NOTICINGS</strong> is a project by <strong style={{ fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', sans-serif", fontWeight: 700 }}>STATE OF THE ART</strong>.
                 </p>
                 <p>
                   What story could only you tell us about San Francisco? Tell us in no more than three lines. The more detailed, the better.
@@ -1107,8 +1107,8 @@ export default function EtchedMap() {
               </div>
               <div style={{
                 display: "flex", gap: 32, flex: 1,
-                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 14, lineHeight: 1.6, fontWeight: 500,
+                fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 14, lineHeight: 1.6, fontWeight: 400,
                 color: t.textColor,
               }}>
                 <div>Long press on map or click (+) to drop a pin.</div>
