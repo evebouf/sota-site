@@ -52,12 +52,14 @@ export default function Secret() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState("")
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false)
+  const [editConfirmation, setEditConfirmation] = useState(false)
   const editRef = useRef<HTMLTextAreaElement>(null)
 
   const loadObservations = useCallback(async () => {
     const { data, error } = await supabase
       .from("observations")
-      .select("*")
+      .select("id, text, lat, lng, created_at, observer_id")
       .order("created_at", { ascending: false })
     if (error) { console.error("Failed to load:", error); return }
     setObservations((data || []) as Observation[])
@@ -96,13 +98,18 @@ export default function Secret() {
     )
     setEditingId(null)
     setEditText("")
+    setEditConfirmation(true)
+    setTimeout(() => setEditConfirmation(false), 2000)
   }
 
   const deleteObservation = async (id: string) => {
-    const { error } = await supabase.from("observations").delete().eq("id", id)
-    if (error) { console.error("Failed to delete:", error); return }
+    const { error, count } = await supabase.from("observations").delete({ count: "exact" }).eq("id", id)
+    if (error) { console.error("Failed to delete:", error); alert(`Delete failed: ${error.message}`); return }
+    if (count === 0) { alert("Delete blocked — check Supabase RLS policies"); return }
     setObservations(prev => prev.filter(o => o.id !== id))
     setConfirmDeleteId(null)
+    setDeleteConfirmation(true)
+    setTimeout(() => setDeleteConfirmation(false), 2000)
   }
 
   const formatDate = (iso: string) => {
@@ -120,6 +127,35 @@ export default function Secret() {
         fontFamily: "'Space Mono', monospace",
       }}
     >
+      {/* Edit confirmation */}
+      {editConfirmation && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0,
+          background: "#22c55e", color: "#ffffff",
+          padding: "10px 32px",
+          fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+          fontSize: 12, fontWeight: 500,
+          textAlign: "center",
+          zIndex: 50,
+        }}>
+          Observation updated
+        </div>
+      )}
+
+      {/* Delete confirmation */}
+      {deleteConfirmation && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0,
+          background: "#22c55e", color: "#ffffff",
+          padding: "10px 32px",
+          fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+          fontSize: 12, fontWeight: 500,
+          textAlign: "center",
+          zIndex: 50,
+        }}>
+          Observation deleted
+        </div>
+      )}
 
       {/* Header */}
       <div
@@ -162,6 +198,8 @@ export default function Secret() {
         </div>
         <span
           style={{
+            position: "absolute", left: "50%", top: "50%",
+            transform: "translateX(-50%) translateY(-50%)",
             fontSize: 9,
             letterSpacing: "0.1em",
             color: "rgba(0,0,0,0.3)",
@@ -169,6 +207,24 @@ export default function Secret() {
         >
           {observations.length} observation{observations.length !== 1 ? "s" : ""}
         </span>
+        <a
+          href="/"
+          style={{
+            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
+            fontSize: 9,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            color: "#ffffff",
+            textDecoration: "none",
+            background: "#1a1a1a",
+            padding: "8px 16px",
+            transition: "opacity 0.15s",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = "0.7" }}
+          onMouseLeave={e => { e.currentTarget.style.opacity = "1" }}
+        >
+          View Map
+        </a>
       </div>
 
       {/* List */}
@@ -209,15 +265,6 @@ export default function Secret() {
                   style={{
                     fontSize: 9,
                     letterSpacing: "0.1em",
-                    color: "rgba(0,0,0,0.4)",
-                  }}
-                >
-                  #{obs.observer_id}
-                </span>
-                <span
-                  style={{
-                    fontSize: 9,
-                    letterSpacing: "0.1em",
                     color: "rgba(0,0,0,0.25)",
                   }}
                 >
@@ -240,15 +287,15 @@ export default function Secret() {
                   <>
                     <button
                       onClick={saveEdit}
-                      onMouseEnter={e => { e.currentTarget.style.color = "#FF2A00" }}
-                      onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
+                      onMouseEnter={e => { e.currentTarget.style.color = "#1a1a1a" }}
+                      onMouseLeave={e => { e.currentTarget.style.color = "#1a1a1a" }}
                       style={{
                         fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
                         fontSize: 9,
                         letterSpacing: "0.15em",
                         textTransform: "uppercase",
                         transform: "scaleX(0.8)",
-                        color: "rgba(0,0,0,0.25)",
+                        color: "#1a1a1a",
                         background: "none",
                         border: "none",
                         cursor: "pointer",
@@ -315,34 +362,40 @@ export default function Secret() {
                         </span>
                         <button
                           onClick={() => deleteObservation(obs.id)}
+                          onMouseEnter={e => { e.currentTarget.style.color = "#FF2A00" }}
+                          onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
                           style={{
                             fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
                             fontSize: 9,
                             letterSpacing: "0.15em",
                             textTransform: "uppercase",
                             transform: "scaleX(0.8)",
-                            color: "#FF2A00",
+                            color: "rgba(0,0,0,0.25)",
                             background: "none",
                             border: "none",
                             cursor: "pointer",
                             padding: "2px 0",
+                            transition: "color 0.15s",
                           }}
                         >
                           Yes
                         </button>
                         <button
                           onClick={() => setConfirmDeleteId(null)}
+                          onMouseEnter={e => { e.currentTarget.style.color = "#1a1a1a" }}
+                          onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
                           style={{
                             fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
                             fontSize: 9,
                             letterSpacing: "0.15em",
                             textTransform: "uppercase",
                             transform: "scaleX(0.8)",
-                            color: "rgba(0,0,0,0.3)",
+                            color: "rgba(0,0,0,0.25)",
                             background: "none",
                             border: "none",
                             cursor: "pointer",
                             padding: "2px 0",
+                            transition: "color 0.15s",
                           }}
                         >
                           No
