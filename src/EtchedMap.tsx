@@ -1040,14 +1040,6 @@ export default function EtchedMap() {
               <div>4. Click any dot to read what others noticed</div>
             </div>
 
-            <div style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 9, letterSpacing: "0.1em",
-              color: t.textColor, opacity: 0.5,
-              marginBottom: 28,
-            }}>
-              Your observer ID: {getObserverId()}
-            </div>
 
             </>) : (
               <div style={{ flex: 1, overflowY: "auto", paddingBottom: 20, scrollbarWidth: "none", msOverflowStyle: "none" }} className="hide-scrollbar">
@@ -1314,14 +1306,14 @@ export default function EtchedMap() {
           }}
         >
           <div style={{ padding: "28px 24px", flex: 1, overflowY: "auto" }}>
-            {/* Observer ID + date */}
+            {/* Date */}
             <div style={{
               fontFamily: "'Space Mono', monospace",
               fontSize: 9, letterSpacing: "0.1em",
               color: t.textColor, opacity: 0.5,
               marginBottom: 4,
             }}>
-              Observer #{selectedObservation.observer_id} — {new Date(selectedObservation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              {new Date(selectedObservation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </div>
 
             {/* Coordinates */}
