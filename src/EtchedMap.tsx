@@ -1324,7 +1324,7 @@ export default function EtchedMap() {
                 color: t.textColor,
               }}>
                 {renderTextWithMentions(selectedObservation.text, t.textColor)}
-                <span style={{ color: t.textColor, marginLeft: 10, fontSize: "0.6em" }}>➽</span>
+                <span style={{ color: t.textColor, marginLeft: 7, fontSize: "0.6em", verticalAlign: "middle" }}>➽</span>
               </div>
             )}
           </div>
