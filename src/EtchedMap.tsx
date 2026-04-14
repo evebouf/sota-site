@@ -344,7 +344,7 @@ export default function EtchedMap() {
   }, [])
 
   const closeAbout = useCallback(() => {
-    setShowAbout(false); setClosingAbout(false); setAboutPage("about")
+    setShowAbout(false); setClosingAbout(false)
   }, [])
 
   const closeManifesto = useCallback(() => {
@@ -1009,188 +1009,105 @@ export default function EtchedMap() {
         />
       </a>
 
-      {/* ===== ABOUT PANEL (left sidebar) ===== */}
+      {/* ===== ABOUT PANEL (full-width overlay) ===== */}
       {showAbout && (
         <div
           style={{
             position: "fixed",
-            top: 40, left: 0, bottom: 40,
-            width: 340,
+            top: 40, left: 0, bottom: 84.5,
+            width: "min(75vw, 800px)",
             background: mode === "day" ? "#ffffff" : "#0c1020",
             borderRight: `1.5px solid ${t.textColor}`,
-            zIndex: 25,
+            zIndex: 35,
             overflowY: "auto",
-            cursor: "default",
             animation: "none",
             display: "flex", flexDirection: "column",
           }}
+          className="hide-scrollbar"
         >
-          {/* Stamp overlay — on the emblem */}
-          <img
-            src="/stamp-sota.png"
-            alt=""
-            style={{
-              position: "absolute",
-              right: 10, top: 30,
-              width: 160, height: "auto",
-              opacity: 0.25,
-              transform: "rotate(-8deg)",
-              pointerEvents: "none",
-              zIndex: 1,
-            }}
-          />
-          <div style={{ padding: "28px 28px 0", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            {aboutPage === "about" ? (<>
-            <img
-              src="/sota-emblem.png"
-              alt="SOTA"
-              style={{ width: "100%", marginBottom: 20, display: "block" }}
-            />
+          <div style={{ padding: "48px 48px 0", flex: 1 }}>
+            {/* Intro */}
             <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase",
-              transform: "scaleX(0.72)", transformOrigin: "left",
-              color: t.textColor, marginBottom: 20,
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 18, lineHeight: 1.7,
+              color: t.textColor, marginBottom: 16, maxWidth: 700,
             }}>
-              Acts of Attention
+              <strong style={{ fontWeight: 700 }}>STATE OF THE ART</strong> is a zine produced in San Francisco.
             </div>
             <div style={{
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 13, lineHeight: 1.7,
-              color: t.textColor, marginBottom: 28,
+              fontSize: 16, lineHeight: 1.7,
+              color: t.textColor, marginBottom: 32, maxWidth: 700,
             }}>
-              San Francisco reveals itself to those who look. This map collects moments of attention — small observations, fleeting details, fragments of the city that might otherwise go unnoticed.
+              We publish nonfiction, fiction, and the occasional poem, online and in print. We believe in singular visions, sharp prose, evasive design, red meat, the liberatory promise of technology, and tomorrow.
             </div>
 
-            <div style={{
-              fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-              fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase",
-              transform: "scaleX(0.75)", transformOrigin: "left",
-              color: t.textColor, marginBottom: 14,
-            }}>
-              How it works
-            </div>
-            <div style={{
-              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 12, lineHeight: 1.8,
-              color: t.textColor, marginBottom: 28,
-            }}>
-              <div style={{ marginBottom: 8 }}>1. Long-press on the map to drop a pin</div>
-              <div style={{ marginBottom: 8 }}>2. Write what caught your eye (200 chars max)</div>
-              <div style={{ marginBottom: 8 }}>3. Your observation joins the collective map</div>
-              <div>4. Click any dot to read what others noticed</div>
-            </div>
-
-
-            </>) : (
-              <div style={{ flex: 1, overflowY: "auto", paddingBottom: 20, scrollbarWidth: "none", msOverflowStyle: "none" }} className="hide-scrollbar">
-                <div style={{
-                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                  fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
-                  transform: "scaleX(0.72)", transformOrigin: "left",
-                  color: t.textColor, marginBottom: 8,
-                }}>
-                  What is SOTA ZINE?
-                </div>
-                <div style={{
-                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                  fontSize: 11, letterSpacing: "0.1em",
-                  color: t.textColor, marginBottom: 24,
-                }}>
-                  Sanjana Friedman — Editor and Publisher
-                </div>
-                <div style={{
-                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                  fontSize: 13, lineHeight: 1.7, color: t.textColor,
-                }}>
-                  <p style={{ marginBottom: 16 }}>
-                    <strong style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 11, letterSpacing: "0.05em" }}>STATE OF THE ART</strong>, or <strong>SOTA ZINE</strong> is an indefensible project born out of the convictions of a megalomaniac. These convictions run as follows:
-                  </p>
-                  <div style={{ paddingLeft: 16, marginBottom: 16 }}>
-                    1) No one reads anymore<br />
-                    2) No one values good design<br />
-                    3) No one cares<br />
-                    4) We will die if we don't do the work
-                  </div>
-                  <p style={{ marginBottom: 16 }}>
-                    Actually, <strong>SOTA ZINE</strong> was born out of a directive from a donor (hereafter referred to collectively as "THE DONORS") to "make a cool techno-optimist zine." Techno-optimism is, as far as we can tell, a recent coinage; it emerged near-simultaneously with the affirmation that "we are the media now." It is also a nonsense phrase. Techno-optimism? We are optimistic about technology? Technology doesn't accept predicates like "optimism" — technology is just the inevitable consequence of human organization and ingenuity. Technology exists. What does it mean for our lives?
-                  </p>
-                  <p style={{ marginBottom: 16 }}>
-                    Ok, we are being obtuse. What the "techno-optimists" really mean to say is that they are sick of the mediocre schoolmarm critic class that regards every attempt to MAKE IT NEW as an attack. Right. This is our common enemy: the hand-wringers, the self-satisfied, and above all the mediocrities.
-                  </p>
-                  <p style={{ marginBottom: 16 }}>
-                    <strong>SOTA ZINE</strong> believes in velocity and heat; <strong>SOTA ZINE</strong> believes in singular genius; <strong>SOTA ZINE</strong> believes that some things are better than others; <strong>SOTA ZINE</strong> believes in doing the work; <strong>SOTA ZINE</strong> believes in making new things; <strong>SOTA ZINE</strong> believes in tomorrow.
-                  </p>
-                  <div style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "left", color: t.textColor, marginBottom: 8, marginTop: 24 }}>Red Meat</div>
-                  <p style={{ marginBottom: 16 }}>
-                    We should do things that look GOOD. Even an inside joke which operates on multiple levels (some of which will be inscrutable to all but us) should be legible to the drooling median social media user as, simply, "cool." This doesn't mean we dumb things down; it just means that everything should also work at some obvious level.
-                  </p>
-                  <div style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "left", color: t.textColor, marginBottom: 8, marginTop: 24 }}>All Killer No Filler</div>
-                  <p style={{ marginBottom: 16 }}>
-                    We should strive to make everything we touch excellent — according to our very high standards. The goal should always be excellence in prose, visuals, ideas, execution. We obsess over details. We do not accept anything — a phrase, a design choice, a title — that doesn't make sense. In this we will never be satisfied, of course. That is our curse.
-                  </p>
-                  <div style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "left", color: t.textColor, marginBottom: 8, marginTop: 24 }}>Faber Ludens</div>
-                  <p style={{ marginBottom: 16 }}>
-                    Maker at play. We are doing our life's work; how could we not have fun. Harry Mathews gives us this: "Literature and game playing, literature as game playing… The words evoke a weedy figure: the playful writer… sauntering down sunny boulevards... Faber ludens — a little ludicrous, too."
-                  </p>
-                  <div style={{ fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", transform: "scaleX(0.75)", transformOrigin: "left", color: t.textColor, marginBottom: 8, marginTop: 24 }}>Sharp Lines, No Approximation</div>
-                  <p style={{ marginBottom: 16 }}>
-                    I keep coming back to this line from Bernhard's hallucination of Glenn Gould: "He loved things with sharp contours, detested approximation. One of his favorite words was self-discipline… He was the most ruthless person toward himself. He never allowed himself to be imprecise."
-                  </p>
-                  <p style={{ marginBottom: 16 }}>
-                    <strong>SOTA ZINE</strong> is not like the other girls; everything we do should be something that only we could do. We are in the business of remembering that we exist as human beings — as unique embodied subjectivities that exist in "the brief crack of light between two eternities of darkness." ➽
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div style={{ display: "flex", flexDirection: "column", marginTop: "auto", marginLeft: -28, marginRight: -28 }}>
-              <button
-                onClick={() => aboutPage === "about" ? setAboutPage("manifesto") : setAboutPage("about")}
-                className="icon-btn"
-                onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
-                style={{
-                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                  fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
-                  color: t.textColor,
-                  background: "none",
-                  border: "none",
-                  borderTop: `1.5px solid ${t.textColor}`,
-                  padding: "14px 28px",
-                  cursor: "default",
-                  width: "100%",
-                  textAlign: "left",
-                  transition: "background 0.15s, color 0.15s",
-                }}
-              >
-                {aboutPage === "about" ? "Read the Manifesto" : "Back to About"}
-              </button>
+            {/* Read the zine link */}
+            <div style={{ marginBottom: 48, textAlign: "right", maxWidth: 700 }}>
               <a
-                href="https://x.com/sotazine"
+                href="https://sotazine.substack.com/"
                 target="_blank"
                 rel="noopener"
-                className="icon-btn"
-                onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = "1" }}
                 style={{
-                  fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                  fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
-                  color: t.textColor,
-                  background: "none",
-                  border: "none",
-                  borderTop: `1.5px solid ${t.textColor}`,
-                  padding: "14px 28px",
-                  cursor: "default",
-                  width: "100%",
-                  textAlign: "left",
-                  textDecoration: "none",
-                  display: "block",
-                  transition: "background 0.15s, color 0.15s",
+                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                  fontSize: 16, fontWeight: 700,
+                  color: t.textColor, textDecoration: "none",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
                 }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = "0.5" }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = "1" }}
               >
-                @sotazine
+                Read the Zine Here
               </a>
+            </div>
+
+            {/* Noticings section */}
+            <div style={{ display: "flex", gap: 24, marginBottom: 32, alignItems: "flex-start", maxWidth: 700 }}>
+              <img
+                src="/sota-emblem.png"
+                alt="SOTA"
+                style={{ width: 120, height: 120, objectFit: "cover", flexShrink: 0 }}
+              />
+              <div style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 16, lineHeight: 1.7,
+                color: t.textColor,
+              }}>
+                <p style={{ marginBottom: 16 }}>
+                  <strong style={{ fontWeight: 700 }}>NOTICINGS</strong> is a project by <strong style={{ fontWeight: 700 }}>STATE OF THE ART</strong>.
+                </p>
+                <p>
+                  What story could only you tell us about San Francisco? Tell us in no more than three lines. The more detailed, the better.
+                </p>
+              </div>
+            </div>
+
+            {/* How It Works */}
+            <div style={{ display: "flex", gap: 24, alignItems: "flex-start", marginBottom: 48, maxWidth: 700 }}>
+              <div style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 22, fontWeight: 700,
+                color: t.textColor,
+                lineHeight: 1.2,
+                flexShrink: 0,
+                width: 120,
+              }}>
+                How It Works
+              </div>
+              <div style={{
+                display: "flex", gap: 32, flex: 1,
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 14, lineHeight: 1.6,
+                color: t.textColor,
+              }}>
+                <div>Long press on map or click (+) to drop a pin.</div>
+                <div>Write a diary entry (250 chars max).</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  <div>Explore other pins on the map to step into other stories.</div>
+                  <div>Download and share what you noticed.</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1883,7 +1800,7 @@ export default function EtchedMap() {
           className="fixed z-30"
           style={{
             bottom: 40,
-            left: showAbout && !closingAbout ? 340 : 0,
+            left: 0,
             right: (showCompose && !closingCompose) || (selectedObservation && !showCompose) ? 340 : 0,
             display: "flex",
           }}
