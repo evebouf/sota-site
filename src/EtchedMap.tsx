@@ -1276,7 +1276,7 @@ export default function EtchedMap() {
           style={{
             position: "fixed",
             top: 40, right: 0, bottom: 40,
-            width: window.innerWidth < 768 ? "100%" : 340,
+            width: 340,
             background: mode === "day" ? "#ffffff" : "#111111",
             borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
