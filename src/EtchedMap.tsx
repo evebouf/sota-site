@@ -1276,7 +1276,7 @@ export default function EtchedMap() {
           style={{
             position: "fixed",
             top: 40, right: 0, bottom: 40,
-            width: 340,
+            width: window.innerWidth < 768 ? "100%" : 340,
             background: mode === "day" ? "#ffffff" : "#111111",
             borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
@@ -1285,7 +1285,20 @@ export default function EtchedMap() {
             animation: "none",
           }}
         >
-          <div style={{ padding: "16px 24px", flex: 1, overflowY: "auto" }}>
+          <div style={{ padding: "20px 24px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+            {/* Date + Coordinates — top */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: 9, letterSpacing: "0.1em",
+                color: t.textColor, opacity: 0.4,
+              }}>
+                {new Date(selectedObservation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                &nbsp;&nbsp;·&nbsp;&nbsp;
+                {selectedObservation.lat.toFixed(4)}°N {Math.abs(selectedObservation.lng).toFixed(4)}°W
+              </div>
+            </div>
+
             {/* Observation text or edit textarea */}
             {editingObservation ? (
               <textarea
@@ -1295,7 +1308,7 @@ export default function EtchedMap() {
                 maxLength={composeMaxChars}
                 style={{
                   fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                  fontSize: 32, lineHeight: 1.3,
+                  fontSize: 24, lineHeight: 1.4,
                   fontWeight: 500,
                   color: t.textColor,
                   background: "none",
@@ -1305,13 +1318,13 @@ export default function EtchedMap() {
                   resize: "none",
                   cursor: "default",
                   padding: 0,
-                  minHeight: 120,
+                  flex: 1,
                 }}
               />
             ) : (
               <div style={{
                 fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 32, lineHeight: 1.3,
+                fontSize: 24, lineHeight: 1.4,
                 fontWeight: 500,
                 color: t.textColor,
               }}>
@@ -1319,25 +1332,6 @@ export default function EtchedMap() {
                 <span style={{ color: t.textColor, marginLeft: 7, fontSize: "0.6em", verticalAlign: "middle" }}>➽</span>
               </div>
             )}
-
-            {/* Date + Coordinates */}
-            <div style={{ marginTop: 24 }}>
-              <div style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 9, letterSpacing: "0.1em",
-                color: t.textColor, opacity: 0.5,
-                marginBottom: 4,
-              }}>
-                {new Date(selectedObservation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-              </div>
-              <div style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 9, letterSpacing: "0.1em",
-                color: t.textColor, opacity: 0.3,
-              }}>
-                {selectedObservation.lat.toFixed(4)}°N {Math.abs(selectedObservation.lng).toFixed(4)}°W
-              </div>
-            </div>
           </div>
 
           {/* Share button */}
