@@ -1149,7 +1149,7 @@ export default function EtchedMap() {
                 style={{
                   fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
                   fontSize: 14,
-                  fontWeight: 700,
+                  fontWeight: 500,
                   color: "#FF2A00",
                   borderBottom: "1px solid #FF2A00",
                   paddingBottom: 1,
