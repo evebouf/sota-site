@@ -99,6 +99,13 @@ fontStyle.textContent = `
   .sota-btn:active {
     /* removed */
   }
+  .about-btn:hover {
+    background: #000 !important;
+    color: #fff !important;
+  }
+  .about-btn:hover img {
+    filter: invert(1) !important;
+  }
   .icon-btn:hover {
     background: #000 !important;
     color: #fff !important;
@@ -893,31 +900,14 @@ export default function EtchedMap() {
       >
         {/* Left: Hamburger / X */}
         <button
-          className="icon-btn"
-          onClick={(e) => {
-            const btn = e.currentTarget
+          className="about-btn"
+          onClick={() => {
             if (showAbout && !closingAbout) {
               closeAbout()
-              setTimeout(() => {
-                btn.style.background = "none"
-                btn.style.color = t.textColor
-                const img = btn.querySelector("img") as HTMLImageElement
-                if (img) img.style.filter = mode === "night" ? "invert(1)" : "none"
-              }, 0)
             } else if (!showAbout) {
               setShowAbout(true)
               setClosingAbout(false)
             }
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#000"; e.currentTarget.style.color = "#fff"
-            const img = e.currentTarget.querySelector("img") as HTMLImageElement
-            if (img) img.style.filter = "invert(1)"
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "none"; e.currentTarget.style.color = t.textColor
-            const img = e.currentTarget.querySelector("img") as HTMLImageElement
-            if (img) img.style.filter = mode === "night" ? "invert(1)" : "none"
           }}
           style={{
             width: 40, height: 40,
@@ -933,7 +923,7 @@ export default function EtchedMap() {
               <line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.5" />
             </svg>
           ) : (
-            <img src="/question-mark.svg" alt="?" style={{ height: 16, filter: mode === "night" ? "invert(1)" : "none", transition: "filter 0.15s" }} />
+            <img src="/question-mark.svg" alt="?" style={{ height: 16, transition: "filter 0.15s" }} />
           )}
         </button>
 
