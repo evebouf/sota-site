@@ -969,11 +969,12 @@ export default function EtchedMap() {
             }
           }}
           onMouseEnter={(e) => {
-            if (showCompose) { e.currentTarget.style.opacity = "0.5" }
-            else { e.currentTarget.style.opacity = "0.85" }
+            e.currentTarget.style.background = "#000"
+            e.currentTarget.style.color = "#fff"
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = "1"
+            e.currentTarget.style.background = showCompose ? "none" : "#FF2A00"
+            e.currentTarget.style.color = showCompose ? t.textColor : "#ffffff"
           }}
           style={{
             width: 40, height: 40,
