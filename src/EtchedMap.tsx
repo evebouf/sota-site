@@ -2126,22 +2126,50 @@ export default function EtchedMap() {
             pointerEvents: loadingFading ? "none" : "auto",
           }}
         >
-          <img
-            src="/globe-illustration.png"
-            alt=""
-            style={{
-              width: 280, height: "auto",
-              marginBottom: 32,
-            }}
-          />
           <div style={{
             fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-            fontSize: 14, letterSpacing: "0.2em", textTransform: "uppercase",
+            fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 400, fontStyle: "italic",
             color: "#1a1a1a",
+            textAlign: "center",
+            letterSpacing: "-0.02em",
+            marginBottom: 16,
           }}>
-            <span style={{ fontWeight: 700 }}>State of the Art</span>
-            {" "}
-            <span style={{ fontWeight: 400 }}>Noticings</span>
+            TELL US A
+          </div>
+          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{
+              position: "absolute", left: "-clamp(120px, 18vw, 220px)",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700,
+              color: "#1a1a1a",
+            }}>
+              State of the Art
+            </span>
+            <img
+              src="/globe-illustration.png"
+              alt=""
+              style={{
+                width: "clamp(300px, 45vw, 520px)", height: "auto",
+              }}
+            />
+            <span style={{
+              position: "absolute", right: "-clamp(80px, 12vw, 160px)",
+              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 400,
+              color: "#1a1a1a",
+            }}>
+              Noticings
+            </span>
+          </div>
+          <div style={{
+            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+            fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 700,
+            color: "#1a1a1a",
+            textAlign: "center",
+            letterSpacing: "-0.02em",
+            marginTop: 16,
+          }}>
+            SAN FRANCISCO STORY
           </div>
         </div>
       )}
