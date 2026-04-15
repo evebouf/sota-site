@@ -1131,6 +1131,38 @@ export default function EtchedMap() {
                 </div>
               </div>
             </div>
+
+            {/* Contact CTA */}
+            <div style={{
+              fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
+              fontSize: 14, lineHeight: 1.7, fontWeight: 400,
+              color: t.textColor, maxWidth: 700, paddingBottom: 48,
+            }}>
+              For inquiries or pitches, email{" "}
+              <span
+                onClick={(e) => {
+                  e.preventDefault()
+                  navigator.clipboard.writeText("stateoftheartmag@gmail.com")
+                  const check = e.currentTarget.parentElement?.querySelector("[data-check]") as HTMLElement
+                  if (check) { check.style.opacity = "1"; check.style.width = "50px"; check.style.marginLeft = "6px"; setTimeout(() => { check.style.opacity = "0"; check.style.width = "0"; check.style.marginLeft = "0" }, 1500) }
+                }}
+                style={{
+                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#FF2A00",
+                  borderBottom: "1px solid #FF2A00",
+                  paddingBottom: 1,
+                  cursor: "pointer",
+                  transition: "opacity 0.15s",
+                  position: "relative",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = "0.6" }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = "1" }}
+              >
+                stateoftheartmag@gmail.com</span>.
+              <span data-check="" style={{ opacity: 0, transition: "opacity 0.2s, width 0.2s, margin-left 0.2s", color: "#22c55e", fontSize: 14, fontWeight: 500, width: 0, marginLeft: 0, overflow: "hidden", display: "inline", whiteSpace: "nowrap" }}>&#8202;copied</span>
+            </div>
           </div>
         </div>
       )}
