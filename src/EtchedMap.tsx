@@ -227,7 +227,7 @@ export default function EtchedMap() {
   const [editText, setEditText] = useState("")
 
   // Compose state — open by default
-  const [showCompose, setShowCompose] = useState(true)
+  const [showCompose, setShowCompose] = useState(() => window.innerWidth >= 768)
   const [closingCompose, setClosingCompose] = useState(false)
 
   const [composeText, setComposeText] = useState("")
