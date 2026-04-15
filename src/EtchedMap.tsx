@@ -894,9 +894,16 @@ export default function EtchedMap() {
         {/* Left: Hamburger / X */}
         <button
           className="icon-btn"
-          onClick={() => {
+          onClick={(e) => {
+            const btn = e.currentTarget
             if (showAbout && !closingAbout) {
               closeAbout()
+              setTimeout(() => {
+                btn.style.background = "none"
+                btn.style.color = t.textColor
+                const img = btn.querySelector("img") as HTMLImageElement
+                if (img) img.style.filter = mode === "night" ? "invert(1)" : "none"
+              }, 0)
             } else if (!showAbout) {
               setShowAbout(true)
               setClosingAbout(false)
