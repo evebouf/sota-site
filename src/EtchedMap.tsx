@@ -2126,50 +2126,57 @@ export default function EtchedMap() {
             pointerEvents: loadingFading ? "none" : "auto",
           }}
         >
-          <div style={{
-            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-            fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 400, fontStyle: "italic",
-            color: "#1a1a1a",
-            textAlign: "center",
-            letterSpacing: "-0.02em",
-            marginBottom: 16,
-          }}>
-            TELL US A
-          </div>
-          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{
-              position: "absolute", left: "-clamp(120px, 18vw, 220px)",
+          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700,
+              fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 400,
               color: "#1a1a1a",
+              textAlign: "center",
+              letterSpacing: "-0.02em",
+              marginBottom: -24,
+              zIndex: 1,
             }}>
-              State of the Art
-            </span>
-            <img
-              src="/globe-illustration.png"
-              alt=""
-              style={{
-                width: "clamp(300px, 45vw, 520px)", height: "auto",
-              }}
-            />
-            <span style={{
-              position: "absolute", right: "-clamp(80px, 12vw, 160px)",
+              TELL US A
+            </div>
+            <div style={{ position: "relative" }}>
+              <img
+                src="/globe-illustration.png"
+                alt=""
+                style={{
+                  width: "min(65vh, 50vw)", maxWidth: 500, height: "auto",
+                  display: "block",
+                }}
+              />
+              <span style={{
+                position: "absolute", left: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700,
+                color: "#1a1a1a",
+                whiteSpace: "nowrap",
+              }}>
+                State of the Art
+              </span>
+              <span style={{
+                position: "absolute", right: "clamp(-120px, -10vw, -60px)", top: "50%", transform: "translateY(-50%)",
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 400,
+                color: "#1a1a1a",
+                whiteSpace: "nowrap",
+              }}>
+                Noticings
+              </span>
+            </div>
+            <div style={{
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 400,
+              fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 700,
               color: "#1a1a1a",
+              textAlign: "center",
+              letterSpacing: "-0.02em",
+              marginTop: -20,
+              zIndex: 1,
             }}>
-              Noticings
-            </span>
-          </div>
-          <div style={{
-            fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-            fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 700,
-            color: "#1a1a1a",
-            textAlign: "center",
-            letterSpacing: "-0.02em",
-            marginTop: 16,
-          }}>
-            SAN FRANCISCO STORY
+              SAN FRANCISCO STORY
+            </div>
           </div>
         </div>
       )}
