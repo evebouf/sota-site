@@ -1279,27 +1279,7 @@ export default function EtchedMap() {
             animation: "none",
           }}
         >
-          <div style={{ padding: "28px 24px", flex: 1, overflowY: "auto" }}>
-            {/* Date */}
-            <div style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 9, letterSpacing: "0.1em",
-              color: t.textColor, opacity: 0.5,
-              marginBottom: 4,
-            }}>
-              {new Date(selectedObservation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-            </div>
-
-            {/* Coordinates */}
-            <div style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 9, letterSpacing: "0.1em",
-              color: t.textColor, opacity: 0.3,
-              marginBottom: 28,
-            }}>
-              {selectedObservation.lat.toFixed(4)}°N {Math.abs(selectedObservation.lng).toFixed(4)}°W
-            </div>
-
+          <div style={{ padding: "16px 24px", flex: 1, overflowY: "auto" }}>
             {/* Observation text or edit textarea */}
             {editingObservation ? (
               <textarea
@@ -1333,6 +1313,25 @@ export default function EtchedMap() {
                 <span style={{ color: t.textColor, marginLeft: 7, fontSize: "0.6em", verticalAlign: "middle" }}>➽</span>
               </div>
             )}
+
+            {/* Date + Coordinates */}
+            <div style={{ marginTop: 24 }}>
+              <div style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: 9, letterSpacing: "0.1em",
+                color: t.textColor, opacity: 0.5,
+                marginBottom: 4,
+              }}>
+                {new Date(selectedObservation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </div>
+              <div style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: 9, letterSpacing: "0.1em",
+                color: t.textColor, opacity: 0.3,
+              }}>
+                {selectedObservation.lat.toFixed(4)}°N {Math.abs(selectedObservation.lng).toFixed(4)}°W
+              </div>
+            </div>
           </div>
 
           {/* Share button */}
@@ -1848,34 +1847,23 @@ export default function EtchedMap() {
 
             {/* Character counter */}
             <div style={{
-              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
-              fontSize: 28,
-              color: t.textColor,
-              opacity: composeMaxChars - composeText.length < 20 ? 0.3 : 0.06,
-              textAlign: "right",
+              display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8,
               padding: "8px 0 16px",
+              opacity: composeMaxChars - composeText.length < 20 ? 0.3 : 0.06,
               transition: "opacity 0.3s",
-              transform: "scaleX(0.75)",
-              transformOrigin: "right",
             }}>
-              {composeMaxChars - composeText.length}
+              <img src="/char-count-icon.svg" alt="" style={{ height: 22 }} />
+              <span style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
+                fontSize: 28,
+                color: t.textColor,
+                transform: "scaleX(0.75)",
+                transformOrigin: "right",
+              }}>
+                {composeMaxChars - composeText.length}
+              </span>
             </div>
 
-            {/* Stamp — fades when typing */}
-            <div style={{
-              marginTop: "auto",
-              display: "flex", justifyContent: "center",
-              padding: "0 0 16px",
-              opacity: composeText ? 0 : 0.15,
-              transition: "opacity 0.5s",
-              pointerEvents: "none",
-            }}>
-              <img
-                src="/stamp-sota.png"
-                alt=""
-                style={{ width: 140, height: "auto" }}
-              />
-            </div>
           </div>
 
           {/* Drop button */}
