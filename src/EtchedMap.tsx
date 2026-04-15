@@ -1275,19 +1275,20 @@ export default function EtchedMap() {
         <div
           style={{
             position: "fixed",
-            top: 40, right: 0, bottom: 40,
-            width: 340,
+            ...(window.innerWidth < 768
+              ? { left: 0, right: 0, bottom: 84, top: "auto", borderTop: `1.5px solid ${t.textColor}`, maxHeight: "60vh" }
+              : { top: 40, right: 0, bottom: 40, width: 340, borderLeft: `1.5px solid ${t.textColor}` }
+            ),
             background: mode === "day" ? "#ffffff" : "#111111",
-            borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             display: "flex", flexDirection: "column",
             cursor: "default",
             animation: "none",
           }}
         >
-          <div style={{ padding: "20px 24px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+          <div style={{ padding: "16px 20px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
             {/* Date + Coordinates — top */}
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 12 }}>
               <div style={{
                 fontFamily: "'Space Mono', monospace",
                 fontSize: 9, letterSpacing: "0.1em",
@@ -1929,7 +1930,7 @@ export default function EtchedMap() {
           style={{
             bottom: 40,
             left: 0,
-            right: (showCompose && !closingCompose) || (selectedObservation && !showCompose) ? 340 : 0,
+            right: (showCompose && !closingCompose) || (selectedObservation && !showCompose && window.innerWidth >= 768) ? 340 : 0,
             display: "flex",
           }}
         >
