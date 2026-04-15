@@ -389,7 +389,7 @@ export default function EtchedMap() {
       const m = mapRef.current
       if (m) {
         // Offset center to the left so pin isn't hidden behind the right sidebar
-        const padding = window.innerWidth < 768 ? { right: 280 } : { right: 360 }
+        const padding = window.innerWidth < 768 ? { bottom: Math.round(window.innerHeight * 0.55) } : { right: 360 }
         m.flyTo({ center: [obs.lng, obs.lat], duration: 800, padding })
       }
     })
@@ -791,7 +791,7 @@ export default function EtchedMap() {
   const goToRandomObservation = useCallback(() => {
     if (observations.length === 0) return
     if (showCompose) closeCompose()
-    const padding = window.innerWidth < 768 ? { right: 280 } : { right: 360 }
+    const padding = window.innerWidth < 768 ? { bottom: Math.round(window.innerHeight * 0.55) } : { right: 360 }
     const random = observations[Math.floor(Math.random() * observations.length)]
     setSelectedObservation(random)
     setEditingObservation(false)
@@ -801,7 +801,7 @@ export default function EtchedMap() {
   const goToObservation = useCallback((direction: "prev" | "next") => {
     if (observations.length === 0) return
     if (showCompose) closeCompose()
-    const padding = window.innerWidth < 768 ? { right: 280 } : { right: 360 }
+    const padding = window.innerWidth < 768 ? { bottom: Math.round(window.innerHeight * 0.55) } : { right: 360 }
     if (!selectedObservation) {
       const obs = direction === "next" ? observations[0] : observations[observations.length - 1]
       setSelectedObservation(obs)
