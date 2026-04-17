@@ -43,3 +43,10 @@ body {
   0% { transform: scaleY(0.4); }
   100% { transform: scaleY(1); }
 }
+
+/* ===== LOADING SCREEN ===== */
+
+@keyframes loadingArcDraw {
+  0% { stroke-dashoffset: 1445; }
+  100% { stroke-dashoffset: 0; }
+}

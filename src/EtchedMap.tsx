@@ -212,13 +212,20 @@ export default function EtchedMap() {
   const [altitude, setAltitude] = useState({ zoom: 15.8, pitch: 45, bearing: -15 })
 
 
-  // Dismiss loading screen when map ready
+  // Minimum loading screen duration
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false)
   useEffect(() => {
-    if (ready) {
-      setTimeout(() => setLoadingFading(true), 500)
+    const timer = setTimeout(() => setMinTimeElapsed(true), 3500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Dismiss loading screen when map ready AND minimum time elapsed
+  useEffect(() => {
+    if (ready && minTimeElapsed) {
+      setTimeout(() => setLoadingFading(true), 400)
       setTimeout(() => setShowLoading(false), 1500)
     }
-  }, [ready])
+  }, [ready, minTimeElapsed])
 
   // Observations state
   const [observations, setObservations] = useState<Observation[]>([])
@@ -1976,7 +1983,7 @@ export default function EtchedMap() {
               background: mode === "day" ? "#ffffff" : "#111111",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
-              borderRight: `0.5px solid ${t.textColor}`,
+              borderRight: `1.5px solid ${t.textColor}`,
               cursor: "default",
               transition: "background 0.15s",
             }}
@@ -1993,8 +2000,7 @@ export default function EtchedMap() {
               background: mode === "day" ? "#ffffff" : "#111111",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
-              borderLeft: `0.5px solid ${t.textColor}`,
-              borderRight: `0.5px solid ${t.textColor}`,
+              borderRight: `1.5px solid ${t.textColor}`,
               cursor: "default",
               transition: "background 0.15s",
             }}
@@ -2011,7 +2017,6 @@ export default function EtchedMap() {
               background: mode === "day" ? "#ffffff" : "#111111",
               border: "none",
               borderTop: `1.5px solid ${t.textColor}`,
-              borderLeft: `0.5px solid ${t.textColor}`,
               cursor: "default",
               transition: "background 0.15s",
             }}
@@ -2174,6 +2179,40 @@ export default function EtchedMap() {
                   display: "block",
                 }}
               />
+              {/* Progress ring */}
+              <svg
+                viewBox="0 0 500 500"
+                style={{
+                  position: "absolute",
+                  top: "50%", left: "50%",
+                  width: "110%", height: "110%",
+                  transform: "translate(-50%, -50%)",
+                  pointerEvents: "none",
+                }}
+              >
+                {/* Track */}
+                <circle
+                  cx="250" cy="250" r="230"
+                  fill="none"
+                  stroke="rgba(0,0,0,0.06)"
+                  strokeWidth="3"
+                />
+                {/* Red progress arc */}
+                <circle
+                  cx="250" cy="250" r="230"
+                  fill="none"
+                  stroke="#FF2A00"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray="1445"
+                  strokeDashoffset="1445"
+                  style={{
+                    animation: "loadingArcDraw 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+                    transformOrigin: "center",
+                    transform: "rotate(-90deg)",
+                  }}
+                />
+              </svg>
               <span style={{
                 position: "absolute", left: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
                 fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
@@ -2184,7 +2223,7 @@ export default function EtchedMap() {
                 State of the Art
               </span>
               <span style={{
-                position: "absolute", right: "clamp(-120px, -10vw, -60px)", top: "50%", transform: "translateY(-50%)",
+                position: "absolute", right: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
                 fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
                 fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 400,
                 color: "#1a1a1a",
