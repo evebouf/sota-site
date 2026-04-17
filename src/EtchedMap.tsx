@@ -1095,9 +1095,9 @@ export default function EtchedMap() {
             {/* Noticings section */}
             <div style={{ display: "flex", gap: 24, marginBottom: 32, alignItems: "flex-start", maxWidth: 700 }}>
               <img
-                src="/sota-emblem.png"
-                alt="SOTA"
-                style={{ width: 120, height: 120, objectFit: "cover", flexShrink: 0 }}
+                src="/noticings-eye.png"
+                alt="Noticings"
+                style={{ width: 120, height: 120, objectFit: "contain", flexShrink: 0 }}
               />
               <div style={{
                 fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
