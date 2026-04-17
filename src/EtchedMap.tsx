@@ -1080,7 +1080,8 @@ export default function EtchedMap() {
                 style={{
                   fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
                   fontSize: 16, fontWeight: 700,
-                  color: t.textColor, textDecoration: "none",
+                  color: "#FF2A00", textDecoration: "underline",
+                  textUnderlineOffset: "3px",
                   textTransform: "uppercase",
                   letterSpacing: "0.05em",
                 }}
@@ -1115,8 +1116,8 @@ export default function EtchedMap() {
             {/* How It Works */}
             <div style={{ display: "flex", gap: 24, alignItems: "flex-start", marginBottom: 48, maxWidth: 700 }}>
               <div style={{
-                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 22, fontWeight: 700,
+                fontFamily: "'Cooper Black', serif",
+                fontSize: 22, fontWeight: 400,
                 color: t.textColor,
                 lineHeight: 1.2,
                 flexShrink: 0,
@@ -2081,7 +2082,7 @@ export default function EtchedMap() {
             userSelect: "none",
           }}
         >
-          EDITION 01 — 20&#8203;26
+          NO. 1 THE CITY
         </span>
 
         {/* Center: Live coordinates */}
@@ -2109,7 +2110,7 @@ export default function EtchedMap() {
               userSelect: "none",
             }}
           >
-            State of the Art
+            SPRING 2026
           </span>
           <button
             onClick={() => setMode(mode === "day" ? "night" : "day")}
