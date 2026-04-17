@@ -208,6 +208,7 @@ export default function EtchedMap() {
   const [showLoading, setShowLoading] = useState(true)
   const [loadingFading, setLoadingFading] = useState(false)
   const [mode, setMode] = useState<MapMode>("day")
+  const [showFlyers, setShowFlyers] = useState(false)
   const [coords, setCoords] = useState({ lat: 37.8008, lng: -122.4058 })
   const [altitude, setAltitude] = useState({ zoom: 15.8, pitch: 45, bearing: -15 })
 
@@ -2037,16 +2038,16 @@ export default function EtchedMap() {
       )}
 
       {/* ===== RSVP POSTERS (bottom-left) ===== */}
-      <a
-        href="https://partiful.com/e/rUUpQAXN3eyR0TGtjCCA"
-        target="_blank"
-        rel="noopener"
+      <div
+        onClick={() => setShowFlyers(true)}
+        className="rsvp-posters"
         style={{
           position: "fixed",
           bottom: 88, left: 12,
           zIndex: 20,
           display: "flex", gap: 4,
-          textDecoration: "none",
+          cursor: "default",
+          perspective: "600px",
         }}
       >
         {[
@@ -2058,13 +2059,85 @@ export default function EtchedMap() {
             key={i}
             src={poster.src}
             alt={poster.label}
+            className="rsvp-card"
             style={{
-              width: 56, height: "auto",
+              width: 72, height: "auto",
               display: "block",
+              transition: `transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${i * 0.08}s`,
+              transformStyle: "preserve-3d",
             }}
           />
         ))}
-      </a>
+      </div>
+
+      {/* ===== FLYER LIGHTBOX ===== */}
+      {showFlyers && (
+        <div
+          className="flyer-lightbox"
+          onClick={() => setShowFlyers(false)}
+          style={{
+            position: "fixed", inset: 0,
+            zIndex: 200,
+            background: "rgba(0,0,0,0.85)",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            cursor: "default",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              display: "flex", gap: "clamp(16px, 3vw, 40px)",
+              alignItems: "center",
+              perspective: "1200px",
+            }}
+          >
+            {[
+              { src: "/rsvp-yellow.png", label: "RSVP LONG", rotate: -8 },
+              { src: "/rsvp-pink.png", label: "RSVP LIVE", rotate: 0 },
+              { src: "/rsvp-red.png", label: "RSVP SF", rotate: 6 },
+            ].map((poster, i) => (
+              <a
+                key={i}
+                href="https://partiful.com/e/rUUpQAXN3eyR0TGtjCCA"
+                target="_blank"
+                rel="noopener"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={poster.src}
+                  alt={poster.label}
+                  className="flyer-card"
+                  style={{
+                    width: "clamp(160px, 22vw, 280px)", height: "auto",
+                    display: "block",
+                    transform: `rotate(${poster.rotate}deg)`,
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                    animation: `flyerEnter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.12}s both`,
+                    transition: "transform 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = `rotate(0deg) scale(1.08) translateY(-12px)` }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${poster.rotate}deg)` }}
+                />
+              </a>
+            ))}
+          </div>
+          <button
+            onClick={() => setShowFlyers(false)}
+            style={{
+              position: "absolute", top: 24, right: 24,
+              background: "none", border: "none",
+              color: "rgba(255,255,255,0.4)",
+              fontSize: 24, cursor: "default",
+              transition: "color 0.2s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "#ffffff" }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.4)" }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* ===== BOTTOM BANNER BAR ===== */}
       <div
