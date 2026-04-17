@@ -238,7 +238,7 @@ export default function EtchedMap() {
   const [closingCompose, setClosingCompose] = useState(false)
 
   const [composeText, setComposeText] = useState("")
-  const composeMaxChars = 200
+  const composeMaxChars = 250
 
   // @ mention autocomplete state
   type MentionResult = { name: string; address: string; mapbox_id: string }
@@ -1668,10 +1668,9 @@ export default function EtchedMap() {
           <div style={{ flex: 1, padding: "16px 24px 0", display: "flex", flexDirection: "column", position: "relative" }}>
             {/* Section label */}
             <div style={{
-              fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
-              fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase",
+              fontFamily: "'Cooper Black', serif", fontWeight: 400,
+              fontSize: 14, letterSpacing: "0.05em",
               color: t.textColor, opacity: 0.25,
-              transform: "scaleX(0.8)", transformOrigin: "center",
               marginBottom: 12,
               textAlign: "center",
             }}>
@@ -1888,20 +1887,30 @@ export default function EtchedMap() {
 
             {/* Character counter */}
             <div style={{
-              display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8,
+              display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6,
               padding: "8px 0 16px",
               opacity: composeMaxChars - composeText.length < 20 ? 0.3 : 0.06,
               transition: "opacity 0.3s",
+              color: t.textColor,
             }}>
-              <img src="/char-count-icon.svg" alt="" style={{ height: 22 }} />
               <span style={{
                 fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
                 fontSize: 28,
-                color: t.textColor,
                 transform: "scaleX(0.75)",
                 transformOrigin: "right",
               }}>
-                {composeMaxChars - composeText.length}
+                {composeText.length}
+              </span>
+              <svg width="35" height="26" viewBox="0 0 35 26" fill="none" style={{ flexShrink: 0 }}>
+                <path d="M0.173 13.256L0.202 12.993C0.534 10.713 0.692 9.266 2.956 9.207C3.995 9.12 5.235 8.988 6.259 9.003C8.047 9.105 9.114 9.646 10.758 8.857C16.209 6.752 9.518 4.428 11.22 1.096C12.532-1.198 14.94 0.599 16.382 2.28C16.685 2.572 17.031 2.865 17.421 3.025C18.661 3.595 19.988 2.718 21.242 3.011C21.819 3.142 22.367 3.464 22.886 3.785C25.28 5.349 27.732 7.117 29.448 9.573C30.89 12.335 31.654 15.317 32.736 18.313C33.154 19.979 33.356 21.104 34.178 22.668C34.553 23.53 35.202 24.626 34.957 25.547C34.221 26.862 30.847 25.167 29.722 24.202C28.583 23.209 27.343 22.507 25.872 22.902C23.059 23.779 20.103 23.106 17.176 22.77C15.2 22.668 12.979 23.384 10.989 23.062C10.513 23.019 10.037 22.989 9.59 23.136C8.826 23.369 8.494 23.969 7.903 24.378C6.836 25.021 5.567 24.699 4.125 24.772C2.697 24.729 1.817 24.787 1.226 23.749C0.13 20.607-0.259 16.617 0.173 13.329V13.256ZM31.842 23.369C32.116 23.501 32.39 23.618 32.664 23.72C32.577 23.53 32.462 23.311 32.318 23.077C32.145 22.799 31.943 22.492 31.683 22.156C31.496 22.332 31.337 22.507 31.222 22.668C31.15 22.77 31.078 22.872 31.034 22.975C31.294 23.121 31.568 23.267 31.842 23.384V23.369ZM30.357 18.196C30.53 18.473 30.717 18.59 30.861 18.634L29.982 16.603C29.982 16.603 29.982 16.676 29.982 16.705C29.982 17.319 30.111 17.816 30.357 18.196ZM28.41 16.5C28.41 15.784 29.217 15.17 29.217 14.513C28.727 11.327 25.944 8.857 23.607 7.059C22.829 6.46 21.17 5.261 20.42 5.013H20.363C20.291 5.071 20.146 5.159 19.945 5.305C19.872 5.232 19.296 6.051 19.512 6.021C21.502 8.608 24.877 11.473 26.564 13.943C27.343 14.951 27.761 16.836 28.583 17.757C28.612 17.567 28.323 16.822 28.395 16.5H28.41ZM24.949 20.286C24.992 20.359 25.035 20.446 25.107 20.519C26.102 20.344 26.549 20.154 26.737 20.037C27.011 19.876 27.04 19.701 27.04 19.54C27.04 18.926 26.203 18.444 25.497 18.137C25.425 18.108 25.352 18.079 25.266 18.049V18.093C25.107 18.546 24.992 18.912 24.934 19.204C24.877 19.482 24.848 19.701 24.848 19.876C24.848 20.023 24.877 20.154 24.934 20.286H24.949ZM7.932 19.584C8.768 20.695 10.628 20.68 11.898 20.812H12.128C13.498 20.812 15.633 20.096 17.003 20.242C18.834 20.373 21.271 21.659 22.987 21.075C23.535 20.826 23.319 19.935 23.492 19.116C23.708 18.386 24.04 17.903 23.55 17.684C21.041 16.807 17.334 18.693 16.022 15.433C15.517 14.454 15.734 14.06 16.642 14.454C17.536 14.805 18.647 15.243 18.618 14.805C18.401 13.928 17.853 12.861 17.781 11.853C17.623 10.888 16.628 9.368 15.488 9.105C13.397 9.587 11.494 11.546 9.273 11.736C8.811 11.838 8.292 11.999 8.004 12.379C6.994 14.264 7.009 17.655 7.917 19.569L7.932 19.584ZM3.75 22.039C4.125 22.2 5.927 22.302 6.374 22.171C6.72 21.82 5.884 19.759 5.884 19.146L5.841 18.926C5.278 16.72 5.769 14.045 5.869 11.897C5.769 11.648 5.206 11.692 4.6 11.707C2.033 10.874 2.553 20.987 3.735 22.054L3.75 22.039Z" fill="currentColor"/>
+              </svg>
+              <span style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif", fontWeight: 700,
+                fontSize: 28,
+                transform: "scaleX(0.75)",
+                transformOrigin: "left",
+              }}>
+                {composeMaxChars}
               </span>
             </div>
 
