@@ -69,7 +69,8 @@ fontStyle.textContent = `
   .etched-map-root, .etched-map-root *, .etched-map-root button {
     cursor: default !important;
   }
-  .etched-map-root a, .etched-map-root a * {
+  .etched-map-root a, .etched-map-root a *,
+  .etched-map-root .rsvp-posters, .etched-map-root .rsvp-posters * {
     cursor: pointer !important;
   }
   .sota-badge { transition: filter 0.4s ease; }
@@ -2046,7 +2047,7 @@ export default function EtchedMap() {
           bottom: 88, left: 12,
           zIndex: 20,
           display: "flex", gap: 4,
-          cursor: "default",
+          cursor: "pointer",
           perspective: "600px",
         }}
       >
