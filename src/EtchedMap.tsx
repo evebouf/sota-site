@@ -1483,11 +1483,6 @@ export default function EtchedMap() {
                 transition: "opacity 0.4s ease, transform 0.4s ease",
               }}>
                 <span style={{
-                  color: "#FF2A00",
-                  fontSize: 10,
-                  lineHeight: 1,
-                }}>&#9679;</span>
-                <span style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: 9,
                   color: t.textColor, opacity: 0.4,
