@@ -1444,87 +1444,102 @@ export default function EtchedMap() {
               const obs = selectedObservation
               const displayText = obs.text.replace(/@\[([^\]]+)\]/g, "@$1")
               const canvas = document.createElement("canvas")
-              const w = 1080, pad = 72
-              // Measure text height
+              const w = 1920, h = 1080
+              const pad = 80
+
+              // Measure text to position it right-aligned block
               const tempCanvas = document.createElement("canvas")
               const tempCtx = tempCanvas.getContext("2d")!
-              tempCtx.font = "500 96px 'Helvetica Neue', Helvetica, sans-serif"
-              const maxW = w - pad * 2
+              const fontSize = 72
+              const lineH = 92
+              tempCtx.font = `bold ${fontSize}px 'Helvetica Neue', Helvetica, sans-serif`
+              const textMaxW = w * 0.52
               const words = displayText.split(" ")
               let tempLine = "", lines: string[] = []
               for (const word of words) {
                 const test = tempLine + (tempLine ? " " : "") + word
-                if (tempCtx.measureText(test).width > maxW && tempLine) {
+                if (tempCtx.measureText(test).width > textMaxW && tempLine) {
                   lines.push(tempLine); tempLine = word
                 } else { tempLine = test }
               }
               lines.push(tempLine + " ➽")
-              const textBlockH = lines.length * 125
-              const h = Math.max(1200, 84 + 42 + 12 + 42 + 84 + textBlockH + 240 + 132)
 
               canvas.width = w; canvas.height = h
               const ctx = canvas.getContext("2d")!
 
-              // Background
+              // White background
               ctx.fillStyle = "#ffffff"
               ctx.fillRect(0, 0, w, h)
 
-              // Date
-              ctx.font = "27px 'Courier New', monospace"
-              ctx.fillStyle = "rgba(0,0,0,0.5)"
-              const date = new Date(obs.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-              ctx.fillText(date, pad, 110)
-
-              // Coordinates
-              ctx.font = "27px 'Courier New', monospace"
-              ctx.fillStyle = "rgba(0,0,0,0.3)"
-              ctx.fillText(`${obs.lat.toFixed(4)}°N ${Math.abs(obs.lng).toFixed(4)}°W`, pad, 156)
-
-              // Observation text
-              ctx.font = "500 96px 'Helvetica Neue', Helvetica, sans-serif"
-              ctx.fillStyle = "#1a1a1a"
-              let textY = 320
-              for (const l of lines) {
-                ctx.fillText(l, pad, textY)
-                textY += 125
-              }
-
-              // Bottom border line
-              ctx.strokeStyle = "#1a1a1a"
-              ctx.lineWidth = 3
-              ctx.beginPath(); ctx.moveTo(0, h - 132); ctx.lineTo(w, h - 132); ctx.stroke()
-
-              // Bottom branding — centered
-              ctx.font = "bold 30px 'Helvetica Neue', Helvetica, sans-serif"
-              ctx.fillStyle = "rgba(0,0,0,0.4)"
-              const brandBold = "STATE OF THE ART"
-              const brandLight = " NOTICINGS"
-              const brandBoldW = ctx.measureText(brandBold).width
-              ctx.font = "30px 'Helvetica Neue', Helvetica, sans-serif"
-              const brandLightW = ctx.measureText(brandLight).width
-              const brandTotalW = brandBoldW + brandLightW
-              const brandX = (w - brandTotalW) / 2
-              ctx.font = "bold 30px 'Helvetica Neue', Helvetica, sans-serif"
-              ctx.fillText(brandBold, brandX, h - 54)
-              ctx.font = "30px 'Helvetica Neue', Helvetica, sans-serif"
-              ctx.fillText(brandLight, brandX + brandBoldW, h - 54)
-
-              // Draw stamp
+              // Draw stamp watermark — large, centered, behind everything
               await new Promise<void>((resolve) => {
                 const stamp = new Image()
                 stamp.onload = () => {
-                  const stampW = 300, stampH = stampW * (stamp.height / stamp.width)
+                  const stampH = h * 0.85
+                  const stampW = stampH * (stamp.width / stamp.height)
                   ctx.save()
-                  ctx.globalAlpha = 0.1
-                  ctx.translate(w - pad - 60, textY + 30)
-                  ctx.rotate(-0.12)
-                  ctx.drawImage(stamp, -stampW / 2, -stampH / 2, stampW, stampH)
+                  ctx.globalAlpha = 0.06
+                  ctx.drawImage(stamp, (w - stampW) / 2, (h - stampH) / 2, stampW, stampH)
                   ctx.restore()
                   resolve()
                 }
                 stamp.onerror = () => resolve()
                 stamp.src = "/sota-stamp-black.png"
               })
+
+              // Top left: red dot + location name
+              ctx.fillStyle = "#FF2A00"
+              ctx.beginPath()
+              ctx.arc(pad + 10, pad + 10, 10, 0, Math.PI * 2)
+              ctx.fill()
+
+              const locName = locationName || ""
+              if (locName) {
+                ctx.font = `bold 28px 'Helvetica Neue', Helvetica, sans-serif`
+                ctx.fillStyle = "#1a1a1a"
+                ctx.letterSpacing = "2px"
+                const locUpper = locName.toUpperCase()
+                // Word wrap location if needed
+                const locWords = locUpper.split(/([,] )/)
+                let locLine1 = "", locLine2 = ""
+                for (const lw of locWords) {
+                  if (!locLine2 && ctx.measureText(locLine1 + lw).width < w * 0.35) {
+                    locLine1 += lw
+                  } else {
+                    locLine2 += lw
+                  }
+                }
+                ctx.fillText(locLine1.trim(), pad + 36, pad + 18)
+                if (locLine2) ctx.fillText(locLine2.trim(), pad + 36, pad + 50)
+              }
+
+              // Top right: coordinates + date
+              ctx.font = `28px 'Courier New', monospace`
+              ctx.fillStyle = "rgba(0,0,0,0.4)"
+              const coordStr = `${obs.lat.toFixed(4)}°N  ${Math.abs(obs.lng).toFixed(4)}°W`
+              const dateStr = new Date(obs.created_at).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "2-digit" }).replace(/\//g, ".")
+              const coordW = ctx.measureText(coordStr).width
+              const dateW = ctx.measureText(dateStr).width
+              ctx.fillText(coordStr, w - pad - coordW - dateW - 60, pad + 18)
+              ctx.fillText(dateStr, w - pad - dateW, pad + 18)
+
+              // Observation text — right half, vertically centered
+              ctx.font = `bold ${fontSize}px 'Helvetica Neue', Helvetica, sans-serif`
+              ctx.fillStyle = "#1a1a1a"
+              const textBlockH = lines.length * lineH
+              const textStartX = w * 0.42
+              const textStartY = (h - textBlockH) / 2 + fontSize
+              for (let i = 0; i < lines.length; i++) {
+                ctx.fillText(lines[i], textStartX, textStartY + i * lineH)
+              }
+
+              // Bottom left: STATE OF THE ART + NOTICINGS
+              ctx.font = `bold 26px 'Helvetica Neue', Helvetica, sans-serif`
+              ctx.fillStyle = "#1a1a1a"
+              ctx.fillText("STATE OF THE ART", pad, h - pad - 30)
+              ctx.font = `300 22px 'Helvetica Neue', Helvetica, sans-serif`
+              ctx.fillStyle = "rgba(0,0,0,0.6)"
+              ctx.fillText("NOTICINGS", pad, h - pad)
 
               // Convert to blob and download
               canvas.toBlob(async (blob) => {
