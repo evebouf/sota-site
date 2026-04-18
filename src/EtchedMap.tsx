@@ -1541,12 +1541,28 @@ export default function EtchedMap() {
               ctx.fillStyle = "rgba(0,0,0,0.6)"
               ctx.fillText("NOTICINGS", pad, h - pad)
 
-              // Convert to blob and download
+              // Convert to blob and share (mobile) or download (desktop)
               canvas.toBlob(async (blob) => {
                 if (!blob) return
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement("a"); a.href = url; a.download = "noticing.png"; a.click()
-                URL.revokeObjectURL(url)
+                const file = new File([blob], "noticing.png", { type: "image/png" })
+                // Use native share sheet on mobile if available
+                if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                  try {
+                    await navigator.share({ files: [file] })
+                  } catch (e: any) {
+                    if (e.name !== "AbortError") {
+                      // Fallback to download if share fails
+                      const url = URL.createObjectURL(blob)
+                      const a = document.createElement("a"); a.href = url; a.download = "noticing.png"; a.click()
+                      URL.revokeObjectURL(url)
+                    }
+                  }
+                } else {
+                  // Desktop: download directly
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement("a"); a.href = url; a.download = "noticing.png"; a.click()
+                  URL.revokeObjectURL(url)
+                }
                 const btn = document.getElementById("share-btn-text")
                 if (btn) { const orig = btn.textContent; btn.textContent = "SAVED"; setTimeout(() => { btn.textContent = orig }, 1500) }
               }, "image/png")
@@ -2139,7 +2155,7 @@ export default function EtchedMap() {
             alt={poster.label}
             className="rsvp-card"
             style={{
-              width: 72, height: "auto",
+              width: window.innerWidth < 768 ? 48 : 72, height: "auto",
               display: "block",
               transition: `transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${i * 0.08}s`,
               transformStyle: "preserve-3d",
@@ -2320,13 +2336,25 @@ export default function EtchedMap() {
           }}
         >
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            {/* STATE OF THE ART — top label on mobile */}
+            {window.innerWidth < 768 && (
+              <div style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 700,
+                color: "#1a1a1a",
+                marginBottom: 24,
+              }}>
+                State of the Art
+              </div>
+            )}
             <div style={{
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 400,
+              fontSize: window.innerWidth < 768 ? "clamp(28px, 8vw, 44px)" : "clamp(36px, 5vw, 64px)",
+              fontWeight: 400,
               color: "#1a1a1a",
               textAlign: "center",
               letterSpacing: "-0.02em",
-              marginBottom: -24,
+              marginBottom: window.innerWidth < 768 ? 8 : -24,
               zIndex: 1,
             }}>
               TELL US A
@@ -2336,7 +2364,8 @@ export default function EtchedMap() {
                 src="/globe-illustration.png"
                 alt=""
                 style={{
-                  width: "min(65vh, 50vw)", maxWidth: 500, height: "auto",
+                  width: window.innerWidth < 768 ? "min(50vh, 65vw)" : "min(65vh, 50vw)",
+                  maxWidth: 500, height: "auto",
                   display: "block",
                 }}
               />
@@ -2346,7 +2375,8 @@ export default function EtchedMap() {
                 style={{
                   position: "absolute",
                   top: "50%", left: "50%",
-                  width: "110%", height: "110%",
+                  width: window.innerWidth < 768 ? "130%" : "110%",
+                  height: window.innerWidth < 768 ? "130%" : "110%",
                   transform: "translate(-50%, -50%)",
                   pointerEvents: "none",
                 }}
@@ -2374,36 +2404,54 @@ export default function EtchedMap() {
                   }}
                 />
               </svg>
-              <span style={{
-                position: "absolute", left: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
-                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700,
-                color: "#1a1a1a",
-                whiteSpace: "nowrap",
-              }}>
-                State of the Art
-              </span>
-              <span style={{
-                position: "absolute", right: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
-                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 400,
-                color: "#1a1a1a",
-                whiteSpace: "nowrap",
-              }}>
-                Noticings
-              </span>
+              {/* Side labels — desktop only */}
+              {window.innerWidth >= 768 && (
+                <>
+                  <span style={{
+                    position: "absolute", left: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
+                    fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                    fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700,
+                    color: "#1a1a1a",
+                    whiteSpace: "nowrap",
+                  }}>
+                    State of the Art
+                  </span>
+                  <span style={{
+                    position: "absolute", right: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
+                    fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                    fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 400,
+                    color: "#1a1a1a",
+                    whiteSpace: "nowrap",
+                  }}>
+                    Noticings
+                  </span>
+                </>
+              )}
             </div>
             <div style={{
               fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 700,
+              fontSize: window.innerWidth < 768 ? "clamp(28px, 8vw, 44px)" : "clamp(36px, 5vw, 64px)",
+              fontWeight: 700,
               color: "#1a1a1a",
               textAlign: "center",
               letterSpacing: "-0.02em",
-              marginTop: -20,
+              lineHeight: window.innerWidth < 768 ? 0.9 : undefined,
+              marginTop: window.innerWidth < 768 ? 20 : -20,
               zIndex: 1,
             }}>
-              SAN FRANCISCO STORY
+              SAN FRANCISCO{window.innerWidth < 768 && <br />} STORY
             </div>
+            {/* NOTICINGS — bottom label on mobile */}
+            {window.innerWidth < 768 && (
+              <div style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 400,
+                color: "#1a1a1a",
+                marginTop: 24,
+              }}>
+                Noticings
+              </div>
+            )}
           </div>
         </div>
       )}
