@@ -1563,15 +1563,16 @@ export default function EtchedMap() {
         </div>
       )}
 
-      {/* ===== COMPOSE PANEL (right sidebar) ===== */}
+      {/* ===== COMPOSE PANEL (right sidebar / bottom sheet on mobile) ===== */}
       {showCompose && (
         <div
           style={{
             position: "fixed",
-            top: 40, right: 0, bottom: 40,
-            width: 340,
+            ...(window.innerWidth < 768
+              ? { left: 0, right: 0, bottom: observations.length > 0 ? 84 : 40, top: "auto", maxHeight: "60vh", borderTop: `1.5px solid ${t.textColor}` }
+              : { top: 40, right: 0, bottom: 40, width: 340, borderLeft: `1.5px solid ${t.textColor}` }
+            ),
             background: mode === "day" ? "#ffffff" : "#111111",
-            borderLeft: `1.5px solid ${t.textColor}`,
             zIndex: 25,
             display: "flex", flexDirection: "column",
             overflow: "hidden",
@@ -2042,7 +2043,7 @@ export default function EtchedMap() {
           style={{
             bottom: 40,
             left: 0,
-            right: (showCompose && !closingCompose) || (selectedObservation && !showCompose && window.innerWidth >= 768) ? 340 : 0,
+            right: (window.innerWidth >= 768 && ((showCompose && !closingCompose) || (selectedObservation && !showCompose))) ? 340 : 0,
             display: "flex",
           }}
         >
