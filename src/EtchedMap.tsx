@@ -2247,19 +2247,36 @@ export default function EtchedMap() {
           transition: "all 0.6s ease",
         }}
       >
-        {/* Left: Edition */}
-        <span
-          aria-hidden="true"
-          data-nosnippet
-          style={{
-            transform: "scaleX(0.75)", transformOrigin: "left",
-            display: "inline-block", pointerEvents: "none",
-            paddingLeft: 16,
-            userSelect: "none",
-          }}
-        >
-          NO. 1 THE CITY
-        </span>
+        {/* Left: Edition (desktop) / Twitter (mobile) */}
+        {window.innerWidth < 768 ? (
+          <a
+            href="https://x.com/sotazine"
+            target="_blank"
+            rel="noopener"
+            style={{
+              transform: "scaleX(0.75)", transformOrigin: "left",
+              display: "inline-block",
+              paddingLeft: 16,
+              color: t.textColor,
+              textDecoration: "none",
+            }}
+          >
+            @SOTAZINE
+          </a>
+        ) : (
+          <span
+            aria-hidden="true"
+            data-nosnippet
+            style={{
+              transform: "scaleX(0.75)", transformOrigin: "left",
+              display: "inline-block", pointerEvents: "none",
+              paddingLeft: 16,
+              userSelect: "none",
+            }}
+          >
+            NO. 1 THE CITY
+          </span>
+        )}
 
         {/* Center: Live coordinates */}
         <div className="hidden md:block" style={{
@@ -2275,19 +2292,21 @@ export default function EtchedMap() {
 
         {/* Right: SOTA text + day/night toggle */}
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
-          <span
-            aria-hidden="true"
-            data-nosnippet
-            style={{
-              letterSpacing: "0.25em", textTransform: "uppercase",
-              transform: "scaleX(0.75)", transformOrigin: "right",
-              display: "inline-block", pointerEvents: "none",
-              paddingRight: 12,
-              userSelect: "none",
-            }}
-          >
-            SPRING 2026
-          </span>
+          {window.innerWidth >= 768 && (
+            <span
+              aria-hidden="true"
+              data-nosnippet
+              style={{
+                letterSpacing: "0.25em", textTransform: "uppercase",
+                transform: "scaleX(0.75)", transformOrigin: "right",
+                display: "inline-block", pointerEvents: "none",
+                paddingRight: 12,
+                userSelect: "none",
+              }}
+            >
+              SPRING 2026
+            </span>
+          )}
           <button
             onClick={() => setMode(mode === "day" ? "night" : "day")}
             onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.5" }}
@@ -2408,7 +2427,7 @@ export default function EtchedMap() {
               {window.innerWidth >= 768 && (
                 <>
                   <span style={{
-                    position: "absolute", left: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
+                    position: "absolute", right: "calc(100% + 16px)", top: "50%", transform: "translateY(-50%)",
                     fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
                     fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700,
                     color: "#1a1a1a",
@@ -2417,7 +2436,7 @@ export default function EtchedMap() {
                     State of the Art
                   </span>
                   <span style={{
-                    position: "absolute", right: "clamp(-140px, -12vw, -80px)", top: "50%", transform: "translateY(-50%)",
+                    position: "absolute", left: "calc(100% + 16px)", top: "50%", transform: "translateY(-50%)",
                     fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
                     fontSize: "clamp(8px, 0.9vw, 11px)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 400,
                     color: "#1a1a1a",
