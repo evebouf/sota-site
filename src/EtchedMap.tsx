@@ -232,6 +232,40 @@ export default function EtchedMap() {
   // Observations state
   const [observations, setObservations] = useState<Observation[]>([])
   const [selectedObservation, setSelectedObservation] = useState<Observation | null>(null)
+  const [locationName, setLocationName] = useState<string | null>(null)
+  const locationCache = useRef<Record<string, string>>({})
+
+  // Reverse geocode when observation selected
+  useEffect(() => {
+    if (!selectedObservation) { setLocationName(null); return }
+    const key = `${selectedObservation.lat.toFixed(4)},${selectedObservation.lng.toFixed(4)}`
+    if (locationCache.current[key]) { setLocationName(locationCache.current[key]); return }
+    setLocationName(null)
+    const token = mapboxgl.accessToken
+    fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${selectedObservation.lng}&latitude=${selectedObservation.lat}&access_token=${token}&types=address,street,neighborhood&limit=1`)
+      .then(r => r.json())
+      .then(data => {
+        const feat = data.features?.[0]
+        if (!feat) return
+        const props = feat.properties
+        const ctx = props.context || {}
+        // Build: street name + neighborhood
+        const street = ctx.street?.name || props.name || ""
+        const neighborhood = ctx.neighborhood?.name || ""
+        let name = ""
+        if (street && neighborhood) {
+          name = `${street}, ${neighborhood}`
+        } else {
+          name = street || neighborhood
+        }
+        if (name) {
+          locationCache.current[key] = name
+          setLocationName(name)
+        }
+      })
+      .catch(() => {})
+  }, [selectedObservation])
+
   const [editingObservation, setEditingObservation] = useState(false)
   const [editText, setEditText] = useState("")
 
@@ -1329,7 +1363,7 @@ export default function EtchedMap() {
           }}
         >
           <div style={{ padding: "16px 20px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
-            {/* Date + Coordinates — top */}
+            {/* Date + Coordinates + Location — top */}
             <div style={{ marginBottom: 12 }}>
               <div style={{
                 fontFamily: "'Space Mono', monospace",
@@ -1339,6 +1373,29 @@ export default function EtchedMap() {
                 {new Date(selectedObservation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                 &nbsp;&nbsp;·&nbsp;&nbsp;
                 {selectedObservation.lat.toFixed(4)}°N {Math.abs(selectedObservation.lng).toFixed(4)}°W
+              </div>
+              <div style={{
+                display: "flex", alignItems: "center", gap: 6,
+                marginTop: 5,
+                minHeight: 18,
+                opacity: locationName ? 1 : 0,
+                transform: locationName ? "translateX(0)" : "translateX(-6px)",
+                transition: "opacity 0.4s ease, transform 0.4s ease",
+              }}>
+                <span style={{
+                  color: "#FF2A00",
+                  fontSize: 10,
+                  lineHeight: 1,
+                }}>&#9679;</span>
+                <span style={{
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 9,
+                  color: t.textColor, opacity: 0.4,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                }}>
+                  {locationName || "\u00A0"}
+                </span>
               </div>
             </div>
 
