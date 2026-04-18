@@ -824,8 +824,16 @@ export default function EtchedMap() {
             setDropCoords([lngLat.lng, lngLat.lat])
           }
         } else {
+          // Tap opens compose and drops pin at tap location
+          if (m) {
+            const lngLat = m.unproject([startX, startY - 40])
+            setDropCoords([lngLat.lng, lngLat.lat])
+          }
           setSelectedObservation(null)
           setEditingObservation(false)
+          setShowCompose(true)
+          setClosingCompose(false)
+          setComposeText("")
         }
       }
     }
