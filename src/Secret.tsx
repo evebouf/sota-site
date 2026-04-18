@@ -488,7 +488,7 @@ export default function Secret() {
               </div>
               {locationNames[`${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`] && (
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-                  <span style={{ color: "#FF2A00", fontSize: 7, lineHeight: 0, position: "relative", top: -1 }}>&#9679;</span>
+                  <span style={{ color: "#FF2A00", fontSize: 5, lineHeight: "9px", display: "inline-block" }}>&#9679;</span>
                   <span style={{
                     fontFamily: "'Space Mono', monospace",
                     fontSize: 9,
