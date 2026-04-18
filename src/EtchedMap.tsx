@@ -272,6 +272,10 @@ export default function EtchedMap() {
   // Compose state — open by default
   const [showCompose, setShowCompose] = useState(() => window.innerWidth >= 768)
   const [closingCompose, setClosingCompose] = useState(false)
+  const showComposeRef = useRef(showCompose)
+  const closingComposeRef = useRef(closingCompose)
+  useEffect(() => { showComposeRef.current = showCompose }, [showCompose])
+  useEffect(() => { closingComposeRef.current = closingCompose }, [closingCompose])
 
   const [composeText, setComposeText] = useState("")
   const composeMaxChars = 250
@@ -776,7 +780,7 @@ export default function EtchedMap() {
     }
   }, [showCompose, closingCompose])
 
-  // Touch equivalents for mobile long press
+  // Touch equivalents for mobile long press + tap
   const handleMapTouchStart = useCallback((e: React.TouchEvent) => {
     const target = e.target as HTMLElement
     if (target.closest(".mapboxgl-marker")) return
@@ -788,6 +792,7 @@ export default function EtchedMap() {
     const startTime = Date.now()
     const delayMs = 200
     const durationMs = 600
+    let moved = false
 
     const onMove = (ev: TouchEvent) => {
       const t = ev.touches[0]
@@ -795,6 +800,7 @@ export default function EtchedMap() {
       const dx = t.clientX - startX
       const dy = t.clientY - startY
       if (Math.sqrt(dx * dx + dy * dy) > 6) {
+        moved = true
         cancelLongPress()
         window.removeEventListener("touchmove", onMove)
         window.removeEventListener("touchend", onUp)
@@ -802,11 +808,26 @@ export default function EtchedMap() {
       }
     }
 
-    const onUp = () => {
+    const onUp = (ev: TouchEvent) => {
       cancelLongPress()
       window.removeEventListener("touchmove", onMove)
       window.removeEventListener("touchend", onUp)
       window.removeEventListener("touchcancel", onUp)
+
+      // Quick tap (< 300ms, no movement) — reposition pin or dismiss
+      const elapsed = Date.now() - startTime
+      if (!moved && elapsed < 300) {
+        const m = mapRef.current
+        if (showComposeRef.current && !closingComposeRef.current) {
+          if (m) {
+            const lngLat = m.unproject([startX, startY - 40])
+            setDropCoords([lngLat.lng, lngLat.lat])
+          }
+        } else {
+          setSelectedObservation(null)
+          setEditingObservation(false)
+        }
+      }
     }
 
     window.addEventListener("touchmove", onMove, { passive: true })
