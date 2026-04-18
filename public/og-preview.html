@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>OG Image Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Space Mono', monospace;
+    }
+    .label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 12px;
+    }
+    .og-card {
+      width: 1200px;
+      height: 630px;
+      background: #FF2A00;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Grain texture */
+    .og-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+      background-size: 256px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Grid lines */
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.06;
+    }
+    .grid-overlay .h-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: #000;
+    }
+    .grid-overlay .v-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: #000;
+    }
+
+    /* Crosshair marks */
+    .crosshair {
+      position: absolute;
+      z-index: 2;
+      opacity: 0.15;
+    }
+    .crosshair::before, .crosshair::after {
+      content: '';
+      position: absolute;
+      background: #000;
+    }
+    .crosshair::before {
+      width: 1px; height: 24px;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .crosshair::after {
+      width: 24px; height: 1px;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .stamp-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-3deg);
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stamp-container img {
+      width: 420px;
+      filter: brightness(0) invert(1);
+      opacity: 0.95;
+    }
+
+    /* Corner coordinates */
+    .coord {
+      position: absolute;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: rgba(0,0,0,0.2);
+      z-index: 4;
+      text-transform: uppercase;
+    }
+    .coord.tl { top: 20px; left: 24px; }
+    .coord.tr { top: 20px; right: 24px; }
+    .coord.bl { bottom: 20px; left: 24px; }
+    .coord.br { bottom: 20px; right: 24px; }
+
+    /* Title text */
+    .title-block {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      text-align: center;
+    }
+    .title-main {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.9);
+    }
+    .title-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-top: 6px;
+    }
+
+    /* Top bar */
+    .top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: rgba(0,0,0,0.15);
+      z-index: 4;
+    }
+    .bottom-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: rgba(0,0,0,0.15);
+      z-index: 4;
+    }
+
+    /* Red dot */
+    .red-dot {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.2);
+      z-index: 4;
+    }
+
+    /* Precision circle */
+    .precision-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 500px;
+      border: 1px solid rgba(0,0,0,0.07);
+      border-radius: 50%;
+      z-index: 1;
+    }
+    .precision-ring-2 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 340px;
+      height: 340px;
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    /* Edition marker */
+    .edition {
+      position: absolute;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%) rotate(90deg);
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.15);
+      z-index: 4;
+      white-space: nowrap;
+    }
+
+    .scale { transform: scale(0.6); transform-origin: top center; }
+  </style>
+</head>
+<body>
+  <div class="label">OG Image Preview — 1200 x 630</div>
+  <div class="scale">
+    <div class="og-card">
+      <div class="top-bar"></div>
+      <div class="bottom-bar"></div>
+      <div class="red-dot"></div>
+
+      <!-- Grid -->
+      <div class="grid-overlay">
+        <div class="h-line" style="top: 25%"></div>
+        <div class="h-line" style="top: 50%"></div>
+        <div class="h-line" style="top: 75%"></div>
+        <div class="v-line" style="left: 25%"></div>
+        <div class="v-line" style="left: 50%"></div>
+        <div class="v-line" style="left: 75%"></div>
+      </div>
+
+      <!-- Crosshairs at intersections -->
+      <div class="crosshair" style="top: 25%; left: 25%"></div>
+      <div class="crosshair" style="top: 25%; left: 75%"></div>
+      <div class="crosshair" style="top: 75%; left: 25%"></div>
+      <div class="crosshair" style="top: 75%; left: 75%"></div>
+
+      <!-- Precision rings -->
+      <div class="precision-ring"></div>
+      <div class="precision-ring-2"></div>
+
+      <!-- Stamp -->
+      <div class="stamp-container">
+        <img src="/stamp-sota.png" alt="SOTA stamp">
+      </div>
+
+      <!-- Corner coordinates -->
+      <div class="coord tl">37.7749°N</div>
+      <div class="coord tr">122.4194°W</div>
+      <div class="coord bl">San Francisco, CA</div>
+      <div class="coord br">Edition 01 — Apr 2026</div>
+
+      <!-- Edition side marker -->
+      <div class="edition">State of the Art</div>
+
+      <!-- Title -->
+      <div class="title-block">
+        <div class="title-main">sotazine.com</div>
+        <div class="title-sub">All killer no filler</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
