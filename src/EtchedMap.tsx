@@ -1075,14 +1075,16 @@ export default function EtchedMap() {
       </a>
 
       {/* ===== ABOUT PANEL (full-width overlay) ===== */}
-      {showAbout && (
+      {showAbout && (() => {
+        const isMobile = window.innerWidth < 768
+        return (
         <div
           style={{
             position: "fixed",
-            top: 40, left: 0, bottom: 84.25,
-            width: "min(75vw, 800px)",
+            top: 40, left: 0, bottom: isMobile ? 40 : 84.25,
+            width: isMobile ? "100vw" : "min(75vw, 800px)",
             background: mode === "day" ? "#ffffff" : "#111111",
-            borderRight: `1.5px solid ${t.textColor}`,
+            borderRight: isMobile ? "none" : `1.5px solid ${t.textColor}`,
             zIndex: 35,
             overflowY: "auto",
             animation: "none",
@@ -1090,18 +1092,18 @@ export default function EtchedMap() {
           }}
           className="hide-scrollbar"
         >
-          <div style={{ padding: "48px 48px 0", flex: 1 }}>
+          <div style={{ padding: isMobile ? "32px 20px 0" : "48px 48px 0", flex: 1 }}>
             {/* Intro */}
             <div style={{
               fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 18, lineHeight: 1.7, fontWeight: 400,
+              fontSize: isMobile ? 16 : 18, lineHeight: 1.7, fontWeight: 400,
               color: t.textColor, marginBottom: 16, maxWidth: 700,
             }}>
               <strong style={{ fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', sans-serif", fontWeight: 700 }}>STATE OF THE ART</strong> is a zine produced in San Francisco.
             </div>
             <div style={{
               fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
-              fontSize: 16, lineHeight: 1.7, fontWeight: 400,
+              fontSize: isMobile ? 14 : 16, lineHeight: 1.7, fontWeight: 400,
               color: t.textColor, marginBottom: 32, maxWidth: 700,
             }}>
               We publish nonfiction, fiction, and the occasional poem, online and in print. We believe in singular visions, sharp prose, evasive design, red meat, the liberatory promise of technology, and tomorrow.
@@ -1115,7 +1117,7 @@ export default function EtchedMap() {
                 rel="noopener"
                 style={{
                   fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                  fontSize: 16, fontWeight: 700,
+                  fontSize: isMobile ? 14 : 16, fontWeight: 700,
                   color: "#FF2A00", textDecoration: "underline",
                   textUnderlineOffset: "3px",
                   textTransform: "uppercase",
@@ -1129,15 +1131,15 @@ export default function EtchedMap() {
             </div>
 
             {/* Noticings section */}
-            <div style={{ display: "flex", gap: 24, marginBottom: 32, alignItems: "flex-start", maxWidth: 700 }}>
+            <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 16 : 24, marginBottom: 32, alignItems: isMobile ? "center" : "flex-start", maxWidth: 700 }}>
               <img
                 src="/noticings-eye.png"
                 alt="Noticings"
-                style={{ width: 120, height: 120, objectFit: "contain", flexShrink: 0 }}
+                style={{ width: isMobile ? 80 : 120, height: isMobile ? 80 : 120, objectFit: "contain", flexShrink: 0 }}
               />
               <div style={{
                 fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 16, lineHeight: 1.7, fontWeight: 400,
+                fontSize: isMobile ? 14 : 16, lineHeight: 1.7, fontWeight: 400,
                 color: t.textColor,
               }}>
                 <p style={{ marginBottom: 16 }}>
@@ -1150,26 +1152,27 @@ export default function EtchedMap() {
             </div>
 
             {/* How It Works */}
-            <div style={{ display: "flex", gap: 24, alignItems: "flex-start", marginBottom: 48, maxWidth: 700 }}>
+            <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 24, alignItems: "flex-start", marginBottom: 48, maxWidth: 700 }}>
               <div style={{
                 fontFamily: "'Cooper Black', serif",
-                fontSize: 22, fontWeight: 400,
+                fontSize: isMobile ? 18 : 22, fontWeight: 400,
                 color: t.textColor,
                 lineHeight: 1.2,
                 flexShrink: 0,
-                width: 120,
+                width: isMobile ? "auto" : 120,
+                marginBottom: isMobile ? 4 : 0,
               }}>
                 How It Works
               </div>
               <div style={{
-                display: "flex", gap: 32, flex: 1,
+                display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 32, flex: 1,
                 fontFamily: "'Helvetica Neue', Helvetica, sans-serif",
-                fontSize: 14, lineHeight: 1.6, fontWeight: 400,
+                fontSize: isMobile ? 13 : 14, lineHeight: 1.6, fontWeight: 400,
                 color: t.textColor,
               }}>
                 <div>Long press on map or click (+) to drop a pin.</div>
                 <div>Write a diary entry (250 chars max).</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 8 : 16 }}>
                   <div>Explore other pins on the map to step into other stories.</div>
                   <div>Download and share what you noticed.</div>
                 </div>
@@ -1209,7 +1212,8 @@ export default function EtchedMap() {
             </div>
           </div>
         </div>
-      )}
+        )
+      })()}
 
       {/* ===== MANIFESTO PANEL (left sidebar) ===== */}
       {showManifesto && (
