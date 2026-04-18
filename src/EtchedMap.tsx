@@ -820,8 +820,9 @@ export default function EtchedMap() {
   // Save edit
   const saveEdit = useCallback(async () => {
     if (!selectedObservation || !editText.trim()) return
-    const { error } = await supabase.from("observations").update({ text: editText.trim() }).eq("id", selectedObservation.id)
+    const { error, data } = await supabase.from("observations").update({ text: editText.trim() }).eq("id", selectedObservation.id).select()
     if (error) { console.error("Failed to update:", error); return }
+    if (!data || data.length === 0) { console.error("Update returned 0 rows — RLS may be blocking updates"); return }
     const updated = { ...selectedObservation, text: editText.trim() }
     setObservations(prev => prev.map(o => o.id === updated.id ? updated : o))
     setSelectedObservation(updated)

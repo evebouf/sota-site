@@ -8,6 +8,8 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY
 )
 
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
+
 // Load Trade Gothic Heavy + Neue Haas Grotesk
 const fontStyle = document.createElement("style")
 fontStyle.textContent = `
@@ -56,6 +58,8 @@ export default function Secret() {
   const [editConfirmation, setEditConfirmation] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const editRef = useRef<HTMLTextAreaElement>(null)
+  const [locationNames, setLocationNames] = useState<Record<string, string>>({})
+  const geocodeQueue = useRef<Set<string>>(new Set())
 
   const loadObservations = useCallback(async () => {
     const { data, error } = await supabase
@@ -68,6 +72,31 @@ export default function Secret() {
   }, [])
 
   useEffect(() => { loadObservations() }, [loadObservations])
+
+  // Reverse geocode all observations
+  useEffect(() => {
+    if (!MAPBOX_TOKEN || observations.length === 0) return
+    observations.forEach(obs => {
+      const key = `${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`
+      if (locationNames[key] || geocodeQueue.current.has(key)) return
+      geocodeQueue.current.add(key)
+      fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${obs.lng}&latitude=${obs.lat}&access_token=${MAPBOX_TOKEN}&types=address,street,neighborhood&limit=1`)
+        .then(r => r.json())
+        .then(data => {
+          const feat = data.features?.[0]
+          if (!feat) return
+          const props = feat.properties
+          const ctx = props.context || {}
+          const street = ctx.street?.name || props.name || ""
+          const neighborhood = ctx.neighborhood?.name || ""
+          let name = ""
+          if (street && neighborhood) name = `${street}, ${neighborhood}`
+          else name = street || neighborhood
+          if (name) setLocationNames(prev => ({ ...prev, [key]: name }))
+        })
+        .catch(() => {})
+    })
+  }, [observations])
 
   useEffect(() => {
     if (editingId && editRef.current) {
@@ -89,11 +118,13 @@ export default function Secret() {
 
   const saveEdit = async () => {
     if (!editingId || !editText.trim()) return
-    const { error } = await supabase
+    const { error, data, count } = await supabase
       .from("observations")
       .update({ text: editText.trim() })
       .eq("id", editingId)
-    if (error) { console.error("Failed to update:", error); return }
+      .select()
+    if (error) { console.error("Failed to update:", error); alert("Update failed: " + error.message); return }
+    if (!data || data.length === 0) { console.error("Update returned 0 rows — RLS may be blocking"); alert("Update failed: no rows affected. Check Supabase RLS policies for UPDATE on observations table."); return }
     setObservations(prev =>
       prev.map(o => o.id === editingId ? { ...o, text: editText.trim() } : o)
     )
@@ -307,6 +338,21 @@ export default function Secret() {
                 >
                   {obs.lat.toFixed(4)}°N {Math.abs(obs.lng).toFixed(4)}°W
                 </span>
+                {locationNames[`${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`] && (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ color: "#FF2A00", fontSize: 10, lineHeight: 1 }}>&#9679;</span>
+                    <span style={{
+                      fontFamily: "'Space Mono', monospace",
+                      fontSize: 9,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "#1a1a1a",
+                      opacity: 0.4,
+                    }}>
+                      {locationNames[`${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`]}
+                    </span>
+                  </span>
+                )}
               </div>
 
               {/* Action buttons */}
