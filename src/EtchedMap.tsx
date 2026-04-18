@@ -211,7 +211,7 @@ export default function EtchedMap() {
   const [mode, setMode] = useState<MapMode>("day")
   const [showFlyers, setShowFlyers] = useState(false)
   const [coords, setCoords] = useState({ lat: 37.8008, lng: -122.4058 })
-  const [altitude, setAltitude] = useState({ zoom: 15.8, pitch: 45, bearing: -15 })
+  const [altitude, setAltitude] = useState({ zoom: 12.6, pitch: 45, bearing: -15 })
 
 
   // Minimum loading screen duration
@@ -471,8 +471,8 @@ export default function EtchedMap() {
     const m = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/light-v11",
-      center: [-122.4058, 37.8008],
-      zoom: 15.8,
+      center: [-122.4076, 37.7781],
+      zoom: 12.6,
       pitch: 45,
       bearing: -15,
       antialias: true,
