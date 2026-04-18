@@ -776,6 +776,71 @@ export default function EtchedMap() {
     }
   }, [showCompose, closingCompose])
 
+  // Touch equivalents for mobile long press
+  const handleMapTouchStart = useCallback((e: React.TouchEvent) => {
+    const target = e.target as HTMLElement
+    if (target.closest(".mapboxgl-marker")) return
+    if (e.touches.length !== 1) return
+
+    const touch = e.touches[0]
+    const startX = touch.clientX
+    const startY = touch.clientY
+    const startTime = Date.now()
+    const delayMs = 200
+    const durationMs = 600
+
+    const onMove = (ev: TouchEvent) => {
+      const t = ev.touches[0]
+      if (!t) return
+      const dx = t.clientX - startX
+      const dy = t.clientY - startY
+      if (Math.sqrt(dx * dx + dy * dy) > 6) {
+        cancelLongPress()
+        window.removeEventListener("touchmove", onMove)
+        window.removeEventListener("touchend", onUp)
+        window.removeEventListener("touchcancel", onUp)
+      }
+    }
+
+    const onUp = () => {
+      cancelLongPress()
+      window.removeEventListener("touchmove", onMove)
+      window.removeEventListener("touchend", onUp)
+      window.removeEventListener("touchcancel", onUp)
+    }
+
+    window.addEventListener("touchmove", onMove, { passive: true })
+    window.addEventListener("touchend", onUp)
+    window.addEventListener("touchcancel", onUp)
+
+    longPressTimer.current = setTimeout(() => {
+      const animate = () => {
+        const elapsed = Date.now() - startTime - delayMs
+        const progress = Math.min(elapsed / durationMs, 1)
+        setLongPress({ x: startX, y: startY, progress })
+        if (progress < 1) {
+          longPressAnim.current = requestAnimationFrame(animate)
+        } else {
+          setLongPress(null)
+          const m = mapRef.current
+          if (m) {
+            const lngLat = m.unproject([startX, startY - 40])
+            setDropCoords([lngLat.lng, lngLat.lat])
+          }
+          setSelectedObservation(null)
+          setEditingObservation(false)
+          setShowCompose(true)
+          setClosingCompose(false)
+          setComposeText("")
+          window.removeEventListener("touchmove", onMove)
+          window.removeEventListener("touchend", onUp)
+          window.removeEventListener("touchcancel", onUp)
+        }
+      }
+      longPressAnim.current = requestAnimationFrame(animate)
+    }, delayMs)
+  }, [cancelLongPress])
+
   // Submit observation
   const submitObservation = useCallback(async () => {
     if (!composeText.trim()) return
@@ -891,6 +956,7 @@ export default function EtchedMap() {
         style={{ top: 40, left: 0, right: 0, bottom: 40 }}
         onClick={handleMapClick}
         onMouseDown={handleMapMouseDown}
+        onTouchStart={handleMapTouchStart}
       >
         <div
           ref={mapContainer}
