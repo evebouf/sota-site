@@ -310,50 +310,35 @@ export default function Secret() {
               padding: "16px 0",
             }}
           >
-            {/* Metadata row */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 6,
-              }}
-            >
-              <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                <span
-                  style={{
-                    fontSize: 9,
-                    letterSpacing: "0.1em",
-                    color: "rgba(0,0,0,0.25)",
-                  }}
-                >
-                  {formatDate(obs.created_at)}
-                </span>
-                <span
-                  style={{
-                    fontSize: 9,
-                    letterSpacing: "0.1em",
-                    color: "rgba(0,0,0,0.2)",
-                  }}
-                >
-                  {obs.lat.toFixed(4)}°N {Math.abs(obs.lng).toFixed(4)}°W
-                </span>
-                {locationNames[`${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`] && (
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ color: "#FF2A00", fontSize: 10, lineHeight: 1 }}>&#9679;</span>
-                    <span style={{
-                      fontFamily: "'Space Mono', monospace",
+            {/* Metadata */}
+            <div style={{ marginBottom: 6 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                  <span
+                    style={{
                       fontSize: 9,
                       letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      color: "#1a1a1a",
-                      opacity: 0.4,
-                    }}>
-                      {locationNames[`${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`]}
-                    </span>
+                      color: "rgba(0,0,0,0.25)",
+                    }}
+                  >
+                    {formatDate(obs.created_at)}
                   </span>
-                )}
-              </div>
+                  <span
+                    style={{
+                      fontSize: 9,
+                      letterSpacing: "0.1em",
+                      color: "rgba(0,0,0,0.2)",
+                    }}
+                  >
+                    {obs.lat.toFixed(4)}°N {Math.abs(obs.lng).toFixed(4)}°W
+                  </span>
+                </div>
 
               {/* Action buttons */}
               <div style={{ display: "flex", gap: 8 }}>
@@ -500,6 +485,22 @@ export default function Secret() {
                   </>
                 )}
               </div>
+              </div>
+              {locationNames[`${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`] && (
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                  <span style={{ color: "#FF2A00", fontSize: 7, lineHeight: 0, position: "relative", top: -1 }}>&#9679;</span>
+                  <span style={{
+                    fontFamily: "'Space Mono', monospace",
+                    fontSize: 9,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "#1a1a1a",
+                    opacity: 0.4,
+                  }}>
+                    {locationNames[`${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`]}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Observation text */}
