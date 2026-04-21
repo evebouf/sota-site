@@ -106,27 +106,20 @@ export default function CardPreview() {
       // Bottom left: branding stack
       ctx.font = `bold 26px 'Helvetica Neue', Helvetica, sans-serif`
       ctx.fillStyle = "#1a1a1a"
-      ctx.fillText("STATE OF THE ART", pad, h - pad - 50)
-      ctx.font = `300 22px 'Helvetica Neue', Helvetica, sans-serif`
-      ctx.fillStyle = "rgba(0,0,0,0.6)"
-      ctx.fillText("NOTICINGS", pad, h - pad - 22)
-      ctx.font = `22px 'Courier New', monospace`
-      ctx.fillStyle = "rgba(0,0,0,0.5)"
-      const urlText = "sotazine.com  ·  "
-      ctx.fillText(urlText, pad, h - pad)
-      const urlTextW = ctx.measureText(urlText).width
-      // X logo
-      const xS = 13
-      const xX = pad + urlTextW + 1
-      const xY = h - pad - xS + 1
-      ctx.strokeStyle = "rgba(0,0,0,0.5)"
-      ctx.lineWidth = 2.5
-      ctx.lineCap = "round"
-      ctx.beginPath()
-      ctx.moveTo(xX, xY); ctx.lineTo(xX + xS, xY + xS)
-      ctx.moveTo(xX + xS, xY); ctx.lineTo(xX, xY + xS)
-      ctx.stroke()
-      ctx.fillText("sotazine", xX + xS + 8, h - pad)
+      // Bottom left: single line branding
+      const brand = "STATE OF THE ART"
+      ctx.fillText(brand, pad, h - pad)
+      const brandW = ctx.measureText(brand).width
+      ctx.font = `300 24px 'Helvetica Neue', Helvetica, sans-serif`
+      ctx.fillStyle = "rgba(0,0,0,0.35)"
+      ctx.fillText("  NOTICINGS", pad + brandW, h - pad)
+
+      // Bottom right: url + handle
+      ctx.font = `20px 'Courier New', monospace`
+      ctx.fillStyle = "rgba(0,0,0,0.7)"
+      const bottomRight = "sotazine.com  ·  @sotazine"
+      const brW = ctx.measureText(bottomRight).width
+      ctx.fillText(bottomRight, w - pad - brW, h - pad)
     }
   }, [obs])
 
