@@ -320,10 +320,13 @@ export default function Secret() {
                 }}
               >
                 <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                  {new Date(obs.created_at) >= new Date("2026-06-07T00:00:00Z")
-                    ? <span style={{ fontSize: 14, lineHeight: "16px" }} title="Chick pin">🐥</span>
-                    : <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF2A00", display: "inline-block", flexShrink: 0 }} title="Orange dot pin" />
-                  }
+                  {(() => {
+                    const CHICK_ICONS = ["🐔", "🐓", "🐣", "🐤", "🐥"]
+                    const pick = (id: string) => CHICK_ICONS[Math.abs([...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0)) % CHICK_ICONS.length]
+                    return new Date(obs.created_at) >= new Date("2026-06-07T00:00:00Z")
+                      ? <span style={{ fontSize: 14, lineHeight: "16px" }} title="Chick pin">{pick(obs.id)}</span>
+                      : <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF2A00", display: "inline-block", flexShrink: 0 }} title="Orange dot pin" />
+                  })()}
                   <span
                     style={{
                       fontSize: 9,

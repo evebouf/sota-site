@@ -385,7 +385,7 @@ export default function EtchedMap() {
         font-size: 18px; line-height: 22px; text-align: center;
         animation: blink-dot 1.5s ease infinite;
       `
-      ring.textContent = "\uD83D\uDC25"
+      ring.textContent = CHICK_ICONS[Math.floor(Math.random() * CHICK_ICONS.length)]
       el.appendChild(ring)
       previewMarkerRef.current = new mapboxgl.Marker({ element: el })
         .setLngLat(dropCoords)
@@ -417,6 +417,8 @@ export default function EtchedMap() {
 
   // Observations created after this date show as chicken; before show as orange dot
   const CHICKEN_CUTOFF = "2026-06-07T00:00:00Z"
+  const CHICK_ICONS = ["\uD83D\uDC14", "\uD83D\uDC13", "\uD83D\uDC23", "\uD83D\uDC24", "\uD83D\uDC25"]
+  const pickChick = (id: string) => CHICK_ICONS[Math.abs([...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0)) % CHICK_ICONS.length]
 
   const addObservationMarker = useCallback((obs: Observation, map: mapboxgl.Map) => {
     const isChicken = new Date(obs.created_at) >= new Date(CHICKEN_CUTOFF)
@@ -430,7 +432,7 @@ export default function EtchedMap() {
         font-size: 18px; line-height: 22px; text-align: center;
         transition: transform 0.2s ease;
       `
-      dot.textContent = "\uD83D\uDC25"
+      dot.textContent = pickChick(obs.id)
     } else {
       dot.style.cssText = `
         width: 10px; height: 10px; border-radius: 50%;
@@ -1595,7 +1597,7 @@ export default function EtchedMap() {
               const isChickenShare = new Date(selectedObservation.created_at) >= new Date(CHICKEN_CUTOFF)
               if (isChickenShare) {
                 ctx.font = "20px serif"
-                ctx.fillText("\uD83D\uDC25", pad + 2, pad + 18)
+                ctx.fillText(pickChick(selectedObservation.id), pad + 2, pad + 18)
               } else {
                 ctx.fillStyle = "#FF2A00"
                 ctx.beginPath()
