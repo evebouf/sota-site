@@ -385,7 +385,7 @@ export default function EtchedMap() {
         font-size: 18px; line-height: 22px; text-align: center;
         animation: blink-dot 1.5s ease infinite;
       `
-      ring.textContent = "\uD83D\uDC14"
+      ring.textContent = "\uD83D\uDC25"
       el.appendChild(ring)
       previewMarkerRef.current = new mapboxgl.Marker({ element: el })
         .setLngLat(dropCoords)
@@ -430,7 +430,7 @@ export default function EtchedMap() {
         font-size: 18px; line-height: 22px; text-align: center;
         transition: transform 0.2s ease;
       `
-      dot.textContent = "\uD83D\uDC14"
+      dot.textContent = "\uD83D\uDC25"
     } else {
       dot.style.cssText = `
         width: 10px; height: 10px; border-radius: 50%;
@@ -1595,7 +1595,7 @@ export default function EtchedMap() {
               const isChickenShare = new Date(selectedObservation.created_at) >= new Date(CHICKEN_CUTOFF)
               if (isChickenShare) {
                 ctx.font = "20px serif"
-                ctx.fillText("\uD83D\uDC14", pad + 2, pad + 18)
+                ctx.fillText("\uD83D\uDC25", pad + 2, pad + 18)
               } else {
                 ctx.fillStyle = "#FF2A00"
                 ctx.beginPath()
