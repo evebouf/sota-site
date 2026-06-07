@@ -320,6 +320,10 @@ export default function Secret() {
                 }}
               >
                 <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                  {new Date(obs.created_at) >= new Date("2026-06-07T00:00:00Z")
+                    ? <span style={{ fontSize: 14, lineHeight: "16px" }} title="Chicken pin">🐔</span>
+                    : <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF2A00", display: "inline-block", flexShrink: 0 }} title="Orange dot pin" />
+                  }
                   <span
                     style={{
                       fontSize: 9,

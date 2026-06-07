@@ -381,11 +381,11 @@ export default function EtchedMap() {
       el.style.cssText = `width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;`
       const ring = document.createElement("div")
       ring.style.cssText = `
-        width: 14px; height: 14px; border-radius: 50%;
-        border: 1.5px solid #FF2A00;
-        background: none;
+        width: 22px; height: 22px;
+        font-size: 18px; line-height: 22px; text-align: center;
         animation: blink-dot 1.5s ease infinite;
       `
+      ring.textContent = "\uD83D\uDC14"
       el.appendChild(ring)
       previewMarkerRef.current = new mapboxgl.Marker({ element: el })
         .setLngLat(dropCoords)
@@ -415,16 +415,29 @@ export default function EtchedMap() {
     setShowManifesto(false); setClosingManifesto(false)
   }, [])
 
+  // Observations created after this date show as chicken; before show as orange dot
+  const CHICKEN_CUTOFF = "2026-06-07T00:00:00Z"
+
   const addObservationMarker = useCallback((obs: Observation, map: mapboxgl.Map) => {
+    const isChicken = new Date(obs.created_at) >= new Date(CHICKEN_CUTOFF)
     const el = document.createElement("div")
     el.className = "mapboxgl-marker"
     el.style.cssText = `cursor: none; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;`
     const dot = document.createElement("div")
-    dot.style.cssText = `
-      width: 10px; height: 10px; border-radius: 50%;
-      background: #FF2A00;
-      transition: transform 0.2s ease;
-    `
+    if (isChicken) {
+      dot.style.cssText = `
+        width: 22px; height: 22px;
+        font-size: 18px; line-height: 22px; text-align: center;
+        transition: transform 0.2s ease;
+      `
+      dot.textContent = "\uD83D\uDC14"
+    } else {
+      dot.style.cssText = `
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #FF2A00;
+        transition: transform 0.2s ease;
+      `
+    }
     el.onmouseenter = () => { dot.style.transform = "scale(1.6)" }
     el.onmouseleave = () => { dot.style.transform = "scale(1)" }
     el.addEventListener("click", (e) => {
@@ -1578,11 +1591,17 @@ export default function EtchedMap() {
                 stamp.src = "/sota-stamp-black.png"
               })
 
-              // Top left: red dot + location name
-              ctx.fillStyle = "#FF2A00"
-              ctx.beginPath()
-              ctx.arc(pad + 10, pad + 10, 10, 0, Math.PI * 2)
-              ctx.fill()
+              // Top left: icon + location name
+              const isChickenShare = new Date(selectedObservation.created_at) >= new Date(CHICKEN_CUTOFF)
+              if (isChickenShare) {
+                ctx.font = "20px serif"
+                ctx.fillText("\uD83D\uDC14", pad + 2, pad + 18)
+              } else {
+                ctx.fillStyle = "#FF2A00"
+                ctx.beginPath()
+                ctx.arc(pad + 10, pad + 10, 10, 0, Math.PI * 2)
+                ctx.fill()
+              }
 
               const locName = locationName || ""
               if (locName) {
