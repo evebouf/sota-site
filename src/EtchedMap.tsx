@@ -381,11 +381,10 @@ export default function EtchedMap() {
       el.style.cssText = `width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;`
       const ring = document.createElement("div")
       ring.style.cssText = `
-        width: 22px; height: 22px;
-        font-size: 18px; line-height: 22px; text-align: center;
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #FF2A00;
         animation: blink-dot 1.5s ease infinite;
       `
-      ring.textContent = CHICK_ICONS[Math.floor(Math.random() * CHICK_ICONS.length)]
       el.appendChild(ring)
       previewMarkerRef.current = new mapboxgl.Marker({ element: el })
         .setLngLat(dropCoords)
@@ -415,31 +414,16 @@ export default function EtchedMap() {
     setShowManifesto(false); setClosingManifesto(false)
   }, [])
 
-  // Observations created after this date show as chicken; before show as orange dot
-  const CHICKEN_CUTOFF = "2026-06-07T00:00:00Z"
-  const CHICK_ICONS = ["\uD83D\uDC14", "\uD83D\uDC13", "\uD83D\uDC23", "\uD83D\uDC24", "\uD83D\uDC25"]
-  const pickChick = (id: string) => CHICK_ICONS[Math.abs([...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0)) % CHICK_ICONS.length]
-
   const addObservationMarker = useCallback((obs: Observation, map: mapboxgl.Map) => {
-    const isChicken = new Date(obs.created_at) >= new Date(CHICKEN_CUTOFF)
     const el = document.createElement("div")
     el.className = "mapboxgl-marker"
     el.style.cssText = `cursor: none; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;`
     const dot = document.createElement("div")
-    if (isChicken) {
-      dot.style.cssText = `
-        width: 22px; height: 22px;
-        font-size: 18px; line-height: 22px; text-align: center;
-        transition: transform 0.2s ease;
-      `
-      dot.textContent = pickChick(obs.id)
-    } else {
-      dot.style.cssText = `
-        width: 10px; height: 10px; border-radius: 50%;
-        background: #FF2A00;
-        transition: transform 0.2s ease;
-      `
-    }
+    dot.style.cssText = `
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #FF2A00;
+      transition: transform 0.2s ease;
+    `
     el.onmouseenter = () => { dot.style.transform = "scale(1.6)" }
     el.onmouseleave = () => { dot.style.transform = "scale(1)" }
     el.addEventListener("click", (e) => {
@@ -1593,17 +1577,11 @@ export default function EtchedMap() {
                 stamp.src = "/sota-stamp-black.png"
               })
 
-              // Top left: icon + location name
-              const isChickenShare = new Date(selectedObservation.created_at) >= new Date(CHICKEN_CUTOFF)
-              if (isChickenShare) {
-                ctx.font = "20px serif"
-                ctx.fillText(pickChick(selectedObservation.id), pad + 2, pad + 18)
-              } else {
-                ctx.fillStyle = "#FF2A00"
-                ctx.beginPath()
-                ctx.arc(pad + 10, pad + 10, 10, 0, Math.PI * 2)
-                ctx.fill()
-              }
+              // Top left: red dot + location name
+              ctx.fillStyle = "#FF2A00"
+              ctx.beginPath()
+              ctx.arc(pad + 10, pad + 10, 10, 0, Math.PI * 2)
+              ctx.fill()
 
               const locName = locationName || ""
               if (locName) {

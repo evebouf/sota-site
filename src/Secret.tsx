@@ -51,13 +51,7 @@ export default function Secret() {
 
   const [observations, setObservations] = useState<Observation[]>([])
   const [loading, setLoading] = useState(true)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editText, setEditText] = useState("")
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
-  const [deleteConfirmation, setDeleteConfirmation] = useState(false)
-  const [editConfirmation, setEditConfirmation] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  const editRef = useRef<HTMLTextAreaElement>(null)
   const [locationNames, setLocationNames] = useState<Record<string, string>>({})
   const geocodeQueue = useRef<Set<string>>(new Set())
 
@@ -98,52 +92,6 @@ export default function Secret() {
     })
   }, [observations])
 
-  useEffect(() => {
-    if (editingId && editRef.current) {
-      editRef.current.focus()
-      editRef.current.selectionStart = editRef.current.value.length
-    }
-  }, [editingId])
-
-  const startEdit = (obs: Observation) => {
-    setEditingId(obs.id)
-    setEditText(obs.text)
-    setConfirmDeleteId(null)
-  }
-
-  const cancelEdit = () => {
-    setEditingId(null)
-    setEditText("")
-  }
-
-  const saveEdit = async () => {
-    if (!editingId || !editText.trim()) return
-    const { error, data, count } = await supabase
-      .from("observations")
-      .update({ text: editText.trim() })
-      .eq("id", editingId)
-      .select()
-    if (error) { console.error("Failed to update:", error); alert("Update failed: " + error.message); return }
-    if (!data || data.length === 0) { console.error("Update returned 0 rows — RLS may be blocking"); alert("Update failed: no rows affected. Check Supabase RLS policies for UPDATE on observations table."); return }
-    setObservations(prev =>
-      prev.map(o => o.id === editingId ? { ...o, text: editText.trim() } : o)
-    )
-    setEditingId(null)
-    setEditText("")
-    setEditConfirmation(true)
-    setTimeout(() => setEditConfirmation(false), 2000)
-  }
-
-  const deleteObservation = async (id: string) => {
-    const { error, count } = await supabase.from("observations").delete({ count: "exact" }).eq("id", id)
-    if (error) { console.error("Failed to delete:", error); alert(`Delete failed: ${error.message}`); return }
-    if (count === 0) { alert("Delete blocked — check Supabase RLS policies"); return }
-    setObservations(prev => prev.filter(o => o.id !== id))
-    setConfirmDeleteId(null)
-    setDeleteConfirmation(true)
-    setTimeout(() => setDeleteConfirmation(false), 2000)
-  }
-
   const relativeTime = (iso: string) => {
     const diff = Date.now() - new Date(iso).getTime()
     const mins = Math.floor(diff / 60000)
@@ -172,36 +120,6 @@ export default function Secret() {
         fontFamily: "'Space Mono', monospace",
       }}
     >
-      {/* Edit confirmation */}
-      {editConfirmation && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0,
-          background: "#22c55e", color: "#ffffff",
-          padding: "10px 32px",
-          fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-          fontSize: 12, fontWeight: 500,
-          textAlign: "center",
-          zIndex: 50,
-        }}>
-          Observation updated
-        </div>
-      )}
-
-      {/* Delete confirmation */}
-      {deleteConfirmation && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0,
-          background: "#22c55e", color: "#ffffff",
-          padding: "10px 32px",
-          fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-          fontSize: 12, fontWeight: 500,
-          textAlign: "center",
-          zIndex: 50,
-        }}>
-          Observation deleted
-        </div>
-      )}
-
       {/* Header */}
       <div
         style={{
@@ -320,13 +238,7 @@ export default function Secret() {
                 }}
               >
                 <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                  {(() => {
-                    const CHICK_ICONS = ["🐔", "🐓", "🐣", "🐤", "🐥"]
-                    const pick = (id: string) => CHICK_ICONS[Math.abs([...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0)) % CHICK_ICONS.length]
-                    return new Date(obs.created_at) >= new Date("2026-06-07T00:00:00Z")
-                      ? <span style={{ fontSize: 14, lineHeight: "16px" }} title="Chick pin">{pick(obs.id)}</span>
-                      : <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF2A00", display: "inline-block", flexShrink: 0 }} title="Orange dot pin" />
-                  })()}
+                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF2A00", display: "inline-block", flexShrink: 0 }} title="Pin" />
                   <span
                     style={{
                       fontSize: 9,
@@ -347,151 +259,6 @@ export default function Secret() {
                   </span>
                 </div>
 
-              {/* Action buttons */}
-              <div style={{ display: "flex", gap: 8 }}>
-                {editingId === obs.id ? (
-                  <>
-                    <button
-                      onClick={saveEdit}
-                      onMouseEnter={e => { e.currentTarget.style.color = "#1a1a1a" }}
-                      onMouseLeave={e => { e.currentTarget.style.color = "#1a1a1a" }}
-                      style={{
-                        fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                        fontSize: 9,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        transform: "scaleX(0.8)",
-                        color: "#1a1a1a",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: "2px 0",
-                        transition: "color 0.15s",
-                      }}
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={cancelEdit}
-                      onMouseEnter={e => { e.currentTarget.style.color = "#1a1a1a" }}
-                      onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
-                      style={{
-                        fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                        fontSize: 9,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        transform: "scaleX(0.8)",
-                        color: "rgba(0,0,0,0.25)",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: "2px 0",
-                        transition: "color 0.15s",
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => startEdit(obs)}
-                      style={{
-                        fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                        fontSize: 9,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        transform: "scaleX(0.8)",
-                        color: "rgba(0,0,0,0.25)",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: "2px 0",
-                        transition: "color 0.15s",
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.color = "#1a1a1a" }}
-                      onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
-                    >
-                      Edit
-                    </button>
-                    {confirmDeleteId === obs.id ? (
-                      <>
-                        <span
-                          style={{
-                            fontSize: 9,
-                            letterSpacing: "0.1em",
-                            color: "#FF2A00",
-                            alignSelf: "center",
-                          }}
-                        >
-                          sure?
-                        </span>
-                        <button
-                          onClick={() => deleteObservation(obs.id)}
-                          onMouseEnter={e => { e.currentTarget.style.color = "#FF2A00" }}
-                          onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
-                          style={{
-                            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                            fontSize: 9,
-                            letterSpacing: "0.15em",
-                            textTransform: "uppercase",
-                            transform: "scaleX(0.8)",
-                            color: "rgba(0,0,0,0.25)",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            padding: "2px 0",
-                            transition: "color 0.15s",
-                          }}
-                        >
-                          Yes
-                        </button>
-                        <button
-                          onClick={() => setConfirmDeleteId(null)}
-                          onMouseEnter={e => { e.currentTarget.style.color = "#1a1a1a" }}
-                          onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
-                          style={{
-                            fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                            fontSize: 9,
-                            letterSpacing: "0.15em",
-                            textTransform: "uppercase",
-                            transform: "scaleX(0.8)",
-                            color: "rgba(0,0,0,0.25)",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            padding: "2px 0",
-                            transition: "color 0.15s",
-                          }}
-                        >
-                          No
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => { setConfirmDeleteId(obs.id); setEditingId(null) }}
-                        style={{
-                          fontFamily: "'Trade Gothic Heavy', 'Arial Black', sans-serif",
-                          fontSize: 9,
-                          letterSpacing: "0.15em",
-                          textTransform: "uppercase",
-                          transform: "scaleX(0.8)",
-                          color: "rgba(0,0,0,0.25)",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          padding: "2px 0",
-                          transition: "color 0.15s",
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.color = "#FF2A00" }}
-                        onMouseLeave={e => { e.currentTarget.style.color = "rgba(0,0,0,0.25)" }}
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
               </div>
               {locationNames[`${obs.lat.toFixed(4)},${obs.lng.toFixed(4)}`] && (
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
@@ -511,45 +278,17 @@ export default function Secret() {
             </div>
 
             {/* Observation text */}
-            {editingId === obs.id ? (
-              <textarea
-                ref={editRef}
-                value={editText}
-                onChange={e => setEditText(e.target.value)}
-                maxLength={200}
-                onKeyDown={e => {
-                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveEdit() }
-                  if (e.key === "Escape") cancelEdit()
-                }}
-                style={{
-                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                  fontSize: 17,
-                  lineHeight: 1.4,
-                  fontWeight: 500,
-                  color: "#1a1a1a",
-                  background: "none",
-                  border: "none",
-                  borderBottom: "1px solid #FF2A00",
-                  outline: "none",
-                  width: "100%",
-                  resize: "none",
-                  padding: 0,
-                  minHeight: 40,
-                }}
-              />
-            ) : (
-              <div
-                style={{
-                  fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
-                  fontSize: 17,
-                  lineHeight: 1.4,
-                  fontWeight: 500,
-                  color: "#1a1a1a",
-                }}
-              >
-                {obs.text}
-              </div>
-            )}
+            <div
+              style={{
+                fontFamily: "'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif",
+                fontSize: 17,
+                lineHeight: 1.4,
+                fontWeight: 500,
+                color: "#1a1a1a",
+              }}
+            >
+              {obs.text}
+            </div>
           </div>
         ))}
 
