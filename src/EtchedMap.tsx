@@ -414,16 +414,33 @@ export default function EtchedMap() {
     setShowManifesto(false); setClosingManifesto(false)
   }, [])
 
+  // Chickens only for observations created June 7–9 2026; everything else is a red dot
+  const CHICKEN_START = "2026-06-07T00:00:00Z"
+  const CHICKEN_END = "2026-06-10T00:00:00Z"
+  const CHICK_ICONS = ["\uD83D\uDC14", "\uD83D\uDC13", "\uD83D\uDC23", "\uD83D\uDC24", "\uD83D\uDC25"]
+  const pickChick = (id: string) => CHICK_ICONS[Math.abs([...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0)) % CHICK_ICONS.length]
+
   const addObservationMarker = useCallback((obs: Observation, map: mapboxgl.Map) => {
+    const created = new Date(obs.created_at)
+    const isChicken = created >= new Date(CHICKEN_START) && created < new Date(CHICKEN_END)
     const el = document.createElement("div")
     el.className = "mapboxgl-marker"
     el.style.cssText = `cursor: none; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;`
     const dot = document.createElement("div")
-    dot.style.cssText = `
-      width: 10px; height: 10px; border-radius: 50%;
-      background: #FF2A00;
-      transition: transform 0.2s ease;
-    `
+    if (isChicken) {
+      dot.style.cssText = `
+        width: 22px; height: 22px;
+        font-size: 18px; line-height: 22px; text-align: center;
+        transition: transform 0.2s ease;
+      `
+      dot.textContent = pickChick(obs.id)
+    } else {
+      dot.style.cssText = `
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #FF2A00;
+        transition: transform 0.2s ease;
+      `
+    }
     el.onmouseenter = () => { dot.style.transform = "scale(1.6)" }
     el.onmouseleave = () => { dot.style.transform = "scale(1)" }
     el.addEventListener("click", (e) => {
@@ -1577,11 +1594,18 @@ export default function EtchedMap() {
                 stamp.src = "/sota-stamp-black.png"
               })
 
-              // Top left: red dot + location name
-              ctx.fillStyle = "#FF2A00"
-              ctx.beginPath()
-              ctx.arc(pad + 10, pad + 10, 10, 0, Math.PI * 2)
-              ctx.fill()
+              // Top left: icon + location name
+              const shareCreated = new Date(selectedObservation.created_at)
+              const isChickenShare = shareCreated >= new Date(CHICKEN_START) && shareCreated < new Date(CHICKEN_END)
+              if (isChickenShare) {
+                ctx.font = "20px serif"
+                ctx.fillText(pickChick(selectedObservation.id), pad + 2, pad + 18)
+              } else {
+                ctx.fillStyle = "#FF2A00"
+                ctx.beginPath()
+                ctx.arc(pad + 10, pad + 10, 10, 0, Math.PI * 2)
+                ctx.fill()
+              }
 
               const locName = locationName || ""
               if (locName) {
